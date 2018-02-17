@@ -92,20 +92,45 @@
           <p>We'll use the key-value store example again and introduce the 70 ms delay.</p>
           <p>In Java:</p>
           <div class="informalexample">
-            <pre class="programlisting">                        match(GetRequest.class, message -&gt; { Thread.sleep(70); //slow down the actor's response Object value = map.get(message.key); Object response = (value != null) ? value : new Status.Failure(new KeyNotFoundException(message.key<a id="GBS.0227.04"></a>)); sender().tell(response, self());</pre>
+            <pre class="programlisting"><code class="hl kwa">match</code><code class="hl opt">(</code>GetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> message <code class="hl opt">-&gt; {</code>
+  Thread<code class="hl opt">.</code><code class="hl kwd">sleep</code><code class="hl opt">(</code><code class="hl num">70</code><code class="hl opt">);</code> <code class="hl slc">// slow down the actor&apos;s response</code>
+  Object value <code class="hl opt">=</code> map<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code>message<code class="hl opt">.</code>key<code class="hl opt">);</code>
+  Object response <code class="hl opt">= (</code>value <code class="hl opt">!=</code> <code class="hl kwb">null</code><code class="hl opt">)</code> ?
+    value <code class="hl opt">:</code> <code class="hl kwa">new</code> Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">KeyNotFoundException</code><code class="hl opt">(</code>message<code class="hl opt">.</code>key<code class="hl opt">));</code>
+  <code class="hl kwd">sender</code><code class="hl opt">().</code><code class="hl kwd">tell</code><code class="hl opt">(</code>response<code class="hl opt">,</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+<code class="hl opt">});</code></pre>
           </div>
           <p>In Scala:</p>
           <div class="informalexample">
-            <pre class="programlisting">    case GetRequest(key) =&gt; Thread.sleep(70) val response: Option[Object] = map.get(key) response match { case Some(x) =&gt; sender() ! x case None =&gt; sender() ! Status.Failure(new KeyNotFoundException(key)) }</pre>
+            <pre class="programlisting"><code class="hl kwa">case</code> <code class="hl kwd">GetRequest</code><code class="hl opt">(</code>key<code class="hl opt">) =&gt;</code> Thread<code class="hl opt">.</code><code class="hl kwd">sleep</code><code class="hl opt">(</code><code class="hl num">70</code><code class="hl opt">)</code>
+  <code class="hl kwa">val</code> response<code class="hl opt">:</code> Option<code class="hl opt">[</code>Object<code class="hl opt">] =</code> map<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code>key<code class="hl opt">)</code>
+  response <code class="hl kwa">match</code> <code class="hl opt">{</code>
+    <code class="hl kwa">case</code> <code class="hl kwd">Some</code><code class="hl opt">(</code>x<code class="hl opt">) =&gt;</code> <code class="hl kwd">sender</code><code class="hl opt">() !</code> x
+    <code class="hl kwa">case</code> None <code class="hl opt">=&gt;</code> <code class="hl kwd">sender</code><code class="hl opt">() !</code> Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">KeyNotFoundException</code><code class="hl opt">(</code>key<code class="hl opt">))</code>
+  <code class="hl opt">}</code></pre>
           </div>
           <p>In our calling class, we'll create a circuit breaker that will trip when latency becomes greater than one second.</p>
           <p>In Java:</p>
           <div class="informalexample">
-            <pre class="programlisting">CircuitBreaker breaker<a id="GBS.0227.05"></a> = new CircuitBreaker(system.scheduler(), 10, FiniteDuration.create(1, "second"), FiniteDuration.create(1, "second"), system.dispatcher()). onOpen(() -&gt; { System.out.println("circuit breaker opened!"); }). onClose(() -&gt; { System.out.println("circuit breaker opened!"); }). onHalfOpen(() -&gt; { System.out.println("circuit breaker opened!"); });</pre>
+            <pre class="programlisting">CircuitBreaker breaker <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">CircuitBreaker</code><code class="hl opt">(</code>
+  system<code class="hl opt">.</code><code class="hl kwd">scheduler</code><code class="hl opt">(),</code> <code class="hl num">10</code><code class="hl opt">,</code> FiniteDuration<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl num">1</code><code class="hl opt">,</code> <code class="hl str">&quot;second&quot;</code><code class="hl opt">),</code>
+  FiniteDuration<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl num">1</code><code class="hl opt">,</code> <code class="hl str">&quot;second&quot;</code><code class="hl opt">),</code> system<code class="hl opt">.</code><code class="hl kwd">dispatcher</code><code class="hl opt">()</code>
+<code class="hl opt">).</code><code class="hl kwd">onOpen</code><code class="hl opt">(() -&gt; {</code>
+  System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;circuit breaker opened!&quot;</code><code class="hl opt">);</code>
+<code class="hl opt">}).</code> <code class="hl kwd">onClose</code><code class="hl opt">(() -&gt; {</code>
+  System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;circuit breaker opened!&quot;</code><code class="hl opt">);</code>
+<code class="hl opt">}).</code><code class="hl kwd">onHalfOpen</code><code class="hl opt">(() -&gt; {</code>
+  System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;circuit breaker opened!&quot;</code><code class="hl opt">);</code>
+<code class="hl opt">});</code></pre>
           </div>
           <p>In <a id="id521" class="indexterm"></a>Scala:</p>
           <div class="informalexample">
-            <pre class="programlisting">val breaker = new CircuitBreaker(system.scheduler,<a id="GBS.0228.01"></a> maxFailures = 10, callTimeout = 1 seconds, resetTimeout = 1 seconds). onOpen(println("circuit breaker opened!")). onClose(println("circuit breaker closed!")). onHalfOpen(println("circuit breaker half-open"))</pre>
+            <pre class="programlisting"><code class="hl kwa">val</code> breaker <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">CircuitBreaker</code><code class="hl opt">(</code>
+  system<code class="hl opt">.</code>scheduler<code class="hl opt">,</code> maxFailures <code class="hl opt">=</code> <code class="hl num">10</code><code class="hl opt">,</code>
+  callTimeout <code class="hl opt">=</code> <code class="hl num">1</code> seconds<code class="hl opt">,</code> resetTimeout <code class="hl opt">=</code> <code class="hl num">1</code> seconds<code class="hl opt">)</code>
+  <code class="hl opt">.</code><code class="hl kwd">onOpen</code><code class="hl opt">(</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;circuit breaker opened!&quot;</code><code class="hl opt">))</code>
+  <code class="hl opt">.</code><code class="hl kwd">onClose</code><code class="hl opt">(</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;circuit breaker closed!&quot;</code><code class="hl opt">))</code>
+  <code class="hl opt">.</code><code class="hl kwd">onHalfOpen</code><code class="hl opt">(</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;circuit breaker half-open&quot;</code><code class="hl opt">))</code></pre>
           </div>
           <p>You can see the parameter names in the Scala example—they are equivalent. We build the CircuitBreaker with the following:</p>
           <div class="itemizedlist">
@@ -120,11 +145,36 @@
           <p>We'll make a call every 50 ms, and the actor will respond in 70 ms, so the messages will queue. Then the mailbox will fill, response times will balloon, and eventually the circuit breaker will open.</p>
           <p>In Java:</p>
           <div class="informalexample">
-            <pre class="programlisting">        Timeout timeout = Timeout.apply(2000); ActorRefdb = system.actorOf(Props.create(SlowAkkademyDb.class)); Await.result(Patterns.ask(db, new SetRequest("key",<a id="GBS.0228.04"></a> "value"),  timeout), timeout.duration()); for(inti=0; i&lt;10000000; i++){ Future future = breaker.callWithCircuitBreaker(() -&gt;Patterns.ask(db, new GetRequest("key"),  timeout)); toJava(future).handle((x,t) -&gt; { if(t != null){ System.out.println("got it: " + x); }else{ System.out.println("error: " + t.toString()); } return null; }); Thread.sleep(50); }</pre>
+            <pre class="programlisting">Timeout timeout <code class="hl opt">=</code> Timeout<code class="hl opt">.</code><code class="hl kwd">apply</code><code class="hl opt">(</code><code class="hl num">2000</code><code class="hl opt">);</code>
+ActorRefdb <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>SlowAkkademyDb<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">));</code>
+Await<code class="hl opt">.</code><code class="hl kwd">result</code><code class="hl opt">(</code>Patterns<code class="hl opt">.</code><code class="hl kwd">ask</code><code class="hl opt">(</code>
+  db<code class="hl opt">,</code> <code class="hl kwa">new</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code><code class="hl str">&quot;key&quot;</code><code class="hl opt">,</code> <code class="hl str">&quot;value&quot;</code><code class="hl opt">),</code> timeout<code class="hl opt">),</code> timeout<code class="hl opt">.</code><code class="hl kwd">duration</code><code class="hl opt">());</code>
+<code class="hl kwa">for</code><code class="hl opt">(</code>inti<code class="hl opt">=</code><code class="hl num">0</code><code class="hl opt">;</code> i<code class="hl opt">&lt;</code><code class="hl num">10000000</code><code class="hl opt">;</code> i<code class="hl opt">++) {</code>
+  Future future <code class="hl opt">=</code> breaker<code class="hl opt">.</code><code class="hl kwd">callWithCircuitBreaker</code><code class="hl opt">(</code>
+    <code class="hl opt">() -&gt;</code> Patterns<code class="hl opt">.</code><code class="hl kwd">ask</code><code class="hl opt">(</code>db<code class="hl opt">,</code> <code class="hl kwa">new</code> <code class="hl kwd">GetRequest</code><code class="hl opt">(</code><code class="hl str">&quot;key&quot;</code><code class="hl opt">),</code> timeout<code class="hl opt">));</code>
+  <code class="hl kwd">toJava</code><code class="hl opt">(</code>future<code class="hl opt">).</code><code class="hl kwd">handle</code><code class="hl opt">((</code>x<code class="hl opt">,</code>t<code class="hl opt">) -&gt; {</code>
+    <code class="hl kwa">if</code><code class="hl opt">(</code>t <code class="hl opt">!=</code> <code class="hl kwb">null</code><code class="hl opt">) {</code>
+      System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;got it: &quot;</code> <code class="hl opt">+</code> x<code class="hl opt">);</code>
+    <code class="hl opt">}</code> <code class="hl kwa">else</code> <code class="hl opt">{</code>
+      System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;error: &quot;</code> <code class="hl opt">+</code> t<code class="hl opt">.</code><code class="hl kwd">toString</code><code class="hl opt">());</code>
+    <code class="hl opt">}</code> <code class="hl kwa">return</code> <code class="hl kwb">null</code><code class="hl opt">;</code>
+  <code class="hl opt">});</code>
+  Thread<code class="hl opt">.</code><code class="hl kwd">sleep</code><code class="hl opt">(</code><code class="hl num">50</code><code class="hl opt">);</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>In Scala:</p>
           <div class="informalexample">
-            <pre class="programlisting">  implicit val timeout = Timeout(2<a id="GBS.0228.05"></a> seconds) valdb = system.actorOf(Props[FastSlowAkkademyDb]) Await.result(db ? SetRequest("key", "value"), 2 seconds) (1 to 1000000).map(x =&gt; { Thread.sleep(50) valaskFuture = breaker.withCircuitBreaker(db ? GetRequest("key")) askFuture.map(x =&gt; "got it: " + x).recover({ case t =&gt; "error: " + t.toString }).foreach(x =&gt;println(x)) })</pre>
+            <pre class="programlisting"><code class="hl kwa">implicit val</code> timeout <code class="hl opt">=</code> <code class="hl kwd">Timeout</code><code class="hl opt">(</code><code class="hl num">2</code> seconds<code class="hl opt">)</code>
+<code class="hl kwa">val</code> db <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">[</code>FastSlowAkkademyDb<code class="hl opt">])</code>
+Await<code class="hl opt">.</code><code class="hl kwd">result</code><code class="hl opt">(</code>db ? <code class="hl kwd">SetRequest</code><code class="hl opt">(</code><code class="hl str">&quot;key&quot;</code><code class="hl opt">,</code> <code class="hl str">&quot;value&quot;</code><code class="hl opt">),</code> <code class="hl num">2</code> seconds<code class="hl opt">)</code>
+<code class="hl opt">(</code><code class="hl num">1</code> to <code class="hl num">1000000</code><code class="hl opt">).</code><code class="hl kwd">map</code><code class="hl opt">(</code>x <code class="hl opt">=&gt; {</code>
+  Thread<code class="hl opt">.</code><code class="hl kwd">sleep</code><code class="hl opt">(</code><code class="hl num">50</code><code class="hl opt">)</code>
+  <code class="hl kwa">val</code> askFuture <code class="hl opt">=</code> breaker<code class="hl opt">.</code><code class="hl kwd">withCircuitBreaker</code><code class="hl opt">(</code>db ? <code class="hl kwd">GetRequest</code><code class="hl opt">(</code><code class="hl str">&quot;key&quot;</code><code class="hl opt">))</code>
+  askFuture
+    <code class="hl opt">.</code><code class="hl kwd">map</code><code class="hl opt">(</code>x <code class="hl opt">=&gt;</code> <code class="hl str">&quot;got it: &quot;</code> <code class="hl opt">+</code> x<code class="hl opt">)</code>
+    <code class="hl opt">.</code><code class="hl kwd">recover</code><code class="hl opt">({</code> <code class="hl kwa">case</code> t <code class="hl opt">=&gt;</code> <code class="hl str">&quot;error: &quot;</code> <code class="hl opt">+</code> t<code class="hl opt">.</code>toString <code class="hl opt">})</code>
+    <code class="hl opt">.</code><code class="hl kwd">foreach</code><code class="hl opt">(</code>x <code class="hl opt">=&gt;</code><code class="hl kwd">println</code><code class="hl opt">(</code>x<code class="hl opt">))</code>
+<code class="hl opt">})</code></pre>
           </div>
           <p>In some cases, you<a id="id522" class="indexterm"></a> might want to roll out your own circuit breaker<a id="GBS.0229.01"></a> or be careful with what you consider to be a failure in a future. The circuit breaker counts any and all failures and will trip after the maxFailures is reached. If your futures fail in ways that you don't want your circuit breaker to fail, you can wrap the responses in a <code class="literal">Try</code> instead of failing the future so that the future is successful.</p>
           <p>There is one more strategy that you can think about to<a id="GBS.0229.02"></a> overcome overwhelming your consumers. If you have a hot producer—something that will endlessly send requests—then you might want to turn the way you supply messages around so that actors ask for messages to process instead of simply receiving endless piles of messages.</p>

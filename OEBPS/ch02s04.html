@@ -43,11 +43,10 @@
       <p>In Akka, this reference to an actor is called an <code class="literal">ActorRef</code>. The <code class="literal">ActorRef</code> is an un-typed reference that encapsulates the actor behind a layer of abstraction and gives us the mechanisms to interact with<a id="GBS.0066.04"></a> the actor.</p>
       <p>We've covered the fact that the actor system is where actors exist. It may be obvious that this is also where we create actors and obtain references to them. The <code class="literal">actorOf</code> method will produce a new actor and return a reference to it:</p>
       <div class="informalexample">
-        <pre class="programlisting">//Java
-ActorRef actor = actorSystem.actorOf(Props.create(JavaPongActor.class));
-//Scala
-val actor: ActorRef =
-actorSystem.actorOf(Props(classOf[ScalaPongActor]))</pre>
+        <pre class="programlisting"><code class="hl slc">// Java</code>
+ActorRef actor <code class="hl opt">=</code> actorSystem<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>JavaPongActor<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">));</code>
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">val</code> actor<code class="hl opt">:</code> ActorRef <code class="hl opt">=</code> actorSystem<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code><code class="hl kwd">Props</code><code class="hl opt">(</code>classOf<code class="hl opt">[</code>ScalaPongActor<code class="hl opt">]))</code></pre>
       </div>
       <div title="Note" style="" class="note">
         <div class="inner">
@@ -66,25 +65,30 @@ actorSystem.actorOf(Props(classOf[ScalaPongActor]))</pre>
         </div>
         <p>To ensure we encapsulate the actor instance and never gain access to an instance of it, we<a id="GBS.0067.01"></a> pass in a Props<a id="id149" class="indexterm"></a> instance with all of the constructor <code class="literal">args</code>. Props lets us pass in the class, and a variable lengle list of arguments:</p>
         <div class="informalexample">
-          <pre class="programlisting">//Java
-Props.create(PongActor.class, arg1, arg2, argn);
-//Scala
-Props(classOf[PongActor], arg1, arg2, argn)</pre>
+          <pre class="programlisting"><code class="hl slc">// Java</code>
+Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>PongActor<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> arg1<code class="hl opt">,</code> arg2<code class="hl opt">,</code> argn<code class="hl opt">);</code>
+<code class="hl slc">// Scala</code>
+<code class="hl kwd">Props</code><code class="hl opt">(</code>classOf<code class="hl opt">[</code>PongActor<code class="hl opt">],</code> arg1<code class="hl opt">,</code> arg2<code class="hl opt">,</code> argn<code class="hl opt">)</code></pre>
         </div>
         <p>If the actor takes constructor arguments, it's recommended that the props is created via a factory method. If we wanted our <span class="emphasis"><em>Pong</em></span> actor to respond with a message<a id="GBS.0067.02"></a> other than <span class="emphasis"><em>Pong</em></span>, we might take that as a constructor arg. We can create a factory method to produce the Props instance like so:</p>
         <div class="informalexample">
-          <pre class="programlisting">//Java
-public static Props props(String response) { return Props.create(this.class, response); }
-//Scala
-object ScalaPongActor { def props(response: String): Props = { Props(classOf[ScalaPongActor], response) }
-}</pre>
+          <pre class="programlisting">
+<code class="hl slc">// Java</code>
+<code class="hl kwa">public static</code> Props <code class="hl kwd">props</code><code class="hl opt">(</code>String response<code class="hl opt">) {</code>
+  <code class="hl kwa">return</code> Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl kwa">this</code><code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> response<code class="hl opt">);</code>
+<code class="hl opt">}</code>
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">object</code> ScalaPongActor <code class="hl opt">{</code>
+  <code class="hl kwa">def</code> <code class="hl kwd">props</code><code class="hl opt">(</code>response<code class="hl opt">:</code> String<code class="hl opt">):</code> Props <code class="hl opt">= {</code> <code class="hl kwd">Props</code><code class="hl opt">(</code>classOf<code class="hl opt">[</code>ScalaPongActor<code class="hl opt">],</code> response<code class="hl opt">) }</code>
+<code class="hl opt">}</code></pre>
         </div>
         <p>Then we would create the actor using the props factory<a id="GBS.0067.03"></a> method:</p>
         <div class="informalexample">
-          <pre class="programlisting">//Java
-ActorRef actor = actorSystem.actorOf(JavaPongActor.props("PongFoo"));
-//Scala
-val actor: ActorRef = actorSystem.actorOf(ScalaPongActor props "PongFoo")</pre>
+          <pre class="programlisting">
+<code class="hl slc">// Java</code>
+ActorRef actor <code class="hl opt">=</code> actorSystem<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>JavaPongActor<code class="hl opt">.</code><code class="hl kwd">props</code><code class="hl opt">(</code><code class="hl str">&quot;PongFoo&quot;</code><code class="hl opt">));</code>
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">val</code> actor<code class="hl opt">:</code> ActorRef <code class="hl opt">=</code> actorSystem<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>ScalaPongActor props <code class="hl str">&quot;PongFoo&quot;</code><code class="hl opt">)</code></pre>
         </div>
         <p>Creating the props factory method isn't required but moves the concern of creating the Props object into one place so that any changes to the actor's constructor can be isolated to avoid making breaking changes as the code changes<a id="GBS.0067.04"></a> over time.</p>
         <p><code class="literal">actorOf</code> creates<a id="id150" class="indexterm"></a> an actor and gives you an <code class="literal">ActorRef</code> for the newly created actor. There is another way to get a reference to an Actor—<code class="literal">actorSelection</code>.</p>
@@ -106,7 +110,9 @@ val actor: ActorRef = actorSystem.actorOf(ScalaPongActor props "PongFoo")</pre>
         </div>
         <p>Note that the preceding path states <code class="literal">akka.tcp</code> as the protocol and specifies the host and port of the remote actor system. If we know the path of an Actor, we can use <code class="literal">actorSelection </code>to get a reference—an <code class="literal">ActorSelection</code>—for that Actor, even if it is on a remote machine:</p>
         <div class="informalexample">
-          <pre class="programlisting">ActorSelection selection<a id="GBS.0068.01"></a> = system.actorSelection("akka.tcp://actorSystem@host.jason-goodwin.com:5678/user/KeanuReeves");</pre>
+          <pre class="programlisting">
+ActorSelection selection <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>
+  <code class="hl str">&quot;akka.tcp://actorSystem&#64;host.jason-goodwin.com:5678/user/KeanuReeves&quot;</code><code class="hl opt">);</code></pre>
         </div>
         <p>The <code class="literal">ActorSelection</code> here is a reference to a remote actor—we can use the <code class="literal">ActorSelection</code> like the <code class="literal">ActorRef</code> to communicate over the network. This demonstrates how easy it is to send messages over the wire, and is an example of Akka's location transparency in action. We're able to change an application<a id="GBS.0068.02"></a> to communicate with remote services merely by configuring where an actor is located.</p>
         <p>To recap this section, we can create an Actor and gain a reference to it by calling <code class="literal">system.actorOf</code> and pass it a Props instance with the list of <code class="literal">args</code>. We can also give the actor a name by passing that into the <code class="literal">actorOf</code> method. Finally, we can look up an existing actor, even on a remote system, by using <code class="literal">actorSelection</code><a id="GBS.0068.03"></a>.</p>

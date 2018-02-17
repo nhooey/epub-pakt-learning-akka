@@ -157,11 +157,9 @@
 </p>
           <p>Log out and back<a id="id73" class="indexterm"></a> in. Ensure you can run the following on the command line: </p>
           <div class="informalexample">
-            <pre class="programlisting">
-              <span class="strong">
+            <pre class="programlisting"><span class="strong">
                 <strong>activator --version</strong>
-              </span>
-            </pre>
+              </span></pre>
           </div>
           <p>That should display text similar to this: sbt launcher version 0.13.5</p>
         </div>
@@ -177,23 +175,20 @@
           <p>Open a terminal.</p>
           <p>Place<a id="GBS.0041.04"></a> the following in your terminal (copied from <a href="http://brew.sh" class="ulink">http://brew.sh</a>). This will install the Homebrew OS X Package manager.</p>
           <div class="informalexample">
-            <pre class="programlisting">ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"</pre>
+            <pre class="programlisting">
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"</pre>
           </div>
           <p>Finally, place the following<a id="id77" class="indexterm"></a> in your terminal and <a id="id78" class="indexterm"></a>press <span class="emphasis"><em>Enter</em></span>:</p>
           <div class="informalexample">
-            <pre class="programlisting">
-              <span class="strong">
+            <pre class="programlisting"><span class="strong">
                 <strong>brew install typesafe-activator</strong>
-              </span>
-            </pre>
+              </span></pre>
           </div>
           <p>Check that the Activator is<a id="id79" class="indexterm"></a> available on the command line:</p>
           <div class="informalexample">
-            <pre class="programlisting">
-              <span class="strong">
+            <pre class="programlisting"><span class="strong">
                 <strong>activator --version</strong>
-              </span>
-            </pre>
+              </span></pre>
           </div>
         </div>
       </div>
@@ -208,11 +203,9 @@
         <p>We will use the Activator to quickly<a id="id80" class="indexterm"></a> scaffold projects in this book. We can generate a project from any number of templates. We will only use the basic Java and Scala templates in this book. Feel free to explore other options. Typesafe has many user-submitted Activator templates that will demonstrate various technologies and approaches used together.</p>
         <p>To create a new Activator template,<a id="GBS.0042.01"></a> in a terminal/command prompt, type:</p>
         <div class="informalexample">
-          <pre class="programlisting">
-            <span class="strong">
+          <pre class="programlisting"><span class="strong">
               <strong>activator new</strong>
-            </span>
-          </pre>
+            </span></pre>
         </div>
         <p>You will see the following.</p>
         <p>Choose from these featured templates or enter a template name:</p>
@@ -238,19 +231,14 @@
         <p>To confirm that the project and your environment are set up correctly, change into the folder and run <code class="literal">activator test</code>.
 </p>
         <div class="informalexample">
-          <pre class="programlisting">
-            <span class="strong">
+          <pre class="programlisting"><span class="strong">
               <strong>cd akkademy-db activator test</strong>
-            </span>
-          </pre>
+            </span></pre>
         </div>
         <p>You will see output indicating that the project compiled and the test ran. If there are any problems, you<a id="GBS.0042.03"></a> may have to head to stack-overflow and sort out your environment before proceeding.</p>
         <p>You will see the <a id="id81" class="indexterm"></a>following success message if all went well:</p>
         <div class="informalexample">
-          <pre class="programlisting">
-            <span class="strong">
-              <strong>[info] Passed: Total 1, Failed 0, Errors 0, Passed 1 [success] Total time: 3 s, completed 22-Jan-2015 9:44:21 PM</strong>
-            </span>
+          <pre class="programlisting"><code class="strong"><strong>[info] Passed: Total 1, Failed 0, Errors 0, Passed 1 [success] Total time: 3 s, completed 22-Jan-2015 9:44:21 PM</strong></code>
           </pre>
         </div>
       </div>
@@ -317,7 +305,8 @@
 </p>
             <p>Include the following in the file, ensuring there is a blank line between each line in the file if there are multiple<a id="GBS.0043.05"></a> lines.</p>
             <div class="informalexample">
-              <pre class="programlisting">addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "3.0.0")</pre>
+              <pre class="programlisting">
+<code class="hl kwd">addSbtPlugin</code><code class="hl opt">(</code><code class="hl str">&quot;com.typesafe.sbteclipse&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;sbteclipse-plugin&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;3.0.0&quot;</code><code class="hl opt">)</code></pre>
             </div>
             <p>You may want to ensure this is current by checking the<a id="id91" class="indexterm"></a> sbteclipse GitHub project: <a href="https://github.com/typesafehub/sbteclipse/" class="ulink">https://github.com/typesafehub/sbteclipse/</a>
 </p>
@@ -325,11 +314,7 @@
             <p>In the terminal, navigate <a id="id92" class="indexterm"></a>to the project we created earlier (<code class="literal">akkademy-db</code><a id="GBS.0044.01"></a>). In the root of the project, run Activator eclipsify to generate the eclipse project structure.</p>
             <p>You will see the following success message if all went well:</p>
             <div class="informalexample">
-              <pre class="programlisting">
-                <span class="strong">
-                  <strong>[info] Successfully created Eclipse project files for project(s): [info] akkademy-db</strong>
-                </span>
-              </pre>
+              <pre class="programlisting"><span class="strong"><strong>[info] Successfully created Eclipse project files for project(s): [info] akkademy-db</strong></span></pre>
             </div>
           </div>
           <div title="Importing the project into Eclipse" class="section">

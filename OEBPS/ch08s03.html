@@ -92,36 +92,44 @@
         <p>First, we know that users exist remotely, so a good place to start is by modeling that remote item. We'll have some sort of user entity representation somewhere else, but the chatroom doesn't need to be concerned with it necessarily. The chatroom only needs to know where to send updates to and information to get the entity information for display. We don't have the user<a id="GBS.0241.01"></a> entity modeled at this point, so we'll just use a simple <code class="literal">UserRef</code> in our case.</p>
         <p>In Java:</p>
         <div class="informalexample">
-          <pre class="programlisting">public class UserRef { public final ActorRef actor;
-    public final String username;
-    public UserRef(ActorRef actor, String username) { this.actor = actor;
-this.username = username;
-    }
-}</pre>
+          <pre class="programlisting"><code class="hl kwa">public class</code> UserRef <code class="hl opt">{</code>
+  <code class="hl kwa">public final</code> ActorRef actor<code class="hl opt">;</code>
+  <code class="hl kwa">public final</code> String username<code class="hl opt">;</code>
+  <code class="hl kwa">public</code> <code class="hl kwd">UserRef</code><code class="hl opt">(</code>ActorRef actor<code class="hl opt">,</code> String username<code class="hl opt">) {</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>actor <code class="hl opt">=</code> actor<code class="hl opt">;</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>username <code class="hl opt">=</code> username<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
         </div>
         <p>In Scala:</p>
         <div class="informalexample">
-          <pre class="programlisting">case class UserRef(actor: ActorRef, name: String)</pre>
+          <pre class="programlisting"><code class="hl kwa">case class</code> <code class="hl kwd">UserRef</code><code class="hl opt">(</code>actor<code class="hl opt">:</code> ActorRef<code class="hl opt">,</code> name<code class="hl opt">:</code> String<code class="hl opt">)</code></pre>
         </div>
         <p>The <code class="literal">UserRef</code> will <a id="id547" class="indexterm"></a>have the name to display and then an actor<a id="GBS.0241.02"></a> ref that we can send updates to. This is all the user info that the chatroom itself will need at this point in time.</p>
         <p>The chatroom has to keep two pieces of data: joined users and chat history. Because these items represent state, and multiple users will be trying to access and change the state, we can guess that the chatroom itself would benefit from being an actor. Because the chatroom will be<a id="GBS.0241.03"></a> an actor, we'll model the Post request and Join request as immutable messages. We'll call them<a id="id548" class="indexterm"></a> starting with a verb name (this may be a small deviation from Java naming conventions but is common with message names). This is expressive of the intent of the message. Then we will have the message include any data relevant to the request.</p>
         <p>In Java:</p>
         <div class="informalexample">
-          <pre class="programlisting">public class Messages { static public class JoinChatroom<a id="GBS.0241.04"></a> { public final UserRefuserRef;
-        public JoinChatroom(UserRefuserRef) { this.userRef = userRef;
-        }
-    }
-    static public class PostToChatroom{ public final String line, username;
-        public PostToChatroom(String line, String username) { this.line = line;
-this.username = username;
-        }
-    }
-}</pre>
+          <pre class="programlisting"><code class="hl kwa">public class</code> Messages <code class="hl opt">{</code>
+  <code class="hl kwa">static public class</code> JoinChatroom <code class="hl opt">{</code>
+    <code class="hl kwa">public final</code> UserRefuserRef<code class="hl opt">;</code>
+    <code class="hl kwa">public</code> <code class="hl kwd">JoinChatroom</code><code class="hl opt">(</code>UserRefuserRef<code class="hl opt">) {</code>
+      <code class="hl kwa">this</code><code class="hl opt">.</code>userRef <code class="hl opt">=</code> userRef<code class="hl opt">;</code>
+    <code class="hl opt">}</code>
+  <code class="hl opt">}</code>
+
+  <code class="hl kwa">static public class</code> PostToChatroom <code class="hl opt">{</code>
+    <code class="hl kwa">public final</code> String line<code class="hl opt">,</code> username<code class="hl opt">;</code>
+    <code class="hl kwa">public</code> <code class="hl kwd">PostToChatroom</code><code class="hl opt">(</code>String line<code class="hl opt">,</code> String username<code class="hl opt">) {</code>
+      <code class="hl kwa">this</code><code class="hl opt">.</code>line <code class="hl opt">=</code> line<code class="hl opt">;</code>
+      <code class="hl kwa">this</code><code class="hl opt">.</code>username <code class="hl opt">=</code> username<code class="hl opt">;</code>
+    <code class="hl opt">}</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
         </div>
         <p>In Scala:</p>
         <div class="informalexample">
-          <pre class="programlisting">case class JoinChatroom(userRef: UserRef)
-case class PostToChatroom(line:<a id="GBS.0241.05"></a> String, username: String)</pre>
+          <pre class="programlisting"><code class="hl kwa">case class</code> <code class="hl kwd">JoinChatroom</code><code class="hl opt">(</code>userRef<code class="hl opt">:</code> UserRef<code class="hl opt">)</code>
+<code class="hl kwa">case class</code> <code class="hl kwd">PostToChatroom</code><code class="hl opt">(</code>line<code class="hl opt">:</code> String<code class="hl opt">,</code> username<code class="hl opt">:</code> String<code class="hl opt">)</code></pre>
         </div>
         <p>Now that we have the messages, we can build the skeleton of the chatroom. We won't implement any logic yet—just create the actor. Because we also know the state, we can add those fields to the actor as well at this point:</p>
         <div class="itemizedlist">
@@ -132,23 +140,28 @@ case class PostToChatroom(line:<a id="GBS.0241.05"></a> String, username: String
         </div>
         <p>In Java:</p>
         <div class="informalexample">
-          <pre class="programlisting">public class Chatroom extends AbstractActor{ List&lt;Messages.PostToChatroom&gt;chatHistory = new ArrayList&lt;Messages.PostToChatroom&gt;();
-    List&lt;UserRef&gt;joinedUsers = new ArrayList&lt;UserRef&gt;();
-    @Override public PartialFunction&lt;Object, BoxedUnit&gt; receive() { return ReceiveBuilder. matchAny(o -&gt;System.out.println("received unknown message")).build();
-    }
-}</pre>
+          <pre class="programlisting"><code class="hl kwa">public class</code> Chatroom <code class="hl kwa">extends</code> AbstractActor <code class="hl opt">{</code>
+  List<code class="hl opt">&lt;</code>Messages<code class="hl opt">.</code>PostToChatroom<code class="hl opt">&gt;</code> chatHistory <code class="hl opt">=</code>
+    <code class="hl kwa">new</code> ArrayList<code class="hl opt">&lt;</code>Messages<code class="hl opt">.</code>PostToChatroom<code class="hl opt">&gt;();</code>
+  List<code class="hl opt">&lt;</code>UserRef<code class="hl opt">&gt;</code> joinedUsers <code class="hl opt">=</code> <code class="hl kwa">new</code> ArrayList<code class="hl opt">&lt;</code>UserRef<code class="hl opt">&gt;();</code>
+
+  <code class="hl kwc">&#64;Override</code> <code class="hl kwa">public</code> PartialFunction<code class="hl opt">&lt;</code>Object<code class="hl opt">,</code> BoxedUnit<code class="hl opt">&gt;</code> <code class="hl kwd">receive</code><code class="hl opt">() {</code>
+    <code class="hl kwa">return</code> ReceiveBuilder<code class="hl opt">.</code><code class="hl kwd">matchAny</code><code class="hl opt">(</code>
+      o <code class="hl opt">-&gt;</code>System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;received unknown message&quot;</code><code class="hl opt">)).</code><code class="hl kwd">build</code><code class="hl opt">();</code>
+    <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
         </div>
         <p>In Scala:</p>
         <div class="informalexample">
-          <pre class="programlisting">class Chatroom<a id="GBS.0242.02"></a> extends Actor {
-var joinedUsers: Seq[UserRef] = Seq.empty
-var chatHistory: Seq[PostToChatroom] = Seq.empty
+          <pre class="programlisting"><code class="hl kwa">class</code> Chatroom <code class="hl kwa">extends</code> Actor <code class="hl opt">{</code>
+  <code class="hl kwa">var</code> joinedUsers<code class="hl opt">:</code> Seq<code class="hl opt">[</code>UserRef<code class="hl opt">] =</code> Seq<code class="hl opt">.</code>empty
+  <code class="hl kwa">var</code> chatHistory<code class="hl opt">:</code> Seq<code class="hl opt">[</code>PostToChatroom<code class="hl opt">] =</code> Seq<code class="hl opt">.</code>empty
 
-override def receive = {
-case _ =&gt;
-println("received unknown message ")
-  }
-}</pre>
+  <code class="hl kwa">override def</code> receive <code class="hl opt">= {</code>
+    <code class="hl kwa">case</code> _ <code class="hl opt">=&gt;</code>
+    <code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;received unknown message &quot;</code><code class="hl opt">)</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
         </div>
       </div>
       <div title="Building by specification" class="section">
@@ -168,20 +181,47 @@ println("received unknown message ")
         </div>
         <p>In Java, we'll continue to use Junit, but<a id="GBS.0242.04"></a> C supports <span class="emphasis"><em>Given, When, Then</em></span> style of specification testing <a id="id552" class="indexterm"></a>with appropriate annotations—it's worth taking a look if you're starting a new project:</p>
         <div class="informalexample">
-          <pre class="programlisting">public class ChatroomTest extends TestCase { static ActorSystem system = ActorSystem.apply(); @Test public void testShouldAddUserToJoinedUsersWhenJoiningTest() { //Given a Chatroom has no users Props props = Props.create(Chatroom.class); TestActorRef&lt;Chatroom&gt;<a id="GBS.0242.05"></a> ref = TestActorRef.create(system, props, "testA"); Chatroom chatroom = ref.underlyingActor(); assertEquals(chatroom.joinedUsers.size(), 0); //When it recieves a request from a user to join the chatroom UserRefuserRef = new UserRef(system.deadLetters(), "user"); Messages.JoinChatroom request = new Messages.JoinChatroom(userRef); ref.tell(request, system.deadLetters()); //It should add<a id="GBS.0243.01"></a> the UserRef to its list of joined users assertEquals(chatroom.joinedUsers.get(0), userRef); }
-}</pre>
+          <pre class="programlisting"><code class="hl kwa">public class</code> ChatroomTest <code class="hl kwa">extends</code> TestCase <code class="hl opt">{</code>
+  <code class="hl kwa">static</code> ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">apply</code><code class="hl opt">();</code>
+  <code class="hl kwc">&#64;Test</code> <code class="hl kwa">public void</code> <code class="hl kwd">testShouldAddUserToJoinedUsersWhenJoiningTest</code><code class="hl opt">() {</code>
+    <code class="hl slc">// Given a Chatroom has no users</code>
+    Props props <code class="hl opt">=</code> Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>Chatroom<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">);</code>
+    TestActorRef<code class="hl opt">&lt;</code>Chatroom<code class="hl opt">&gt;</code> ref <code class="hl opt">=</code> TestActorRef<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>
+      system<code class="hl opt">,</code> props<code class="hl opt">,</code> <code class="hl str">&quot;testA&quot;</code><code class="hl opt">);</code>
+    Chatroom chatroom <code class="hl opt">=</code> ref<code class="hl opt">.</code><code class="hl kwd">underlyingActor</code><code class="hl opt">();</code>
+    <code class="hl kwd">assertEquals</code><code class="hl opt">(</code>chatroom<code class="hl opt">.</code>joinedUsers<code class="hl opt">.</code><code class="hl kwd">size</code><code class="hl opt">(),</code> <code class="hl num">0</code><code class="hl opt">);</code>
+
+    <code class="hl slc">// When it recieves a request from a user to join the chatroom</code>
+    UserRefuserRef <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">UserRef</code><code class="hl opt">(</code>system<code class="hl opt">.</code><code class="hl kwd">deadLetters</code><code class="hl opt">(),</code> <code class="hl str">&quot;user&quot;</code><code class="hl opt">);</code>
+    Messages<code class="hl opt">.</code>JoinChatroom request <code class="hl opt">=</code> <code class="hl kwa">new</code> Messages<code class="hl opt">.</code><code class="hl kwd">JoinChatroom</code><code class="hl opt">(</code>userRef<code class="hl opt">);</code>
+    ref<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code>request<code class="hl opt">,</code> system<code class="hl opt">.</code><code class="hl kwd">deadLetters</code><code class="hl opt">());</code>
+
+    <code class="hl slc">// It should add the UserRef to its list of joined users</code>
+    <code class="hl kwd">assertEquals</code><code class="hl opt">(</code>chatroom<code class="hl opt">.</code>joinedUsers<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code><code class="hl num">0</code><code class="hl opt">),</code> userRef<code class="hl opt">);</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
         </div>
         <p>Note that we can start the test name with the word "should"—as Dan North writes, this helps us write descriptive test names that will print useful information when the tests run. The actual structure of the test reflects our given when the format is as shown in the comments. The comments themselves<a id="GBS.0243.02"></a> may not be necessary, but here this demonstrates how the specification relates to the code.</p>
         <p>In Scala, we have better DSLs with the common testing tools, so we can more directly structure our test to reflect the specification:</p>
         <div class="informalexample">
-          <pre class="programlisting">class ChatroomSpec extends FunSpec with Matchers { val system = ActorSystem()
-  describe("Given a Chatroom has no users"){ val props: Props = Props.create(classOf[Chatroom])<a id="GBS.0243.03"></a> val ref: TestActorRef[Chatroom] = TestActorRef.create(system, props, "testA") val chatroom: Chatroom = ref.underlyingActor chatroom.joinedUsers.size should equal(0)
-    describe("when it receives a request from a user to join the chatroom"){ val userRef: UserRef = new UserRef(system.deadLetters, "user") val request: JoinChatroom = JoinChatroom(userRef)
-      ref ! userRef
-      it("should add<a id="GBS.0243.04"></a> the UserRef to the list of joined users"){ chatroom.joinedUsers.head should equal(userRef) }
-    }
-  }
-}</pre>
+          <pre class="programlisting"><code class="hl kwa">class</code> ChatroomSpec <code class="hl kwa">extends</code> FunSpec <code class="hl kwa">with</code> Matchers <code class="hl opt">{</code>
+  <code class="hl kwa">val</code> system <code class="hl opt">=</code> <code class="hl kwd">ActorSystem</code><code class="hl opt">()</code>
+  <code class="hl kwd">describe</code><code class="hl opt">(</code><code class="hl str">&quot;Given a Chatroom has no users&quot;</code><code class="hl opt">) {</code>
+    <code class="hl kwa">val</code> props<code class="hl opt">:</code> Props <code class="hl opt">=</code> Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>classOf<code class="hl opt">[</code>Chatroom<code class="hl opt">])</code>
+    <code class="hl kwa">val</code> ref<code class="hl opt">:</code> TestActorRef<code class="hl opt">[</code>Chatroom<code class="hl opt">] =</code>
+      TestActorRef<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>system<code class="hl opt">,</code> props<code class="hl opt">,</code> <code class="hl str">&quot;testA&quot;</code><code class="hl opt">)</code>
+    <code class="hl kwa">val</code> chatroom<code class="hl opt">:</code> Chatroom <code class="hl opt">=</code> ref<code class="hl opt">.</code>underlyingActor
+    chatroom<code class="hl opt">.</code>joinedUsers<code class="hl opt">.</code>size should <code class="hl kwd">equal</code><code class="hl opt">(</code><code class="hl num">0</code><code class="hl opt">)</code>
+    <code class="hl kwd">describe</code><code class="hl opt">(</code><code class="hl str">&quot;when it receives a request from a user to join chatroom&quot;</code><code class="hl opt">) {</code>
+      <code class="hl kwa">val</code> userRef<code class="hl opt">:</code> UserRef <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">UserRef</code><code class="hl opt">(</code>system<code class="hl opt">.</code>deadLetters<code class="hl opt">,</code> <code class="hl str">&quot;user&quot;</code><code class="hl opt">)</code>
+      <code class="hl kwa">val</code> request<code class="hl opt">:</code> JoinChatroom <code class="hl opt">=</code> <code class="hl kwd">JoinChatroom</code><code class="hl opt">(</code>userRef<code class="hl opt">)</code>
+      ref <code class="hl opt">!</code> userRef
+      <code class="hl kwd">it</code><code class="hl opt">(</code><code class="hl str">&quot;should add the UserRef to the list of joined users&quot;</code><code class="hl opt">) {</code>
+        chatroom<code class="hl opt">.</code>joinedUsers<code class="hl opt">.</code>head should <code class="hl kwd">equal</code><code class="hl opt">(</code>userRef<code class="hl opt">)</code>
+      <code class="hl opt">}</code>
+    <code class="hl opt">}</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
         </div>
         <p>This maps more directly<a id="id553" class="indexterm"></a> to the <span class="emphasis"><em>Given When Then</em></span> format to show how you might use <code class="literal">FunSpec</code> to layer your tests. While this demonstrates the specification quite directly, in real scenarios I would avoid creating too much nesting and duplicate things instead so that your tests aren't bleeding—unlike<a id="GBS.0243.05"></a> your production code, duplication can be appropriate in tests. There are several ways in which you can structure tests using <code class="literal">ScalaTest</code>—check out the API and see which suits you best.</p>
         <p>At this point, we need to run the test and ensure that it fails with the expected problem. Running the failing test is an important step as it gives us confidence that our test is validating the correct thing. Here<a id="GBS.0244.01"></a> we can see the test failing because there are no joined users in the list, as expected. Then, when it passes, we know that the behavior is correctly implemented to meet the specification:</p>

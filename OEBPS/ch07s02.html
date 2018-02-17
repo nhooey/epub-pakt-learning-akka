@@ -53,11 +53,13 @@
             <p>We've <a id="id506" class="indexterm"></a>programmatically defined<a id="id507" class="indexterm"></a> and instantiated actors. Akka's deployment configuration can also be used to configure actors and routers from the configuration file.</p>
             <p>You can define an actor's mailbox (by actor path) in the deployment configuration. If this is defined, this will take priority over any other configured mailboxes.<a id="GBS.0221.01"></a> In application.conf, you would define an actor's mailbox like the following:</p>
             <div class="informalexample">
-              <pre class="programlisting">akka.actor.deployment { /myactor { mailbox = default-mailbox } }</pre>
+              <pre class="programlisting"><code class="hl kwa">akka</code><code class="hl opt">.</code>actor<code class="hl opt">.</code>deployment { <code class="hl kwc">/myactor</code> { mailbox = default-mailbox } }</pre>
             </div>
             <p>The actor created at <code class="literal">/user/myactor</code> would then have the default mailbox:</p>
             <div class="informalexample">
-              <pre class="programlisting">ActorRefclusterController = system.actorOf(Props.create(MyActor.class), "myactor"); system.actorOf(Props[MyActor], "myactor")</pre>
+              <pre class="programlisting">ActorRefclusterController <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>MyActor<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">),</code>
+                                           <code class="hl str">&quot;myactor&quot;</code><code class="hl opt">);</code>
+system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">[</code>MyActor<code class="hl opt">],</code> <code class="hl str">&quot;myactor&quot;</code><code class="hl opt">)</code></pre>
             </div>
           </div>
           <div title="Selecting a mailbox in code" class="section">
@@ -70,7 +72,9 @@
             </div>
             <p>You can also <a id="id508" class="indexterm"></a>define which<a id="GBS.0221.02"></a> mailbox is used in code. <code class="literal">Props</code> has a <code class="literal">withMailbox</code> method<a id="id509" class="indexterm"></a> that can be called to assign a mailbox when the actor is created:</p>
             <div class="informalexample">
-              <pre class="programlisting">ActorRefclusterController = system.actorOf(Props.create(MyActor.class).withMailbox("default-mailbox")); system.actorOf(Props[MyActor].withMailbox("default-mailbox")</pre>
+              <pre class="programlisting">ActorRefclusterController <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>MyActor<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">)</code>
+  <code class="hl opt">.</code><code class="hl kwd">withMailbox</code><code class="hl opt">(</code><code class="hl str">&quot;default-mailbox&quot;</code><code class="hl opt">));</code>
+system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">[</code>MyActor<code class="hl opt">].</code><code class="hl kwd">withMailbox</code><code class="hl opt">(</code><code class="hl str">&quot;default-mailbox&quot;</code><code class="hl opt">)</code></pre>
             </div>
           </div>
         </div>
@@ -91,20 +95,29 @@
           <p>Instead of using the default mailbox, in this case you can use <code class="literal">SingleConsumerOnlyUnboundedMailbox</code>, which can be more efficient than the default mailbox in most cases (remember to always measure performance related changes). The only time you cannot use this mailbox is with <code class="literal">BalancingPool/BalancingDispatcher</code>, where multiple actors consume messages from the same mailbox. The queue implementation<a id="GBS.0222.01"></a> is single-consumer only.</p>
           <p>First we'll define a mailbox in our application.conf:</p>
           <div class="informalexample">
-            <pre class="programlisting">akka.actor.mymailbox{ mailbox-type = "akka.dispatch.SingleConsumerOnlyUnboundedMailbox" }</pre>
+            <pre class="programlisting"><code class="hl kwa">akka</code><code class="hl opt">.</code>actor<code class="hl opt">.</code>mymailbox {
+  mailbox-type = <code class="hl str">&quot;akka.dispatch.SingleConsumerOnlyUnboundedMailbox&quot;</code>
+}</pre>
           </div>
           <p>Then we can make the actors with the mailbox:</p>
           <div class="informalexample">
-            <pre class="programlisting">ActorRefclusterController = system.actorOf(Props.create(MyActor.class).withMailbox("akka.actor.mymailbox")); system.actorOf(Props[MyActor].withMailbox("akka.actor.mymailbox")</pre>
+            <pre class="programlisting">ActorRefclusterController <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>MyActor<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">)</code>
+  <code class="hl opt">.</code><code class="hl kwd">withMailbox</code><code class="hl opt">(</code><code class="hl str">&quot;akka.actor.mymailbox&quot;</code><code class="hl opt">));</code>
+system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">[</code>MyActor<code class="hl opt">].</code><code class="hl kwd">withMailbox</code><code class="hl opt">(</code><code class="hl str">&quot;akka.actor.mymailbox&quot;</code><code class="hl opt">)</code></pre>
           </div>
           <p>We will<a id="GBS.0222.02"></a> often need to <a id="id511" class="indexterm"></a>decide whether we want to use a bounded or unbounded mailbox. Unbounded mailboxes are preferable in most cases for performance reasons, but what we've set out to do in our example is to use a bounded mailbox to drop messages. We don't want to run out of memory if we get overwhelmed—we would rather drop some messages.</p>
           <p>There are two types of bounded mailboxes—blocking and non-blocking.<a id="GBS.0222.03"></a> All mailboxes are backed by queues. Blocking versus non-blocking in this case means that the delivery of a message to a full mailbox will either cause the thread to wait until there is room (blocking) or will drop the message (non-blocking.) We've decided to drop the messages so we can settle on the <code class="literal">NonBlockingBoundedMailbox</code>. We'll add the mailbox in our configuration:</p>
           <div class="informalexample">
-            <pre class="programlisting">akka.actor.boundedmailbox{<a id="GBS.0222.04"></a> mailbox-type = "akka.dispatch.NonBlockingBoundedMailbox" mailbox-capacity = 1000000 }</pre>
+            <pre class="programlisting"><code class="hl kwa">akka</code><code class="hl opt">.</code>actor<code class="hl opt">.</code>boundedmailbox {
+  mailbox-type = <code class="hl str">&quot;akka.dispatch.NonBlockingBoundedMailbox&quot;</code>
+  mailbox-capacity = <code class="hl kwb">1000000</code>
+}</pre>
           </div>
           <p>And then instantiate the actors with it:</p>
           <div class="informalexample">
-            <pre class="programlisting">ActorRefclusterController = system.actorOf(Props.create(MyActor.class).withMailbox("akka.actor.boundedmailbox")); system.actorOf(Props[MyActor].withMailbox("akka.actor.boundedmailbox")</pre>
+            <pre class="programlisting">ActorRefclusterController <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>MyActor<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">)</code>
+  <code class="hl opt">.</code><code class="hl kwd">withMailbox</code><code class="hl opt">(</code><code class="hl str">&quot;akka.actor.boundedmailbox&quot;</code><code class="hl opt">));</code>
+system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">[</code>MyActor<code class="hl opt">].</code><code class="hl kwd">withMailbox</code><code class="hl opt">(</code><code class="hl str">&quot;akka.actor.boundedmailbox&quot;</code><code class="hl opt">)</code></pre>
           </div>
           <p>Now, if our system gets overwhelmed, we'll lose some messages, but things will stay<a id="GBS.0222.05"></a> up.</p>
           <p>What happens if messages get dropped? Well, your systems that communicate with downstream systems should have timeout and retry semantics baked in. You can expect that messages will get dropped occasionally, so if you need at least once processing, you need to build your systems to keep track of requests and retry them if they fail for any reason. In the case of our example application, the<a id="GBS.0223.01"></a> client will probably get an error, so the user can choose to retry. In your own systems, timeout and retry mechanisms can easily be built.</p>

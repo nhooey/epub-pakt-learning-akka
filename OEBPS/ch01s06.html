@@ -31,23 +31,40 @@
         <p>We will now open the<a id="id102" class="indexterm"></a> application (either Java or Scala) in our favorite IDE. The<a id="id103" class="indexterm"></a> scaffolding Activator created is not for an Akka project, so we will need to add the Akka dependencies<a id="GBS.0046.03"></a> first. We will add both the Akka core Akka module (akka-actor) and the Akka test-kit, which contains tools to more easily allow us to test the actors.</p>
         <p>In the <code class="literal">build.sbt</code> file, you will see something roughly like this for a Scala project. Note the dependencies are actually Maven dependencies. Any Maven dependencies can easily be added, as we'll cover shortly. The Java and Scala projects will be more<a id="GBS.0046.04"></a> or less identical; however the Java project will have a Junit dependency instead of Scalatest:</p>
         <div class="informalexample">
-          <pre class="programlisting">name := """akkademy-db-java"""
-version := "1.0"
-scalaVersion := "2.11.1"
-libraryDependencies ++= Seq( "com.typesafe.akka" %% "akka-actor" % "2.3.6", "com.typesafe.akka" %% "akka-testkit" % "2.3.6" % "test", "junit"             % "junit"           % "4.11"  % "test", "com.novocode"      % "junit-interface"<a id="GBS.0046.05"></a> % "0.10"  % "test" )</pre>
+          <pre class="programlisting">
+name <code class="hl opt">:=</code> <code class="hl str">&quot;&quot;&quot;akkademy-db-java&quot;&quot;&quot;</code>
+version <code class="hl opt">:=</code> <code class="hl str">&quot;1.0&quot;</code>
+scalaVersion <code class="hl opt">:=</code> <code class="hl str">&quot;2.11.1&quot;</code>
+
+libraryDependencies <code class="hl opt">++=</code> <code class="hl kwd">Seq</code><code class="hl opt">(</code>
+  <code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-actor&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code><code class="hl opt">,</code>
+  <code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-testkit&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;test&quot;</code>
+  <code class="hl str">&quot;junit&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;junit&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;4.11&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;test&quot;</code>
+  <code class="hl str">&quot;com.novocode&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;junit-interface&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;0.10&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;test&quot;</code>
+<code class="hl opt">)</code></pre>
         </div>
         <p>To Include Akka, we need to add a new dependency.</p>
         <p>Your dependencies should look something like this for Java:</p>
         <div class="informalexample">
-          <pre class="programlisting">libraryDependencies ++= Seq( "com.typesafe.akka" % "akka-actor_2.11" % "2.3.6", "junit"             % "junit"           % "4.11"  % "test", "com.novocode"      % "junit-interface" % "0.10"  % "test" )</pre>
+          <pre class="programlisting">
+libraryDependencies <code class="hl opt">++=</code> <code class="hl kwd">Seq</code><code class="hl opt">(</code>
+  <code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;akka-actor_2.11&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code><code class="hl opt">,</code>
+  <code class="hl str">&quot;junit&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;junit&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;4.11&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;test&quot;</code><code class="hl opt">,</code>
+  <code class="hl str">&quot;com.novocode&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;junit-interface&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;0.10&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;test&quot;</code>
+<code class="hl opt">)</code></pre>
         </div>
         <p>And something like this for Scala:</p>
         <div class="informalexample">
-          <pre class="programlisting">name := """akkademy-db-scala"""<a id="GBS.0047.01"></a>
-version := "1.0"
-scalaVersion := "2.11.1"
-libraryDependencies ++= Seq( "com.typesafe.akka" %% "akka-actor" % "2.3.3", "com.typesafe.akka" %% "akka-testkit" % "2.3.6" % "test", "org.scalatest" %% "scalatest" % "2.1.6" % "test"
-)</pre>
+          <pre class="programlisting">
+name <code class="hl opt">:=</code> <code class="hl str">&quot;&quot;&quot;akkademy-db-scala&quot;&quot;&quot;</code>
+version <code class="hl opt">:=</code> <code class="hl str">&quot;1.0&quot;</code>
+scalaVersion <code class="hl opt">:=</code> <code class="hl str">&quot;2.11.1&quot;</code>
+
+libraryDependencies <code class="hl opt">++=</code> <code class="hl kwd">Seq</code><code class="hl opt">(</code>
+  <code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-actor&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.3&quot;</code><code class="hl opt">,</code>
+   <code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-testkit&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;test&quot;</code><code class="hl opt">,</code>
+   <code class="hl str">&quot;org.scalatest&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;scalatest&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.1.6&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;test&quot;</code>
+<code class="hl opt">)</code></pre>
         </div>
         <div title="A note on getting the right Scala version with %%" class="section">
           <div class="titlepage">
@@ -60,8 +77,9 @@ libraryDependencies ++= Seq( "com.typesafe.akka" %% "akka-actor" % "2.3.3", "com
           <p>As Scala does not have binary<a id="id104" class="indexterm"></a> compatibility across major versions, libraries will often be built and published across<a id="GBS.0047.02"></a> several versions of Scala. To have SBT try to resolve the dependency built for the correct Scala version for your project, you can change the dependency declared in the <code class="literal">build.sbt</code> file to use two % symbols after the group ID instead of specifying the Scala version in the artifact id.</p>
           <p>For example, in a Scala 2.11 project, these two dependencies are equivalents as shown in the following code:</p>
           <div class="informalexample">
-            <pre class="programlisting">  "com.typesafe.akka"<a id="GBS.0047.03"></a> % "akka-actor_2.11" % "2.3.3"
-  "com.typesafe.akka" %% "akka-actor" % "2.3.3"</pre>
+            <pre class="programlisting">
+<code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;akka-actor_2.11&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.3&quot;</code>
+<code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-actor&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.3&quot;</code></pre>
           </div>
         </div>
         <div title="Adding other Dependencies from Maven Central" class="section">
@@ -105,14 +123,20 @@ libraryDependencies ++= Seq( "com.typesafe.akka" %% "akka-actor" % "2.3.3", "com
             </div>
             <p>Here is our Set message <a id="id109" class="indexterm"></a>in Java as an immutable object. This is a fairly standard approach to immutable objects in Java. It will be a familiar sight to any skilled Java developer; you should generally prefer immutability in all of your code.</p>
             <div class="informalexample">
-              <pre class="programlisting">package com.akkademy.message<a id="GBS.0048.03"></a>s;
-public class SetRequest { private final String key; private final Object value;public Set(String key, Object value) { 
- this.key = key;
- this.value = value;
- }
-    public String getKey() { return key; }    public Object getValue() { return value;
-    }
-}</pre>
+              <pre class="programlisting">
+<code class="hl kwa">package</code> com<code class="hl opt">.</code>akkademy<code class="hl opt">.</code>messages<code class="hl opt">;</code>
+<code class="hl kwa">public class</code> SetRequest <code class="hl opt">{</code>
+  <code class="hl kwa">private final</code> String key<code class="hl opt">;</code>
+  <code class="hl kwa">private final</code> Object value<code class="hl opt">;</code>
+
+  <code class="hl kwa">public</code> <code class="hl kwd">Set</code><code class="hl opt">(</code>String key<code class="hl opt">,</code> Object value<code class="hl opt">) {</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>key <code class="hl opt">=</code> key<code class="hl opt">;</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>value <code class="hl opt">=</code> value<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+
+  <code class="hl kwa">public</code> String <code class="hl kwd">getKey</code><code class="hl opt">() {</code> <code class="hl kwa">return</code> key<code class="hl opt">; }</code>
+  <code class="hl kwa">public</code> Object <code class="hl kwd">getValue</code><code class="hl opt">() {</code> <code class="hl kwa">return</code> value<code class="hl opt">; }</code>
+<code class="hl opt">}</code></pre>
             </div>
           </div>
           <div title="Scala" class="section">
@@ -125,7 +149,9 @@ public class SetRequest { private final String key; private final Object value;p
             </div>
             <p>In Scala we have a much more succinct way of<a id="id110" class="indexterm"></a> defining immutable messages—the case class. The case class lets us create an immutable<a id="GBS.0048.04"></a> message; values can only be set once in the constructor and then are read from the fields:</p>
             <div class="informalexample">
-              <pre class="programlisting">package com.akkademy.messages case class SetRequest(key: String, value: Object)</pre>
+              <pre class="programlisting">
+<code class="hl kwa">package</code> com<code class="hl opt">.</code>akkademy<code class="hl opt">.</code>messages
+<code class="hl kwa">case class</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>key<code class="hl opt">:</code> String<code class="hl opt">,</code> value<code class="hl opt">:</code> Object<code class="hl opt">)</code></pre>
             </div>
             <p>That's it for the messages.</p>
           </div>
@@ -157,31 +183,53 @@ public class SetRequest { private final String key; private final Object value;p
             </div>
             <p><a id="GBS.0049.01"></a>The following <a id="id112" class="indexterm"></a>code denotes Actor response to the message in Java:</p>
             <div class="informalexample">
-              <pre class="programlisting">package com.akkademy;
-import akka.actor.AbstractActor;
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
-import akka.japi.pf.ReceiveBuilder;
-import com.akkademy.message.SetRequest;
-import java.util.HashMap;
-import java.util.Map;
-public class AkkademyDb extends AbstractActor { protected final LoggingAdapter log = Logging.getLogger(context<a id="GBS.0049.02"></a>().system(), this); protected final Map&lt;String, Object&gt; map = new HashMap&lt;&gt;(); 
-    private AkkademyDb(){ receive(ReceiveBuilder.match(SetRequest.class, message -&gt; { log.info("Received set request – key: {} value: {}", message.getKey(), message.getValue()); map.put(message.getKey(), message.getValue()); }).matchAny(o -&gt; log.info("received unknown message {}", o)).build()
-      <a id="GBS.0049.03"></a>  );
-    }
-}</pre>
+              <pre class="programlisting">
+<code class="hl kwa">package</code> com<code class="hl opt">.</code>akkademy<code class="hl opt">;</code>
+
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>AbstractActor<code class="hl opt">;</code>
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>event<code class="hl opt">.</code>Logging<code class="hl opt">;</code>
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>event<code class="hl opt">.</code>LoggingAdapter<code class="hl opt">;</code>
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>japi<code class="hl opt">.</code>pf<code class="hl opt">.</code>ReceiveBuilder<code class="hl opt">;</code>
+<code class="hl kwa">import</code> com<code class="hl opt">.</code>akkademy<code class="hl opt">.</code>message<code class="hl opt">.</code>SetRequest<code class="hl opt">;</code>
+<code class="hl kwa">import</code> java<code class="hl opt">.</code>util<code class="hl opt">.</code>HashMap<code class="hl opt">;</code>
+<code class="hl kwa">import</code> java<code class="hl opt">.</code>util<code class="hl opt">.</code>Map<code class="hl opt">;</code>
+
+<code class="hl kwa">public class</code> AkkademyDb <code class="hl kwa">extends</code> AbstractActor <code class="hl opt">{</code>
+  <code class="hl kwa">protected final</code> LoggingAdapter log <code class="hl opt">=</code> Logging<code class="hl opt">.</code><code class="hl kwd">getLogger</code><code class="hl opt">(</code><code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">system</code><code class="hl opt">(),</code> <code class="hl kwa">this</code><code class="hl opt">);</code>
+  <code class="hl kwa">protected final</code> Map<code class="hl opt">&lt;</code>String<code class="hl opt">,</code> Object<code class="hl opt">&gt;</code> map <code class="hl opt">=</code> <code class="hl kwa">new</code> HashMap<code class="hl opt">&lt;&gt;();</code>
+
+  <code class="hl kwa">private</code> <code class="hl kwd">AkkademyDb</code><code class="hl opt">() {</code>
+    <code class="hl kwd">receive</code><code class="hl opt">(</code>
+      ReceiveBuilder<code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>
+         SetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code>
+         message <code class="hl opt">-&gt; {</code>
+           log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code>
+               <code class="hl str">&quot;Received set request – key: {} value: {}&quot;</code><code class="hl opt">,</code>
+               message<code class="hl opt">.</code><code class="hl kwd">getKey</code><code class="hl opt">(),</code>
+               message<code class="hl opt">.</code><code class="hl kwd">getValue</code><code class="hl opt">());</code>
+           map<code class="hl opt">.</code><code class="hl kwd">put</code><code class="hl opt">(</code>message<code class="hl opt">.</code><code class="hl kwd">getKey</code><code class="hl opt">(),</code> message<code class="hl opt">.</code><code class="hl kwd">getValue</code><code class="hl opt">());</code>
+      <code class="hl opt">})</code>
+        <code class="hl opt">.</code><code class="hl kwd">matchAny</code><code class="hl opt">(</code>o <code class="hl opt">-&gt;</code> log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received unknown message {}&quot;</code><code class="hl opt">,</code> o<code class="hl opt">))</code>
+        <code class="hl opt">.</code><code class="hl kwd">build</code><code class="hl opt">());</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
             </div>
             <p>The actor is a Java class that extends <code class="literal">AbstractActor</code> (a Java8 Akka Actor API). We create the logger and the map in the class as protected members so we can access them in test cases later in the chapter.</p>
             <p>In the constructor we call receive. The receive method takes a <code class="literal">ReceiveBuilder</code> which has several methods that we call chained together to produce the final <code class="literal">ReceiveBuilder</code>. With this,<a id="GBS.0049.04"></a> we describe how the actor should behave in response to different message types. We define two behaviors here and we will look at them one at a time.</p>
             <p>First, we define the behavior to respond to any <code class="literal">SetRequest</code> messages with:</p>
             <div class="informalexample">
-              <pre class="programlisting">match(SetRequest.class, message -&gt; { log.info("Received Set request: {}", message); map.put(message.getKey(), message.getValue()); }).</pre>
+              <pre class="programlisting">
+<code class="hl kwa">match</code><code class="hl opt">(</code>SetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> message <code class="hl opt">-&gt; {</code>
+  log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;Received Set request: {}&quot;</code><code class="hl opt">,</code> message<code class="hl opt">);</code>
+  map<code class="hl opt">.</code><code class="hl kwd">put</code><code class="hl opt">(</code>message<code class="hl opt">.</code><code class="hl kwd">getKey</code><code class="hl opt">(),</code> message<code class="hl opt">.</code><code class="hl kwd">getValue</code><code class="hl opt">());</code>
+<code class="hl opt">});</code></pre>
             </div>
             <p>The <code class="literal">ReceiveBuilder</code> match method in the<a id="GBS.0049.05"></a> Java8 API is somewhat similar to a case statement except that we can match on class types. More formally, this is pattern matching.</p>
             <p>The match method call, then, says: if the message is of type <code class="literal">SetRequest.class</code>, take that message, log it, and put a new record in the map using the key and value of that Set message.</p>
             <p>Second, we define a<a id="id113" class="indexterm"></a> catch-all to simply log any unknown message.</p>
             <div class="informalexample">
-              <pre class="programlisting">matchAny(o -&gt; log.info("received<a id="GBS.0050.01"></a> unknown message"))</pre>
+              <pre class="programlisting">
+<code class="hl kwd">matchAny</code><code class="hl opt">(</code>o <code class="hl opt">-&gt;</code> log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received unknown message&quot;</code><code class="hl opt">))</code></pre>
             </div>
           </div>
           <div title="Scala – AkkademyDb.scala" class="section">
@@ -194,34 +242,49 @@ public class AkkademyDb extends AbstractActor { protected final LoggingAdapter l
             </div>
             <p>Scala is a natural <a id="id114" class="indexterm"></a>fit as the language has pattern matching as a first-class language construct. We'll have a look at the Scala equivalent code now:</p>
             <div class="informalexample">
-              <pre class="programlisting">package com.akkademy
-import akka.actor.Actor
-import akka.event.Logging
-import scala.collection.mutable.HashMap
-import com.akkademy.messages.SetRequest
-class AkkademyDb extends Actor {
-  val map = new<a id="GBS.0050.02"></a> HashMap[String, Object]
-  val log = Logging(context.system, this) override def receive = { case SetRequest(key, value) =&gt; { log.info("received SetRequest - key: {} value: {}", key, value) map.put(key, value) } case o =&gt; log.info("received unknown message: {}", o);
-  }
-}</pre>
+              <pre class="programlisting">
+<code class="hl kwa">package</code> com<code class="hl opt">.</code>akkademy
+
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>Actor
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>event<code class="hl opt">.</code>Logging
+<code class="hl kwa">import</code> scala<code class="hl opt">.</code>collection<code class="hl opt">.</code>mutable<code class="hl opt">.</code>HashMap
+<code class="hl kwa">import</code> com<code class="hl opt">.</code>akkademy<code class="hl opt">.</code>messages<code class="hl opt">.</code>SetRequest
+
+<code class="hl kwa">class</code> AkkademyDb <code class="hl kwa">extends</code> Actor <code class="hl opt">{</code>
+  <code class="hl kwa">val</code> map <code class="hl opt">=</code> <code class="hl kwa">new</code> HashMap<code class="hl opt">[</code>String<code class="hl opt">,</code> Object<code class="hl opt">]</code>
+  <code class="hl kwa">val</code> log <code class="hl opt">=</code> <code class="hl kwd">Logging</code><code class="hl opt">(</code>context<code class="hl opt">.</code>system<code class="hl opt">,</code> <code class="hl kwa">this</code><code class="hl opt">)</code>
+
+  <code class="hl kwa">override def</code> receive <code class="hl opt">= {</code>
+   <code class="hl kwa">case</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">) =&gt; {</code>
+     log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received SetRequest - key: {} value: {}&quot;</code><code class="hl opt">,</code> key<code class="hl opt">,</code> value<code class="hl opt">)</code>
+     map<code class="hl opt">.</code><code class="hl kwd">put</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">)</code>
+   <code class="hl opt">}</code>
+   <code class="hl kwa">case</code> o <code class="hl opt">=&gt;</code> log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received unknown message: {}&quot;</code><code class="hl opt">,</code> o<code class="hl opt">)</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
             </div>
             <p>In the Scala API, we mix in the Actor trait, define the map and logger as we did in Java, and then implement the receive method.<a id="GBS.0050.03"></a> The receive method on the Actor super-type returns the Receive which, in the Akka source, is defined as a partial function as follows:</p>
             <div class="informalexample">
-              <pre class="programlisting">type Receive = scala.PartialFunction[scala.Any, scala.Unit]</pre>
+              <pre class="programlisting">
+<code class="hl kwa">type</code> Receive <code class="hl opt">=</code> scala<code class="hl opt">.</code>PartialFunction<code class="hl opt">[</code>scala<code class="hl opt">.</code>Any<code class="hl opt">,</code> scala<code class="hl opt">.</code>Unit<code class="hl opt">]</code></pre>
             </div>
             <p>We define the behavior for the response to the <code class="literal">SetRequest</code> message using pattern matching to produce the partial function. We can extract the key and the value variables for clearer code using pattern matching<a id="GBS.0050.04"></a> semantics:</p>
             <div class="informalexample">
-              <pre class="programlisting">case SetRequest(key, value)</pre>
+              <pre class="programlisting">
+<code class="hl kwa">case</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">)</code></pre>
             </div>
             <p>The behavior is to simply log the request, and then to set the key/value in the map.</p>
             <div class="informalexample">
-              <pre class="programlisting">    case SetRequest(key, value) =&gt; { log.info("received SetRequest - key: {} value: {}", key, value)
-      map.put(key, value)
-    }</pre>
+              <pre class="programlisting">
+<code class="hl kwa">case</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">) =&gt; {</code>
+  log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received SetRequest - key: {} value: {}&quot;</code><code class="hl opt">,</code> key<code class="hl opt">,</code> value<code class="hl opt">)</code>
+  map<code class="hl opt">.</code><code class="hl kwd">put</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">)</code>
+<code class="hl opt">}</code></pre>
             </div>
             <p>Finally, we add a <a id="id115" class="indexterm"></a>catch-all case to simply log unknown messages:</p>
             <div class="informalexample">
-              <pre class="programlisting">    case o =&gt; log.info("received unknown message: {}", o);</pre>
+              <pre class="programlisting">
+<code class="hl kwa">case</code> o <code class="hl opt">=&gt;</code> log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received unknown message: {}&quot;</code><code class="hl opt">,</code> o<code class="hl opt">);</code></pre>
             </div>
             <p>That's it for the<a id="GBS.0050.05"></a> actor. Now we have to validate we did everything correctly.</p>
           </div>
@@ -246,7 +309,8 @@ class AkkademyDb extends Actor {
           </div>
           <p>Akka provides a<a id="id118" class="indexterm"></a> test kit that provides almost anything you would ever need to test your actor code. We included the test kit dependencies earlier when we set up our project. For reference, the SBT dependency<a id="GBS.0051.02"></a> to place in <code class="literal">build.sbt </code>is as follows:</p>
           <div class="informalexample">
-            <pre class="programlisting">  "com.typesafe.akka" %% "akka-testkit" % "2.3.6" % "test"</pre>
+            <pre class="programlisting">
+<code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-testkit&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;test&quot;</code></pre>
           </div>
           <p>We're going to use the <code class="literal">TestActorRef</code> generic here from the testkit instead of a normal <code class="literal">ActorRef</code> (which we will look at in the next chapter). The <code class="literal">TestActorRef</code> does two things: it makes the actor's API synchronous so we don't need to think about concurrency in our tests, and it gives us access to the underlying<a id="GBS.0051.03"></a> Actor object.</p>
           <p>To be clear, Akka hides the actual Actor (<code class="literal">AkkademyDb</code>) and instead gives a reference to the actor that you send messages to. This encapsulates the actor to enforce message passing as nobody can access the actual object instance.</p>
@@ -261,19 +325,31 @@ class AkkademyDb extends Actor {
             </div>
             <p>This is the source code<a id="id119" class="indexterm"></a> for Akka toolkit:</p>
             <div class="informalexample">
-              <pre class="programlisting">package com.akkademy;
-import static<a id="GBS.0051.04"></a> org.junit.Assert.assertEquals;
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.actor.Props;
-import akka.testkit.TestActorRef;
-import com.akkademy.messages.SetRequest;
-import org.junit.Test;
-public class AkkademyDbTest { ActorSystem system = ActorSystem.create(); 
-    @Test
-    public void itShouldPlaceKeyValueFromSetMessageIntoMap() { TestActorRef&lt;AkkademyDb&gt; actorRef = TestActorRef.create(<a id="GBS.0051.05"></a>system, Props.create(AkkademyDb.class)); actorRef.tell(new SetRequest("key", "value"),ActorRef.noSender());
-        AkkademyDb akkademyDb = actorRef.underlyingActor(); assertEquals(akkademyDb.map.get("key"), "value");}
-}</pre>
+              <pre class="programlisting">
+<code class="hl kwa">package</code> com<code class="hl opt">.</code>akkademy<code class="hl opt">;</code>
+
+<code class="hl kwa">import static</code> org<code class="hl opt">.</code>junit<code class="hl opt">.</code>Assert<code class="hl opt">.</code>assertEquals<code class="hl opt">;</code>
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>ActorRef<code class="hl opt">;</code>
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>ActorSystem<code class="hl opt">;</code>
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>Props<code class="hl opt">;</code>
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>testkit<code class="hl opt">.</code>TestActorRef<code class="hl opt">;</code>
+<code class="hl kwa">import</code> com<code class="hl opt">.</code>akkademy<code class="hl opt">.</code>messages<code class="hl opt">.</code>SetRequest<code class="hl opt">;</code>
+<code class="hl kwa">import</code> org<code class="hl opt">.</code>junit<code class="hl opt">.</code>Test<code class="hl opt">;</code>
+
+<code class="hl kwa">public class</code> AkkademyDbTest <code class="hl opt">{</code>
+  ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">();</code>
+
+  <code class="hl kwc">&#64;Test</code>
+  <code class="hl kwa">public void</code> <code class="hl kwd">itShouldPlaceKeyValueFromSetMessageIntoMap</code><code class="hl opt">() {</code>
+    TestActorRef<code class="hl opt">&lt;</code>AkkademyDb<code class="hl opt">&gt;</code> actorRef <code class="hl opt">=</code> TestActorRef<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>
+      system<code class="hl opt">,</code> Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>AkkademyDb<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">));</code>
+
+    actorRef<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code><code class="hl str">&quot;key&quot;</code><code class="hl opt">,</code> <code class="hl str">&quot;value&quot;</code><code class="hl opt">),</code> ActorRef<code class="hl opt">.</code><code class="hl kwd">noSender</code><code class="hl opt">());</code>
+    AkkademyDb akkademyDb <code class="hl opt">=</code> actorRef<code class="hl opt">.</code><code class="hl kwd">underlyingActor</code><code class="hl opt">();</code>
+    <code class="hl kwd">assertEquals</code><code class="hl opt">(</code>akkademyDb<code class="hl opt">.</code>map<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code><code class="hl str">&quot;key&quot;</code><code class="hl opt">),</code> <code class="hl str">&quot;value&quot;</code><code class="hl opt">);</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}
+</code></pre>
             </div>
           </div>
           <div title="Scala" class="section">
@@ -286,52 +362,66 @@ public class AkkademyDbTest { ActorSystem system = ActorSystem.create();
             </div>
             <p>The following source code represents<a id="id120" class="indexterm"></a> interaction with the actor:</p>
             <div class="informalexample">
-              <pre class="programlisting">package com.akkademy
-import akka.util.Timeout
-import org.scalatest.{BeforeAndAfterEach, FunSpecLike, Matchers}<a id="GBS.0052.01"></a>
-import akka.actor.ActorSystem
-import com.akkademy.messages.SetRequest
-import akka.testkit.TestActorRef
-import scala.concurrent.duration. class AkkademyDbSpec extends FunSpecLike with Matchers with BeforeAndAfterEach {implicit val system = ActorSystem()
-  describe("akkademyDb") { describe("given SetRequest"){ it("should place key/value into map"){ val actorRef = TestActorRef(new AkkademyDb)<a id="GBS.0052.02"></a> actorRef ! SetRequest("key", "value")
-        val akkademyDb = actorRef.underlyingActorakkademyDb.map.get("key") should equal(Some("value"))
-      }
-    }
-  }
-}</pre>
+              <pre class="programlisting">
+<code class="hl kwa">package</code> com<code class="hl opt">.</code>akkademy
+
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>Actor
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>event<code class="hl opt">.</code>Logging
+<code class="hl kwa">import</code> com<code class="hl opt">.</code>akkademy<code class="hl opt">.</code>messages<code class="hl opt">.</code>SetRequest
+<code class="hl kwa">import</code> scala<code class="hl opt">.</code>collection<code class="hl opt">.</code>mutable<code class="hl opt">.</code>HashMap
+
+<code class="hl kwa">class</code> AkkademyDb <code class="hl kwa">extends</code> Actor <code class="hl opt">{</code>
+  <code class="hl kwa">val</code> map <code class="hl opt">=</code> <code class="hl kwa">new</code> HashMap<code class="hl opt">[</code>String<code class="hl opt">,</code> String<code class="hl opt">]</code>
+  <code class="hl kwa">val</code> log <code class="hl opt">=</code> <code class="hl kwd">Logging</code><code class="hl opt">(</code>context<code class="hl opt">.</code>system<code class="hl opt">,</code> <code class="hl kwa">this</code><code class="hl opt">)</code>
+
+  <code class="hl kwa">override def</code> receive <code class="hl opt">= {</code>
+    <code class="hl kwa">case</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">) =&gt; {</code>
+      log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received SetRequest - key: {} value: {}&quot;</code><code class="hl opt">,</code> key<code class="hl opt">,</code> value<code class="hl opt">)</code>
+      map<code class="hl opt">.</code><code class="hl kwd">put</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">)</code>
+    <code class="hl opt">}</code>
+    <code class="hl kwa">case</code> o <code class="hl opt">=&gt;</code> log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received unknown message: {}&quot;</code><code class="hl opt">,</code> o<code class="hl opt">);</code>
+  <code class="hl opt">}
+</code>
+<code class="hl opt">}
+</code></pre>
             </div>
             <p>This is the first time we are looking at interacting with an actor so there is some new code and behavior, some of it is test-specific and some related to interacting with the actor.</p>
             <p>We've described an Actor System as a place where actors<a id="GBS.0052.03"></a> and their addresses reside, the first thing we need to do before creating the actor is to get a reference to an actor system. We create one as a field in the test:</p>
             <div class="informalexample">
-              <pre class="programlisting">//Java
-ActorSystem system = ActorSystem.create();
-//Scala
-implicit val system = ActorSystem()</pre>
+              <pre class="programlisting">
+<code class="hl slc">// Java</code>
+ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">();</code>
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">implicit val</code> system <code class="hl opt">=</code> <code class="hl kwd">ActorSystem</code><code class="hl opt">()</code></pre>
             </div>
             <p>After creating the actor system, we can now create our actor in the actor system. As mentioned, we're going to use Akka Testkit to create a <code class="literal"><a id="GBS.0052.04"></a>TestActorRef</code> which has a synchronous API, and lets us get at the underlying actor. We create the actor in our actor system here:</p>
             <div class="informalexample">
-              <pre class="programlisting">//Java
-TestActorRef&lt;AkkademyDb&gt; actorRef = TestActorRef.create(system, Props.create(AkkademyDb.class));
-//Scala
-val actorRef = TestActorRef(new AkkademyDb)</pre>
+              <pre class="programlisting">
+<code class="hl slc">// Java</code>
+TestActorRef<code class="hl opt">&lt;</code>AkkademyDb<code class="hl opt">&gt;</code> actorRef <code class="hl opt">=</code> TestActorRef<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>system<code class="hl opt">,</code> Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>AkkademyDb<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">));</code>
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">val</code> actorRef <code class="hl opt">=</code> <code class="hl kwd">TestActorRef</code><code class="hl opt">(</code><code class="hl kwa">new</code> AkkademyDb<code class="hl opt">)</code></pre>
             </div>
             <p>We call the Akka Testkit <code class="literal">TestActorRef</code> create method, passing in the actor system we created (it is implicitly passed<a id="GBS.0052.05"></a> in Scala) and a reference to the class. We will look at actor creation in further chapters. Actor instances are hidden away so the act of creating an actor in our actor system returns an <code class="literal">ActorRef</code> (in this case, a <code class="literal">TestActorRef</code>) that we can send messages to. The system and class reference is enough for Akka to create this simple actor in our actor system so we have successfully created our first<a id="GBS.0053.01"></a> actor.</p>
             <p>We communicate with an actor via message-passing. We place a message into an actor's mailbox with 'tell' or '!' in Scala, which is still read as 'tell'. We define that there is nobody to respond to for this message as a parameter of the <code class="literal">tell</code> method in Java. In Scala, outside of an actor, this is implicit.</p>
             <div class="informalexample">
-              <pre class="programlisting">//Java
-actorRef.tell(new SetRequest("key", "value"), ActorRef.noSender());
-//Scala<a id="GBS.0053.02"></a>
-actorRef ! SetRequest("key", "value")</pre>
+              <pre class="programlisting">
+<code class="hl slc">// Java</code>
+actorRef<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code><code class="hl str">&quot;key&quot;</code><code class="hl opt">,</code> <code class="hl str">&quot;value&quot;</code><code class="hl opt">),</code> ActorRef<code class="hl opt">.</code><code class="hl kwd">noSender</code><code class="hl opt">());</code>
+<code class="hl slc">// Scala</code>
+actorRef <code class="hl opt">!</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code><code class="hl str">&quot;key&quot;</code><code class="hl opt">,</code> <code class="hl str">&quot;value&quot;</code><code class="hl opt">)</code></pre>
             </div>
             <p>Because we are using <code class="literal">TestActorRef</code>, the call to tell will not continue until the request is processed. This is fine for a look at our first actor but it's important to note that this example does not expose the asynchronous nature of the Actor's API. This is not the usual behavior; tell is an asynchronous operation that returns immediately in normal usage.</p>
             <p><a id="GBS.0053.03"></a>Finally, we need to ensure that the behavior is correct by asserting that the actor placed the value into its map. To do this, we get the reference to the underlying Actor instance, and inspect the map by calling <code class="literal">get("key")</code> and ensuring the value is there.</p>
             <div class="informalexample">
-              <pre class="programlisting">//Java
-AkkademyDb akkademyDb = actorRef.underlyingActor();
-assertEquals(akkademyDb.map.get("key"), "value");
-//Scala
-val akkademyDb = actorRef.underlyingActor<a id="GBS.0053.04"></a>
-akkademyDb.map.get("key") should equal(Some("value"))</pre>
+              <pre class="programlisting">
+<code class="hl slc">// Java</code>
+AkkademyDb akkademyDb <code class="hl opt">=</code> actorRef<code class="hl opt">.</code><code class="hl kwd">underlyingActor</code><code class="hl opt">();</code>
+<code class="hl kwd">assertEquals</code><code class="hl opt">(</code>akkademyDb<code class="hl opt">.</code>map<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code><code class="hl str">&quot;key&quot;</code><code class="hl opt">),</code> <code class="hl str">&quot;value&quot;</code><code class="hl opt">);</code>
+
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">val</code> akkademyDb <code class="hl opt">=</code> actorRef<code class="hl opt">.</code>underlyingActor
+akkademyDb<code class="hl opt">.</code>map<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code><code class="hl str">&quot;key&quot;</code><code class="hl opt">)</code> should <code class="hl kwd">equal</code><code class="hl opt">(</code><code class="hl kwd">Some</code><code class="hl opt">(</code><code class="hl str">&quot;value&quot;</code><code class="hl opt">))</code></pre>
             </div>
             <p>That's it for the creation <a id="id121" class="indexterm"></a>of our first simple test case. This basic pattern can be built on for unit testing Actors synchronously. As we go through the book, we will look at more extensive unit-testing examples as well as asynchronous integration testing of our actors.</p>
           </div>
@@ -348,20 +438,22 @@ akkademyDb.map.get("key") should equal(Some("value"))</pre>
         <p>We're almost there! Now that we've built our <a id="id122" class="indexterm"></a>tests,<a id="GBS.0053.05"></a> we can go to the command line and run 'activator' to start the activator cli. Next we can run 'clean' to tidy up any garbage and then 'test' which will fire off the tests. To do this in one step, we can run activator clean test.</p>
         <p>You should see something like the following for the Java Junit test:</p>
         <div class="informalexample">
-          <pre class="programlisting">[INFO] [01/12/2015 23:09:24.893] [pool-7-thread-1] [akka://default/user/$$a] Received Set request:<a id="GBS.0054.01"></a> Set{key='key', value=value}
-[info] Passed: Total 1, Failed 0, Errors 0, Passed 1
-<span class="strong"><strong>[</strong></span>success] Total time: 7 s, completed 12-Jan-2015 11:09:25 PM</pre>
+          <pre class="programlisting">
+<code class="hl opt">[</code>INFO<code class="hl opt">] [</code><code class="hl num">01</code><code class="hl opt">/</code><code class="hl num">12</code><code class="hl opt">/</code><code class="hl num">2015 23</code><code class="hl opt">:</code><code class="hl num">09</code><code class="hl opt">:</code><code class="hl num">24.893</code><code class="hl opt">] [</code>pool<code class="hl opt">-</code><code class="hl num">7</code><code class="hl opt">-</code>thread<code class="hl opt">-</code><code class="hl num">1</code><code class="hl opt">] [</code>akka<code class="hl opt">:</code><code class="hl slc">//default/user/$$a] Received Set request: Set{key=&apos;key&apos;, value=value}</code>
+<code class="hl opt">[</code>info<code class="hl opt">]</code> Passed<code class="hl opt">:</code> Total <code class="hl num">1</code><code class="hl opt">,</code> Failed <code class="hl num">0</code><code class="hl opt">,</code> Errors <code class="hl num">0</code><code class="hl opt">,</code> Passed <code class="hl num">1</code>
+<code class="strong"><strong>[</strong></code>success] Total time: 7 s, completed 12-Jan-2015 11:09:25 PM</pre>
         </div>
         <p>And if you're using Scala, then scala-test will give you a bit nicer output:</p>
         <div class="informalexample">
-          <pre class="programlisting">[info] AkkademyDbSpec:
-[info] akkademyDb
-[info] - should place key/value from Set message into map
-[info] Run completed in 1 second, 990 milliseconds.
-[info] Total number of tests<a id="GBS.0054.02"></a> run: 1
-[info] Suites: completed 1, aborted 0
-[info] Tests: succeeded 1, failed 0, canceled 0, ignored 0, pending 0
-[info] All tests passed.</pre>
+          <pre class="programlisting">
+<code class="hl opt">[</code>info<code class="hl opt">]</code> AkkademyDbSpec<code class="hl opt">:</code>
+<code class="hl opt">[</code>info<code class="hl opt">]</code> akkademyDb
+<code class="hl opt">[</code>info<code class="hl opt">] -</code> should place key<code class="hl opt">/</code>value from Set message into map
+<code class="hl opt">[</code>info<code class="hl opt">]</code> Run completed in <code class="hl num">1</code> second<code class="hl opt">,</code> <code class="hl num">990</code> milliseconds<code class="hl opt">.</code>
+<code class="hl opt">[</code>info<code class="hl opt">]</code> Total number of tests run<code class="hl opt">:</code> <code class="hl num">1</code>
+<code class="hl opt">[</code>info<code class="hl opt">]</code> Suites<code class="hl opt">:</code> completed <code class="hl num">1</code><code class="hl opt">,</code> aborted <code class="hl num">0</code>
+<code class="hl opt">[</code>info<code class="hl opt">]</code> Tests<code class="hl opt">:</code> succeeded <code class="hl num">1</code><code class="hl opt">,</code> failed <code class="hl num">0</code><code class="hl opt">,</code> canceled <code class="hl num">0</code><code class="hl opt">,</code> ignored <code class="hl num">0</code><code class="hl opt">,</code> pending <code class="hl num">0</code>
+<code class="hl opt">[</code>info<code class="hl opt">]</code> All tests passed<code class="hl opt">.</code></pre>
         </div>
         <p>The output will tell you some information about how many tests were run, how many tests failed, and, if there are any errors, it will indicate where the failures occurred so that you can investigate. Once you have a test in place on a behavior, you can be<a id="GBS.0054.03"></a> confident that any changes or refactorings you apply did not break the behavior.</p>
       </div>

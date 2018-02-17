@@ -121,15 +121,32 @@
           <p>In Java:</p>
           <p>Following code denotes manager's supervision strategy in Java:</p>
           <div class="informalexample">
-            <pre class="programlisting">@Override
-    public akka.actor.SupervisorStrategy supervisorStrategy() {
-    <a id="GBS.0132.04"></a>    return new OneForOneStrategy(5, Duration.create("1 minute"), akka.japi.pf.DeciderBuilder. match(BrokenPlateException.class, e -&gt; SupervisorStrategy.resume()). match(DrunkenFoolException.class, e -&gt; SupervisorStrategy.restart()). match(RestaurantFireError.class, e -&gt; SupervisorStrategy.escalate()). match(TiredChefException.class, e -&gt; SupervisorStrategy.stop()). matchAny(e -&gt; SupervisorStrategy.escalate()).<a id="GBS.0132.05"></a> build() );
-    }</pre>
+            <pre class="programlisting"><code class="hl kwc">&#64;Override</code>
+<code class="hl kwa">public</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>SupervisorStrategy <code class="hl kwd">supervisorStrategy</code><code class="hl opt">() {</code>
+  <code class="hl kwa">return new</code> <code class="hl kwd">OneForOneStrategy</code><code class="hl opt">(</code>
+    <code class="hl num">5</code><code class="hl opt">,</code> Duration<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl str">&quot;1 minute&quot;</code><code class="hl opt">),</code>
+    akka<code class="hl opt">.</code>japi<code class="hl opt">.</code>pf<code class="hl opt">.</code>DeciderBuilder
+      <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>BrokenPlateException<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> e <code class="hl opt">-&gt;</code> SupervisorStrategy<code class="hl opt">.</code><code class="hl kwd">resume</code><code class="hl opt">())</code>
+      <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>DrunkenFoolException<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> e <code class="hl opt">-&gt;</code> SupervisorStrategy<code class="hl opt">.</code><code class="hl kwd">restart</code><code class="hl opt">())</code>
+      <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>RestaurantFireError<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> e <code class="hl opt">-&gt;</code> SupervisorStrategy<code class="hl opt">.</code><code class="hl kwd">escalate</code><code class="hl opt">())</code>
+      <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>TiredChefException<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> e <code class="hl opt">-&gt;</code> SupervisorStrategy<code class="hl opt">.</code><code class="hl kwd">stop</code><code class="hl opt">())</code>
+      <code class="hl opt">.</code><code class="hl kwd">matchAny</code><code class="hl opt">(</code>e <code class="hl opt">-&gt;</code> SupervisorStrategy<code class="hl opt">.</code><code class="hl kwd">escalate</code><code class="hl opt">())</code>
+      <code class="hl opt">.</code><code class="hl kwd">build</code><code class="hl opt">()</code>
+    <code class="hl opt">);</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>We override the <code class="literal">supervisorStrategy</code> method in an actor returning a new strategy (<code class="literal">OneForOneStrategy</code>, which we'll look at more closely shortly.) In Java8, we use a <code class="literal">DeciderBuilder</code> to create a Scala <code class="literal">PartialFunction</code> for the strategy similar to how we use the <code class="literal">ReceiveBuilder</code> for the <code class="literal">PartialFunction</code> for the receive block. While Java lacks the pattern matching semantics that Scala has for<a id="GBS.0133.01"></a> producing Scala <code class="literal">PartialFunctions</code>, the <code class="literal">DeciderBuilder</code> alleviates this, giving us a nice API for pattern matching in Java8. We describe each case outlined in the scenarios in our Sushi restaurant example and we also include a <code class="literal">matchAny</code> case at the end—if an unknown <code class="literal">Throwable</code> is received, we have the manager call his boss.</p>
           <p>Scala has pattern matching so it needs less boilerplate to express the same:</p>
           <div class="informalexample">
-            <pre class="programlisting"><a id="GBS.0133.02"></a>override def supervisorStrategy = { OneForOneStrategy(){ case BrokenPlateException =&gt; Resume case DrunkenFoolException =&gt; Restart case RestaurantFireError =&gt;Escalate case TiredChefException =&gt; Stop case _ =&gt; Escalate } }</pre>
+            <pre class="programlisting"><code class="hl kwa">override def</code> supervisorStrategy <code class="hl opt">= {</code>
+  <code class="hl kwd">OneForOneStrategy</code><code class="hl opt">() {</code>
+    <code class="hl kwa">case</code> BrokenPlateException <code class="hl opt">=&gt;</code> Resume
+    <code class="hl kwa">case</code> DrunkenFoolException <code class="hl opt">=&gt;</code> Restart
+    <code class="hl kwa">case</code> RestaurantFireError <code class="hl opt">=&gt;</code> Escalate
+    <code class="hl kwa">case</code> TiredChefException <code class="hl opt">=&gt;</code> Stop
+    <code class="hl kwa">case</code> _ <code class="hl opt">=&gt;</code> Escalate
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>In the Scala <a id="id319" class="indexterm"></a>example, we override the <code class="literal">supervisorStrategy</code> method of the actor again, and then define a <code class="literal">PartialFunction</code> matching on Throwables and returning Directives. Here we describe<a id="GBS.0133.03"></a> all of the scenarios outlined in the example and any unknown cases, we escalate.</p>
           <p>In both Scala and Java, we describe how to handle each of the different <code class="literal">Throwable</code> cases if they are thrown by the actor: if the chef breaks a plate, we tell them to resume the next plate; if a chef is a drunken fool, we tell them to go home and bring on a new chef; if the chef lights the restaurant on fire, we have<a id="GBS.0133.04"></a> the manager call his boss; if the chef is tired, we tell him to take a break.</p>
@@ -180,7 +197,12 @@
           </div>
           <p>It's important to<a id="id322" class="indexterm"></a> understand what happens to a message when an <a id="id323" class="indexterm"></a>exception is encountered and to take an appropriate position depending on your application. Supervision strategies can be defined to retry failed messages any number of times before raising the exception to the supervision strategy. You can also time bound the failures so that you can retry up to 10 times<a id="GBS.0135.02"></a> or retry for 1 minute—whichever comes first:</p>
           <div class="informalexample">
-            <pre class="programlisting">new OneForOneStrategy(2, Duration.create("1 minute"), PartialFunction) OneForOneStrategy( maxNrOfRetries = 2) { case _: IOException  Restart })</pre>
+            <pre class="programlisting"><code class="hl kwa">new</code> <code class="hl kwd">OneForOneStrategy</code><code class="hl opt">(</code>
+  <code class="hl num">2</code><code class="hl opt">,</code> Duration<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl str">&quot;1 minute&quot;</code><code class="hl opt">),</code> PartialFunction<code class="hl opt">)</code>
+
+<code class="hl kwd">OneForOneStrategy</code><code class="hl opt">(</code>maxNrOfRetries <code class="hl opt">=</code> <code class="hl num">2</code><code class="hl opt">) {</code>
+  <code class="hl kwa">case</code> _<code class="hl opt">:</code> IOException Restart
+<code class="hl opt">}</code></pre>
           </div>
           <p>Once a message raises an exception, it will be dropped. It will not be tried again—the Supervisor will execute the supervision strategy, and in the case of resume or restart, the next message will be processed.</p>
           <p><a id="GBS.0135.03"></a>In the case of a worker queue, you likely want to retry the job a few times and then have it fail completely.</p>
@@ -196,8 +218,8 @@
           <p>Actors can be stopped in a few <a id="id324" class="indexterm"></a>different ways. You can stop an actor by doing <a id="id325" class="indexterm"></a>any of the following:</p>
           <div class="itemizedlist">
             <ul class="itemizedlist">
-              <li style="list-style-type: disc;" class="listitem">Call <code class="literal">ActorSystem.stop</code>(<code class="literal">actorRef</code>)</li>
-              <li style="list-style-type: disc;" class="listitem">Call <code class="literal">ActorContext.stop</code>(<code class="literal">actorRef</code>)</li>
+              <li style="list-style-type: disc;" class="listitem">Call <code><code class="literal">ActorSystem.stop</code>(<code class="literal">actorRef</code>)</code></li>
+              <li style="list-style-type: disc;" class="listitem">Call <code><code class="literal">ActorContext.stop</code>(<code class="literal">actorRef</code>)</code></li>
               <li style="list-style-type: disc;" class="listitem">Send a <code class="literal">PoisonPill</code> message to the actor, which will stop the actor when processed.</li>
               <li style="list-style-type: disc;" class="listitem">Send a Kill<a id="GBS.0135.04"></a> message to the actor, which will stop the actor when processed.</li>
             </ul>
@@ -212,7 +234,7 @@
               </div>
             </div>
           </div>
-          <p>Supervision describes <a id="id328" class="indexterm"></a>a mechanism for responding to a child <a id="id329" class="indexterm"></a>actor's states—it's also possible for an actor to monitor any other actor. Calling <code class="literal">context.watch</code>(<code class="literal">actorRef</code>) will register an actor for monitoring another actor for termination and calling <code class="literal">context.unwatch</code>(<code class="literal">actorRef</code>) will unregister. If the watched actor stops, a <code class="literal">Terminated</code>(<code class="literal"><a id="GBS.0136.01"></a>ActorRef</code>) message will be sent to the watcher.</p>
+          <p>Supervision describes <a id="id328" class="indexterm"></a>a mechanism for responding to a child <a id="id329" class="indexterm"></a>actor's states—it's also possible for an actor to monitor any other actor. Calling <code><code class="literal">context.watch</code>(<code class="literal">actorRef</code>)</code> will register an actor for monitoring another actor for termination and calling <code><code class="literal">context.unwatch</code>(<code class="literal">actorRef</code>)</code> will unregister. If the watched actor stops, a <code><code class="literal">Terminated</code>(<code class="literal"><a id="GBS.0136.01"></a>ActorRef</code>)</code> message will be sent to the watcher.</p>
         </div>
         <div title="Safely restarting" class="section">
           <div class="titlepage">
@@ -225,18 +247,27 @@
           <p>When we build reactive systems, we design them anticipating failure. We need to ensure our systems respond to failure correctly. One of the mistakes that I've seen out in the wild is to initialize an actor's state after it has started without handling the failure case. If you send an actor some initialization messages, with information<a id="GBS.0136.02"></a> that is important to its state, you have to be very careful because that information may be be lost in a restart.</p>
           <p>Let's demonstrate: Imagine if we make a database client actor with no arguments, and then we tell the actor where to connect. This doesn't seem unreasonable—very often in Java, we set fields in objects after creating them. We also know that Actors can safely store state, so nothing<a id="GBS.0136.03"></a> seems wrong with this scenario yet:</p>
           <div class="informalexample">
-            <pre class="programlisting">ActorRef db = system.actorOf(DbActor.props()); db ! Connect(host = "10.0.8.14", port = "9001"); val actor = createActor(DbActor.props); actor.tell(new Connect("10.0.8.14", "9001");</pre>
+            <pre class="programlisting">ActorRef db <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>DbActor<code class="hl opt">.</code><code class="hl kwd">props</code><code class="hl opt">())</code>
+db <code class="hl opt">!</code> <code class="hl kwd">Connect</code><code class="hl opt">(</code>host <code class="hl opt">=</code> <code class="hl str">&quot;10.0.8.14&quot;</code><code class="hl opt">,</code> port <code class="hl opt">=</code> <code class="hl str">&quot;9001&quot;</code><code class="hl opt">)</code>
+<code class="hl kwa">val</code> actor <code class="hl opt">=</code> <code class="hl kwd">createActor</code><code class="hl opt">(</code>DbActor<code class="hl opt">.</code>props<code class="hl opt">)</code>
+actor<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">Connect</code><code class="hl opt">(</code><code class="hl str">&quot;10.0.8.14&quot;</code><code class="hl opt">,</code> <code class="hl str">&quot;9001&quot;</code><code class="hl opt">)</code></pre>
           </div>
           <p>Now we have an actor, and, once it processes that first message, it's initialized and connected to a remote database.</p>
           <p>We send messages to the actor for a bit, and then the actor encounters<a id="GBS.0136.04"></a> an exception caused by network reliability. The actor will restart at this point. When the actor restarts, it will call <code class="literal">preRestart()</code>, and then the original actor will stop. All of the state in that actor will go away with it. Then a new object is created for the Actor. That actor's constructor will run, then <code class="literal">postRestart</code> will be called, and then the actor will be up and running.</p>
           <p>That Connect message<a id="GBS.0136.05"></a> is now lost. You can write some extra code to handle this scenario. You could write a supervision strategy or use Akka's lifecycle monitoring (<code class="literal">DeathWatch</code>) to respond to these failure conditions. But, the point is, for this simple initialization message, you have to handle this case now and risk making an error in handling the client. A much better implementation is to pass the initialization information<a id="GBS.0137.01"></a> into the constructor of the actor via Props:</p>
           <div class="informalexample">
-            <pre class="programlisting">ActorRef db = system.actorOf(DbActor.props(host = "10.0.8.14", port = "9001")); val actor = createActor(DbActor.props("10.0.8.14", "9001"));</pre>
+            <pre class="programlisting">ActorRef db <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>DbActor<code class="hl opt">.</code><code class="hl kwd">props</code><code class="hl opt">(</code>
+  host <code class="hl opt">=</code> <code class="hl str">&quot;10.0.8.14&quot;</code><code class="hl opt">,</code> port <code class="hl opt">=</code> <code class="hl str">&quot;9001&quot;</code><code class="hl opt">))</code>
+<code class="hl kwa">val</code> actor <code class="hl opt">=</code> <code class="hl kwd">createActor</code><code class="hl opt">(</code>DbActor<code class="hl opt">.</code><code class="hl kwd">props</code><code class="hl opt">(</code><code class="hl str">&quot;10.0.8.14&quot;</code><code class="hl opt">,</code> <code class="hl str">&quot;9001&quot;</code><code class="hl opt">))</code></pre>
           </div>
           <p>This seems better—the actor now gets all of the information in its constructor and it connects automatically. If we start sending the actor messages and it restarts, it will recover correctly because it has the<a id="GBS.0137.02"></a> connection information in its constructor arguments..` But, if the actor encounters an exception during initialization, perhaps trying to connect to the remote database, then the default supervision behavior is to stop. So, we have a scenario where the actor can restart safely if running, but, if it can't initialize, we have to write extra code in supervision behavior to handle the scenario where<a id="GBS.0137.03"></a> the actor can't connect to the database on startup.</p>
           <p>It is common to have an actor send itself an initialization message and to have it handle changing its state while running, instead of potentially failing during initialization. To do this, on <code class="literal">postStart</code>, an actor might send itself a Connect message:</p>
           <div class="informalexample">
-            <pre class="programlisting">public void postStart(){ self().ask(new Connect(), null); } override def postStart = self ! Connect</pre>
+            <pre class="programlisting"><code class="hl kwa">public void</code> <code class="hl kwd">postStart</code><code class="hl opt">() {</code>
+  <code class="hl kwd">self</code><code class="hl opt">().</code><code class="hl kwd">ask</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">Connect</code><code class="hl opt">(),</code> <code class="hl kwb">null</code><code class="hl opt">);</code>
+<code class="hl opt">}</code>
+
+<code class="hl kwa">override def</code> postStart <code class="hl opt">=</code> self <code class="hl opt">!</code> Connect</pre>
           </div>
           <p><a id="GBS.0137.04"></a>Now that actor can only fail when it's running, and it will restart successfully, continuing to try to connect to the database until it's available.</p>
           <p>If you're paying attention, you might reason that you could have the actor send itself the <code class="literal">Connect(host, port)</code> message on the <code class="literal">preRestart</code> event. If the actor were to drop that message for any reason, maybe because its mailbox was full or because a restart<a id="GBS.0137.05"></a> caused it to be dropped, then that Connect message could be lost—it's simpler and safer to use the constructor for an actor that is critical to the actor's functioning.</p>

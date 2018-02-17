@@ -32,8 +32,10 @@
       <p>An <code class="literal">ActorRef</code> will have an <code class="literal">ActorPath</code> with a fragment <code class="literal">#123456</code>, which is what is called the actor's UID. An <code class="literal">ActorPath</code> will not—it will just have the path.</p>
       <p>We looked at <code class="literal">ActorSystem.actorSelection</code> earlier, which will let us look<a id="GBS.0212.03"></a> up an Actor with any path and send it messages:</p>
       <div class="informalexample">
-        <pre class="programlisting">ActorSelectionactorSelection = actorSystem.actorSelection("akka.tcp://ActorSystem@127.0.0.7/user/my-actor");
-valactorSelection = actorSystem.actorSelection("akka.tcp://ActorSystem@127.0.0.7/user/my-actor")</pre>
+        <pre class="programlisting">ActorSelectionactorSelection <code class="hl opt">=</code> actorSystem<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>
+  <code class="hl str">&quot;akka.tcp://ActorSystem&#64;127.0.0.7/user/my-actor&quot;</code><code class="hl opt">);</code>
+val actorSelection <code class="hl opt">=</code> actorSystem<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>
+  <code class="hl str">&quot;akka.tcp://ActorSystem&#64;127.0.0.7/user/my-actor&quot;</code><code class="hl opt">)</code></pre>
       </div>
       <p>That gives us an actor selection, which <a id="id495" class="indexterm"></a>we can send messages to. Although, the actor selection does not assume that an actor exists. If we send<a id="GBS.0212.04"></a> messages to an <code class="literal">ActorSelection</code> and the actor does not exist, the message will disappear. Thus, we can look up an actor and get an <code class="literal">ActorRef</code> for a remote actor.</p>
       <div title="Using akka.actor.Identify to Find a Remote Actor" class="section">
@@ -46,10 +48,15 @@ valactorSelection = actorSystem.actorSelection("akka.tcp://ActorSystem@127.0.0.7
         </div>
         <p>All actors by default <a id="id496" class="indexterm"></a>accept a message—<code class="literal">akka.actor.Identify</code>. We can<a id="id497" class="indexterm"></a> create a new Identify message and send it to an actor to get an <code class="literal">ActorRef</code>:</p>
         <div class="informalexample">
-          <pre class="programlisting">Identify msg = new Identify(messageId) Future&lt;ActorIdentity&gt;<a id="GBS.0212.05"></a> identity = (Future&lt;ActorIdentity&gt;) Patterns.ask(actor, msg, timeout);
-valmsg = Identify(messageId) val identity: Future[ActorIdentity] = (sentinelClient ? msg).mapTo[ActorIdentity]</pre>
+          <pre class="programlisting">Identify msg <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">Identify</code><code class="hl opt">(</code>messageId<code class="hl opt">)</code>
+Future<code class="hl opt">&lt;</code>ActorIdentity<code class="hl opt">&gt;</code> identity <code class="hl opt">= (</code>Future<code class="hl opt">&lt;</code>ActorIdentity<code class="hl opt">&gt;)</code>
+Patterns<code class="hl opt">.</code><code class="hl kwd">ask</code><code class="hl opt">(</code>actor<code class="hl opt">,</code> msg<code class="hl opt">,</code> timeout<code class="hl opt">);</code>
+
+<code class="hl kwa">val</code> msg <code class="hl opt">=</code> <code class="hl kwd">Identify</code><code class="hl opt">(</code>messageId<code class="hl opt">)</code>
+<code class="hl kwa">val</code> identity<code class="hl opt">:</code> Future<code class="hl opt">[</code>ActorIdentity<code class="hl opt">] =</code>
+  <code class="hl opt">(</code>sentinelClient ? msg<code class="hl opt">).</code>mapTo<code class="hl opt">[</code>ActorIdentity<code class="hl opt">]</code></pre>
         </div>
-        <p>We will receive a response—<code class="literal">ActorIdentity</code>(<code class="literal">messageId</code>, <code class="literal">Some</code>(<code class="literal">actorRef</code>)), or <code class="literal">ActorIdentity</code>((<code class="literal">path</code>, <code class="literal">client</code>), <code class="literal">None</code>)—showing that an actor is either present or absent. This gives us a mechanism for determining if a remote actor<a id="GBS.0213.01"></a> exists and obtaining an <code class="literal">ActorRef</code> for it.</p>
+        <p>We will receive a response—<code><code class="literal">ActorIdentity</code>(<code class="literal">messageId</code>, <code class="literal">Some</code>(<code class="literal">actorRef</code>))</code>, or <code><code class="literal">ActorIdentity</code>((<code class="literal">path</code>, <code class="literal">client</code>), <code class="literal">None</code>)</code>—showing that an actor is either present or absent. This gives us a mechanism for determining if a remote actor<a id="GBS.0213.01"></a> exists and obtaining an <code class="literal">ActorRef</code> for it.</p>
       </div>
     </div>
     <div style="display:none;">

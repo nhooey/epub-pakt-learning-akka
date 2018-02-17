@@ -101,23 +101,24 @@
         </div>
         <p>If both your references and types are mutable, then that's the worst case scenario. The following<a id="GBS.0098.02"></a> is an example:</p>
         <div class="informalexample">
-          <pre class="programlisting">public class Message{
-public StringBuffer mutableBuffer;
-public Message(StringBuffer: mutableBuffer){
-this.mutableBuffer = mutableBuffer;
-}
-}
-class Message(var mutableBuffer: StringBuffer = new StringBuffer);</pre>
+          <pre class="programlisting"><code class="hl kwa">public class</code> Message <code class="hl opt">{</code>
+  <code class="hl kwa">public</code> StringBuffer mutableBuffer<code class="hl opt">;</code>
+  <code class="hl kwa">public</code> <code class="hl kwd">Message</code><code class="hl opt">(</code>StringBuffer<code class="hl opt">:</code> mutableBuffer<code class="hl opt">) {</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>mutableBuffer <code class="hl opt">=</code> mutableBuffer<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code>
+<code class="hl kwa">class</code> <code class="hl kwd">Message</code><code class="hl opt">(</code><code class="hl kwa">var</code> mutableBuffer<code class="hl opt">:</code> StringBuffer <code class="hl opt">=</code> <code class="hl kwa">new</code> StringBuffer<code class="hl opt">);</code></pre>
         </div>
         <p>Here, both the objects <a id="id248" class="indexterm"></a>are referenced, and the object's state can also change, which is the worst case in our grid.</p>
         <p>Variables referenced in the message (for example, fields)<a id="GBS.0098.03"></a> can either be mutable or immutable. In Scala, field members marked <code class="literal">val</code> are immutable references and field members marked <code class="literal">var</code> are mutable—the reference can be changed to point to a new object/primitive. In Java, members marked with final are immutable references and those without are mutable. All fields in messages should be of the immutable variety. The field members should be passed in via constructor<a id="GBS.0098.04"></a> arguments to be able to fulfill the immutability contract.</p>
         <p>We can demonstrate how the references can change:</p>
         <div class="informalexample">
-          <pre class="programlisting">Messagemessage=newMessage(newStringBuffer("original"));
-message.mutableBuffer=newStringBuffer("new");
+          <pre class="programlisting">
+Messagemessage <code class="hl opt">=</code> <code class="hl kwd">newMessage</code><code class="hl opt">(</code><code class="hl kwd">newStringBuffer</code><code class="hl opt">(</code><code class="hl str">"original"</code><code class="hl opt">));</code>
+message<code class="hl opt">.</code>mutableBuffer <code class="hl opt">=</code> <code class="hl kwd">newStringBuffer</code><code class="hl opt">(</code><code class="hl str">"new"</code><code class="hl opt">);</code>
 
-valmessage=newMessage(newStringBuffer("original"))
-message.mutableBuffer=newStringBuffer("new")</pre>
+val message <code class="hl opt">=</code> <code class="hl kwd">newMessage</code><code class="hl opt">(</code><code class="hl kwd">newStringBuffer</code><code class="hl opt">(</code><code class="hl str">"original"</code><code class="hl opt">))</code>
+message<code class="hl opt">.</code>mutableBuffer <code class="hl opt">=</code> <code class="hl kwd">newStringBuffer</code><code class="hl opt">(</code><code class="hl str">"new"</code><code class="hl opt">)</code></pre>
         </div>
         <p>Here we create a new message, and then we change the <code class="literal">StringBuffer</code> reference to point to<a id="GBS.0098.05"></a> a new <code class="literal">StringBuffer</code>. The message is created with <code class="literal">StringBuffer</code>(<code class="literal">original</code>) but is mutated to <code class="literal">StringBuffer</code>(<code class="literal">new</code>). This shows how the message can be changed because of the change in its reference.</p>
         <div class="mediaobject">
@@ -126,19 +127,20 @@ message.mutableBuffer=newStringBuffer("new")</pre>
         </div>
         <p>We want to eliminate the possibility of someone changing the reference in the message, so we need to make the references <code class="literal">val</code>/<code class="literal">final</code>. The following is an example of immutable references in the<a id="id249" class="indexterm"></a> message, improving on our previous example:</p>
         <div class="informalexample">
-          <pre class="programlisting">public class Message {
-public final StringBuffer mutableBuffer;
-Message(StringBuffer mutableBuffer) {
-                this.mutableBuffer = mutableBuffer;
-      <a id="GBS.0099.02"></a>  }
-	}</pre>
+          <pre class="programlisting"><code class="hl kwa">public class</code> Message <code class="hl opt">{</code>
+  <code class="hl kwa">public final</code> StringBuffer mutableBuffer<code class="hl opt">;</code>
+  <code class="hl kwd">Message</code><code class="hl opt">(</code>StringBuffer mutableBuffer<code class="hl opt">) {</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>mutableBuffer <code class="hl opt">=</code> mutableBuffer<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
         </div>
         <p>In Scala, if no access modifiers are supplied in the declaration, the field reference will be an immutable <code class="literal">val</code>. In Java, we use the final modifier to make the reference immutable. Now we can't change the <code class="literal">mutableBuffer</code> reference to point at a new object—we can be sure the message will always point toward the same <code class="literal">StringBuffer</code>. There is still a problem with this though—we can change the <code class="literal">StringBuffer</code><a id="GBS.0099.03"></a> object itself as it is a mutable type. We can append new characters to a reference. If multiple Actors have a reference to that message, then it's possible that concurrency errors can occur. The following is an example of us changing the <code class="literal">StringBuffer</code>:</p>
         <div class="informalexample">
-          <pre class="programlisting">Message message = new Message(new StringBuffer())
-message.mutableBuffer.append("appended");
-val message = new Message(StringBuffer("original"))<a id="GBS.0099.04"></a>
-message.mutableBuffer.append("appended")</pre>
+          <pre class="programlisting">
+Message message <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">Message</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">StringBuffer</code><code class="hl opt">())</code>
+message<code class="hl opt">.</code>mutableBuffer<code class="hl opt">.</code><code class="hl kwd">append</code><code class="hl opt">(</code><code class="hl str">"appended"</code><code class="hl opt">);</code>
+<code class="hl kwa">val</code> message <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">Message</code><code class="hl opt">(</code><code class="hl kwd">StringBuffer</code><code class="hl opt">(</code><code class="hl str">"original"</code><code class="hl opt">))</code>
+message<code class="hl opt">.</code>mutableBuffer<code class="hl opt">.</code><code class="hl kwd">append</code><code class="hl opt">(</code><code class="hl str">"appended"</code><code class="hl opt">)</code></pre>
         </div>
         <p>This demonstrates that even though the message's <code class="literal">mutableBuffer</code> reference is immutable, the <code class="literal">StringBuffer</code> in memory can still be modified as it is a mutable type as shown in the following figure:</p>
         <div class="mediaobject">
@@ -147,27 +149,27 @@ message.mutableBuffer.append("appended")</pre>
         </div>
         <p>For a message to truly be immutable, it needs to have both immutable references and use immutable types. String is an immutable type, so we can make this message immutable by using String instead of <code class="literal">StringBuffer</code>. An example of the ideal immutable message is as follows:</p>
         <div class="informalexample">
-          <pre class="programlisting">public class ImmutableMessage{
-    public final String immutableType;
-public ImmutableMessage(String immutableType) {
-    this.immutableType<a id="GBS.0100.02"></a> = immutableType;
-    }
-}
-class ImmutableMessage(immutableType: String)</pre>
+          <pre class="programlisting"><code class="hl kwa">public class</code> ImmutableMessage <code class="hl opt">{</code>
+  <code class="hl kwa">public final</code> String immutableType<code class="hl opt">;</code>
+  <code class="hl kwa">public</code> <code class="hl kwd">ImmutableMessage</code><code class="hl opt">(</code>String immutableType<code class="hl opt">) {</code>
+  <code class="hl kwa">this</code><code class="hl opt">.</code>immutableType <code class="hl opt">=</code> immutableType<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code>
+<code class="hl kwa">class</code> <code class="hl kwd">ImmutableMessage</code><code class="hl opt">(</code>immutableType<code class="hl opt">:</code> String<code class="hl opt">)</code></pre>
         </div>
         <p>Now we cannot <a id="id250" class="indexterm"></a>change the message in any way—it's thread safe and can be sent across threads or machines without any risk of that message changing in any way in its life:</p>
         <div class="informalexample">
-          <pre class="programlisting">new ImmutableMessage("can't be changed");</pre>
+          <pre class="programlisting"><code class="hl kwa">new</code> <code class="hl kwd">ImmutableMessage</code> <code class="hl opt">(</code><code class="hl str">"can't be changed"</code><code class="hl opt">);</code></pre>
         </div>
         <p>There is one more improvement we can make—use a case class instead of a class in Scala. Case classes are preferred<a id="GBS.0100.03"></a> as they give useful members like a default <code class="literal">toString()</code> and <code class="literal">copy()</code> method. They can be serialized for use in Akka remoting as well. In Java, we will often declare our messages as Serializable as well in case we want to send them over the wire:</p>
         <div class="informalexample">
-          <pre class="programlisting">public class ImmutableMessage implements Serializable {
-public final String string;
-public ImmutableMessage(String string) {
-this.string = string;
-}
-}
-case<a id="GBS.0100.04"></a> class ImmutableMessage(String: String)</pre>
+          <pre class="programlisting"><code class="hl kwa">public class</code> ImmutableMessage <code class="hl kwa">implements</code> Serializable <code class="hl opt">{</code>
+  <code class="hl kwa">public final</code> String string<code class="hl opt">;</code>
+  <code class="hl kwa">public</code> <code class="hl kwd">ImmutableMessage</code><code class="hl opt">(</code>String string<code class="hl opt">) {</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>string <code class="hl opt">=</code> string<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code>
+<code class="hl kwa">case class</code> <code class="hl kwd">ImmutableMessage</code><code class="hl opt">(</code>String<code class="hl opt">:</code> String<code class="hl opt">)</code></pre>
         </div>
         <p>Understanding immutability is essential not only in Akka messages but also in safe and concurrent computing in general. Any time data is to be shared between threads, therefore, aim for immutability first. Now that we know how to make immutable messages, we can look at how to compose actors together with various messaging patterns.</p>
       </div>
@@ -189,9 +191,10 @@ case<a id="GBS.0100.04"></a> class ImmutableMessage(String: String)</pre>
         <p>Asks always require a timeout be defined and if the ask is not replied to, then the future will fail with the timeout. The <code class="literal">ask/?</code> method requires<a id="GBS.0101.03"></a> a timeout to be supplied to it—either a long one in milliseconds or an <code class="literal">akka.util.Timeout</code>, which offers some more expressive descriptions of time.</p>
         <p>In Java, you can Ask with a <code class="literal">Timeout</code> constructed with a <code class="literal">TimeUnit</code> like the following:</p>
         <div class="informalexample">
-          <pre class="programlisting">static import akka.pattern.Patterns.ask; Timeout timeout = new akka.util.Timeout(1,
-java.util.concurrent.TimeUnit.SECONDS);
-Future future = ask(actor, message, timeout);</pre>
+          <pre class="programlisting"><code class="hl kwa">static import</code> akka<code class="hl opt">.</code>pattern<code class="hl opt">.</code>Patterns<code class="hl opt">.</code>ask<code class="hl opt">;</code>
+Timeout timeout <code class="hl opt">=</code> <code class="hl kwa">new</code> akka<code class="hl opt">.</code>util<code class="hl opt">.</code><code class="hl kwd">Timeout</code><code class="hl opt">(</code>
+  <code class="hl num">1</code><code class="hl opt">,</code> java<code class="hl opt">.</code>util<code class="hl opt">.</code>concurrent<code class="hl opt">.</code>TimeUnit<code class="hl opt">.</code>SECONDS<code class="hl opt">);</code>
+Future future <code class="hl opt">=</code> <code class="hl kwd">ask</code><code class="hl opt">(</code>actor<code class="hl opt">,</code> message<code class="hl opt">,</code> timeout<code class="hl opt">);</code></pre>
         </div>
         <p><a id="GBS.0101.04"></a>In Scala, you can use <code class="literal">scala.concurrent.duration</code> for defining a timeout with the attractive scala duration<a id="id253" class="indexterm"></a> <span class="strong"><strong>Domain Specific Languages</strong></span>(<span class="strong"><strong>DSL</strong></span>), which <a id="id254" class="indexterm"></a>lets you describe a duration as, for example, 1 second. In Scala, the timeout supplied to the ask is implicit, which helps to simplify the ask semantics to a concise statement:</p>
         <div class="informalexample">
@@ -199,10 +202,10 @@ Future future = ask(actor, message, timeout);</pre>
         </div>
         <p>For example, with the timeout and imports, your code would<a id="GBS.0102.01"></a> look like the following:</p>
         <div class="informalexample">
-          <pre class="programlisting">import scala.concurrent.duration._
-import akka.pattern.ask
-implicit val timeout = akka.util.Timeout(1 second)
-val future = actorRef ? "message"</pre>
+          <pre class="programlisting"><code class="hl kwa">import</code> scala<code class="hl opt">.</code>concurrent<code class="hl opt">.</code>duration<code class="hl opt">.</code>_
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>pattern<code class="hl opt">.</code>ask
+<code class="hl kwa">implicit val</code> timeout <code class="hl opt">=</code> akka<code class="hl opt">.</code>util<code class="hl opt">.</code><code class="hl kwd">Timeout</code><code class="hl opt">(</code><code class="hl num">1</code> second<code class="hl opt">)</code>
+<code class="hl kwa">val</code> future <code class="hl opt">=</code> actorRef ? <code class="hl str">"message"</code></pre>
         </div>
         <p>We'll look at an <a id="id255" class="indexterm"></a>example of a design using ask to demonstrate how we can compose together asks. Because Ask gives Futures, this is essentially composing together Futures that the Actors produce with Ask.</p>
         <div title="Designing with Ask" class="section">
@@ -222,96 +225,116 @@ val future = actorRef ? "message"</pre>
           <p>For brevity, we'll omit the Actor code except for the service Actor. The full code examples are in the GitHub examples in the folder in this chapter. For the context of reading<a id="GBS.0103.01"></a> the code, each of the Actors sends back either a failure or a success—a String representing the article (raw or parsed).</p>
           <p>The following is the Scala source:</p>
           <div class="informalexample">
-            <pre class="programlisting">packagecom.akkademy.askdemo
-class AskDemoArticleParser(cacheActorPath: String, httpClientActorPath: String, acticleParserActorPath: String,implicit val timeout: Timeout
-) 
-extends Actor {
-  val cacheActor = context.actorSelection(cacheActorPath)<a id="GBS.0103.02"></a>
-  val httpClientActor = context.actorSelection(httpClientActorPath)
-  val articleParserActor = context.actorSelection(acticleParserActorpath)
-  import scala.concurrent.ExecutionContext.Implicits.global
+            <pre class="programlisting"><code class="hl kwa">package</code> com<code class="hl opt">.</code>akkademy<code class="hl opt">.</code>askdemo
 
-  override def receive: Receive = {
-    case ParseArticle(uri) =&gt;
-      val senderRef = sender() //sender ref needed for closure
+<code class="hl kwa">class</code> <code class="hl kwd">AskDemoArticleParser</code><code class="hl opt">(</code>
+  cacheActorPath<code class="hl opt">:</code> String<code class="hl opt">,</code>
+  httpClientActorPath<code class="hl opt">:</code> String<code class="hl opt">,</code>
+  acticleParserActorPath<code class="hl opt">:</code> String<code class="hl opt">,</code>
+  <code class="hl kwa">implicit val</code> timeout<code class="hl opt">:</code> Timeout
+<code class="hl opt">)</code> <code class="hl kwa">extends</code> Actor <code class="hl opt">{</code>
+  <code class="hl kwa">val</code> cacheActor <code class="hl opt">=</code> context<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>cacheActorPath<code class="hl opt">)</code>
+  <code class="hl kwa">val</code> httpClientActor <code class="hl opt">=</code> context<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>httpClientActorPath<code class="hl opt">)</code>
+  <code class="hl kwa">val</code> articleParserActor <code class="hl opt">=</code> context<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>acticleParserActorpath<code class="hl opt">)</code>
+  <code class="hl kwa">import</code> scala<code class="hl opt">.</code>concurrent<code class="hl opt">.</code>ExecutionContext<code class="hl opt">.</code>Implicits<code class="hl opt">.</code>global
 
-      val cacheResult = cacheActor ? GetRequest(uri) //ask cache<a id="GBS.0103.03"></a> actor
+  <code class="hl kwa">override def</code> receive<code class="hl opt">:</code> Receive <code class="hl opt">= {</code>
+    <code class="hl kwa">case</code> <code class="hl kwd">ParseArticle</code><code class="hl opt">(</code>uri<code class="hl opt">) =&gt;</code>
+      <code class="hl slc">// sender ref needed for closure</code>
+      <code class="hl kwa">val</code> senderRef <code class="hl opt">=</code> <code class="hl kwd">sender</code><code class="hl opt">()</code>
 
-      val result = cacheResult.recoverWith { //if request fails, then ask the articleParseActor
-        case _: Exception =&gt;
-          val fRawResult = httpClientActor ? uri
+      <code class="hl slc">// ask cache actor</code>
+      <code class="hl kwa">val</code> cacheResult <code class="hl opt">=</code> cacheActor ? <code class="hl kwd">GetRequest</code><code class="hl opt">(</code>uri<code class="hl opt">)</code>
 
-          fRawResult flatMap {
-            case HttpResponse(rawArticle) =&gt;
-              articleParserActor ? ParseHtmlArticle(uri, rawArticle)
-            case x =&gt;
-              Future.failed(new Exception("unknown<a id="GBS.0103.04"></a> response"))
-          }
-      }
-                 
-      result onComplete { //could use Pipe (covered later)
-        case scala.util.Success(x: String) =&gt;
-          println("cached result!")
-          senderRef ! x //cached result
-        case scala.util.Success(x: ArticleBody) =&gt;
-          cacheActor ! SetRequest(uri, x.body)
-          senderRef ! x
-        case scala.util.Failure(t) =&gt;
-    <a id="GBS.0103.05"></a>      senderRef ! akka.actor.Status.Failure(t)
-        case x =&gt;
-          println("unknown message! " + x)
-      }
-  }
-}</pre>
+      <code class="hl slc">// if request fails, then ask the articleParseActor</code>
+      <code class="hl kwa">val</code> result <code class="hl opt">=</code> cacheResult<code class="hl opt">.</code>recoverWith <code class="hl opt">{</code>
+        <code class="hl kwa">case</code> _<code class="hl opt">:</code> Exception <code class="hl opt">=&gt;</code>
+          <code class="hl kwa">val</code> fRawResult <code class="hl opt">=</code> httpClientActor ? uri
+
+          fRawResult flatMap <code class="hl opt">{</code>
+            <code class="hl kwa">case</code> <code class="hl kwd">HttpResponse</code><code class="hl opt">(</code>rawArticle<code class="hl opt">) =&gt;</code>
+              articleParserActor ? <code class="hl kwd">ParseHtmlArticle</code><code class="hl opt">(</code>uri<code class="hl opt">,</code> rawArticle<code class="hl opt">)</code>
+            <code class="hl kwa">case</code> x <code class="hl opt">=&gt;</code>
+              Future<code class="hl opt">.</code><code class="hl kwd">failed</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">Exception</code><code class="hl opt">(</code><code class="hl str">"unknown response"</code><code class="hl opt">))</code>
+          <code class="hl opt">}</code>
+      <code class="hl opt">}</code>
+
+      <code class="hl slc">// could use Pipe (covered later)</code>
+      result onComplete <code class="hl opt">{</code>
+        <code class="hl kwa">case</code> scala<code class="hl opt">.</code>util<code class="hl opt">.</code><code class="hl kwd">Success</code><code class="hl opt">(</code>x<code class="hl opt">:</code> String<code class="hl opt">) =&gt;</code>
+          <code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">"cached result!"</code><code class="hl opt">)</code>
+          senderRef <code class="hl opt">!</code> x <code class="hl slc">// cached result</code>
+        <code class="hl kwa">case</code> scala<code class="hl opt">.</code>util<code class="hl opt">.</code><code class="hl kwd">Success</code><code class="hl opt">(</code>x<code class="hl opt">:</code> ArticleBody<code class="hl opt">) =&gt;</code>
+          cacheActor <code class="hl opt">!</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>uri<code class="hl opt">,</code> x<code class="hl opt">.</code>body<code class="hl opt">)</code>
+          senderRef <code class="hl opt">!</code> x
+        <code class="hl kwa">case</code> scala<code class="hl opt">.</code>util<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code>t<code class="hl opt">) =&gt;</code>
+          senderRef <code class="hl opt">!</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code>t<code class="hl opt">)</code>
+        <code class="hl kwa">case</code> x <code class="hl opt">=&gt;</code>
+          <code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">"unknown message! "</code> <code class="hl opt">+</code> x<code class="hl opt">)</code>
+      <code class="hl opt">}</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>The following<a id="id260" class="indexterm"></a> is the equivalent Java8 <a id="id261" class="indexterm"></a>code:</p>
           <div class="informalexample">
-            <pre class="programlisting">public class AskDemoArticleParser extends AbstractActor {
+            <pre class="programlisting"><code class="hl kwa">public class</code> AskDemoArticleParser <code class="hl kwa">extends</code> AbstractActor <code class="hl opt">{</code>
 
-    private final ActorSelection cacheActor;
-    private final ActorSelection httpClientActor;
-    private final ActorSelection artcileParseActor;
-    private final Timeout<a id="GBS.0104.01"></a> timeout;
+  <code class="hl kwa">private final</code> ActorSelection cacheActor<code class="hl opt">;</code>
+  <code class="hl kwa">private final</code> ActorSelection httpClientActor<code class="hl opt">;</code>
+  <code class="hl kwa">private final</code> ActorSelection artcileParseActor<code class="hl opt">;</code>
+  <code class="hl kwa">private final</code> Timeout timeout<code class="hl opt">;</code>
 
-    public AskDemoArticleParser(String cacheActorPath, String httpClientActorPath, String artcileParseActorPath, Timeout timeout) {
-        this.cacheActor = context().actorSelection(cacheActorPath);
-        this.httpClientActor = context().actorSelection(httpClientActorPath);
-        this.artcileParseActor = context().actorSelection(artcileParseActorPath);
-        this.timeout = timeout;<a id="GBS.0104.02"></a>
-    }
+  <code class="hl kwa">public</code> <code class="hl kwd">AskDemoArticleParser</code><code class="hl opt">(</code>String cacheActorPath<code class="hl opt">,</code>
+                              String httpClientActorPath<code class="hl opt">,</code>
+                              String artcileParseActorPath<code class="hl opt">,</code>
+                              Timeout timeout<code class="hl opt">)</code>
+  <code class="hl opt">{</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>cacheActor <code class="hl opt">=</code> <code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>cacheActorPath<code class="hl opt">);</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>httpClientActor <code class="hl opt">=</code>
+      <code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>httpClientActorPath<code class="hl opt">);</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>artcileParseActor <code class="hl opt">=</code>
+      <code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>artcileParseActorPath<code class="hl opt">);</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>timeout <code class="hl opt">=</code> timeout<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
 
-public PartialFunction receive() {
-        return ReceiveBuilder.
-                match(ParseArticle.class, msg -&gt; {
-                    final CompletionStage cacheResult = toJava(ask(cacheActor, new GetRequest(msg.url), timeout));
-                    final CompletionStage result = cacheResult.handle((x, t) -&gt; {
-                        return (x != null)
-                                ?<a id="GBS.0104.03"></a> CompletableFuture.completedFuture(x)
-                                : toJava(ask(httpClientActor, msg.url, timeout)).
-                                thenCompose(rawArticle -&gt; toJava(
-                                                ask(artcileParseActor,
-                                                        new ParseHtmlArticle(msg.url,
-                                                        <a id="GBS.0104.04"></a>        ((HttpResponse) rawArticle).body), timeout))
-                                );
-                    }).thenCompose(x -&gt; x);
+  <code class="hl kwa">public</code> PartialFunction <code class="hl kwd">receive</code><code class="hl opt">() {</code>
+      <code class="hl kwa">return</code> ReceiveBuilder
+        <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>ParseArticle<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> msg <code class="hl opt">-&gt; {</code>
+          <code class="hl kwa">final</code> CompletionStage cacheResult <code class="hl opt">=</code> <code class="hl kwd">toJava</code><code class="hl opt">(</code>
+            <code class="hl kwd">ask</code><code class="hl opt">(</code>cacheActor<code class="hl opt">,</code> <code class="hl kwa">new</code> <code class="hl kwd">GetRequest</code><code class="hl opt">(</code>msg<code class="hl opt">.</code>url<code class="hl opt">),</code> timeout<code class="hl opt">));</code>
+          <code class="hl kwa">final</code> CompletionStage result <code class="hl opt">=</code> cacheResult<code class="hl opt">.</code><code class="hl kwd">handle</code><code class="hl opt">((</code>x<code class="hl opt">,</code> t<code class="hl opt">) -&gt; {</code>
+            <code class="hl kwa">return</code> <code class="hl opt">(</code>x <code class="hl opt">!=</code> <code class="hl kwb">null</code><code class="hl opt">)</code>
+                ? CompletableFuture<code class="hl opt">.</code><code class="hl kwd">completedFuture</code><code class="hl opt">(</code>x<code class="hl opt">)</code>
+                <code class="hl opt">:</code> <code class="hl kwd">toJava</code><code class="hl opt">(</code><code class="hl kwd">ask</code><code class="hl opt">(</code>httpClientActor<code class="hl opt">,</code> msg<code class="hl opt">.</code>url<code class="hl opt">,</code> timeout<code class="hl opt">)).</code>
+                <code class="hl kwd">thenCompose</code><code class="hl opt">(</code>rawArticle <code class="hl opt">-&gt;</code> <code class="hl kwd">toJava</code><code class="hl opt">(</code>
+                  <code class="hl kwd">ask</code><code class="hl opt">(</code>artcileParseActor<code class="hl opt">,</code>
+                      <code class="hl kwa">new</code> <code class="hl kwd">ParseHtmlArticle</code><code class="hl opt">(</code>
+                        msg<code class="hl opt">.</code>url<code class="hl opt">,</code>
+                        <code class="hl opt">((</code>HttpResponse<code class="hl opt">)</code> rawArticle<code class="hl opt">).</code>body<code class="hl opt">),</code>
+                        timeout<code class="hl opt">)</code>
+                <code class="hl opt">));</code>
+          <code class="hl opt">}).</code><code class="hl kwd">thenCompose</code><code class="hl opt">(</code>x <code class="hl opt">-&gt;</code> x<code class="hl opt">);</code>
 
-                    final ActorRef senderRef = sender();
-                    result.handle((x,t) -&gt; {
-                        if(x != null){
-                            if(x instanceof ArticleBody){
-                                String body = ((ArticleBody) x).body;<a id="GBS.0104.05"></a> //parsed article
-                                cacheActor.tell(body, self()); //cache it
-                                senderRef.tell(body, self()); //reply
-                            } else if(x instanceof String) //cached article
-                                senderRef.tell(x, self());
-                        } else if( x == null )
-                            senderRef.tell(new akka.actor.Status.Failure((T<a id="GBS.0105.01"></a>hrowable)t), self());
-                        return null;
-                    });
+          <code class="hl kwa">final</code> ActorRef senderRef <code class="hl opt">=</code> <code class="hl kwd">sender</code><code class="hl opt">();</code>
+          result<code class="hl opt">.</code><code class="hl kwd">handle</code><code class="hl opt">((</code>x<code class="hl opt">,</code>t<code class="hl opt">) -&gt; {</code>
+            <code class="hl kwa">if</code> <code class="hl opt">(</code>x <code class="hl opt">!=</code> <code class="hl kwb">null</code><code class="hl opt">) {</code>
+              <code class="hl kwa">if</code> <code class="hl opt">(</code>x <code class="hl kwa">instanceof</code> ArticleBody<code class="hl opt">) {</code>
+                String body <code class="hl opt">= ((</code>ArticleBody<code class="hl opt">)</code> x<code class="hl opt">).</code>body<code class="hl opt">;</code> <code class="hl slc">// parsed article</code>
+                cacheActor<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code>body<code class="hl opt">,</code> <code class="hl kwd">self</code><code class="hl opt">());</code> <code class="hl slc">// cache it</code>
+                senderRef<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code>body<code class="hl opt">,</code> <code class="hl kwd">self</code><code class="hl opt">());</code> <code class="hl slc">// reply</code>
+              <code class="hl opt">}</code> <code class="hl kwa">else if</code> <code class="hl opt">(</code>x <code class="hl kwa">instanceof</code> String<code class="hl opt">) {</code> <code class="hl slc">// cached article</code>
+                senderRef<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code>x<code class="hl opt">,</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+              <code class="hl opt">}</code>
+            <code class="hl opt">}</code> <code class="hl kwa">else if</code> <code class="hl opt">(</code>x <code class="hl opt">==</code> <code class="hl kwb">null</code><code class="hl opt">) {</code>
+              senderRef<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code>
+                <code class="hl opt">(</code>Throwable<code class="hl opt">)</code>t<code class="hl opt">),</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+            <code class="hl opt">}</code>
+            <code class="hl kwa">return</code> <code class="hl kwb">null</code><code class="hl opt">;</code>
+          <code class="hl opt">});</code>
 
-                }).build();
-    }
-}</pre>
+        <code class="hl opt">}).</code><code class="hl kwd">build</code><code class="hl opt">();</code>
+    <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>Both the Scala and<a id="id262" class="indexterm"></a> Java8 examples have <a id="id263" class="indexterm"></a>the same functionality—the Actor constructor takes strings with the Actor paths and looks up each of the Actors with <code class="literal">actorSelection</code> as we have done previously. Injecting the paths are dependencies. This lets us configure where our actors<a id="GBS.0105.02"></a> are. For example, the cached <code class="literal">b</code> would be local in test and on a remote machine in production.</p>
           <p>Once we receive a message, we try to get a cached article. If the <code class="literal">cacheResult</code> misses or fails for any reason, we compose together two more asks in a recover/exceptionally block:</p>
@@ -333,7 +356,7 @@ public PartialFunction receive() {
               </div>
             </div>
           </div>
-          <p>Note that in the <a id="id264" class="indexterm"></a>preceding example, a local <code class="literal">ActorRef </code>variable is created to store the <code class="literal">sender()</code>method's result. This is very important: this is necessary here and you will no doubt bump into this at least once when you start working with Akka. Because the lambdas are executed somewhere else, in another execution context on another thread, the <code class="literal">sender()</code>method will return an unexpected<a id="GBS.0106.01"></a> value when the code block in the lambda is running. This is a non-obvious issue to beginners. In older Scala Akka examples, <code class="literal">sender()</code> was often written without the brackets. It's recommended that <code class="literal">sender()</code>always be expressed with the brackets in Scala as it does not have referential transparency (it doesn't return the same value every time it's called)— it's clearer that this is a method call when<a id="GBS.0106.02"></a> you add the brackets. In order for the correct <code class="literal">ActorRef</code> to be referred to, <code class="literal">sender()</code>must be called in the main thread and the reference stored into a variable. That variable will correctly be passed into the lambda's closure when it is executed. There is a better way to handle the reply called Pipe, which we'll look at shortly, but this is an<a id="id265" class="indexterm"></a> important quality of closures to understand.</p>
+          <p>Note that in the <a id="id264" class="indexterm"></a>preceding example, a local <code class="literal">ActorRef </code>variable is created to store the <code class="literal">sender()</code> method's result. This is very important: this is necessary here and you will no doubt bump into this at least once when you start working with Akka. Because the lambdas are executed somewhere else, in another execution context on another thread, the <code class="literal">sender()</code> method will return an unexpected value when the code block in the lambda is running. This is a non-obvious issue to beginners. In older Scala Akka examples, <code class="literal">sender()</code> was often written without the brackets. It's recommended that <code class="literal">sender()</code> always be expressed with the brackets in Scala as it does not have referential transparency (it doesn't return the same value every time it's called)— it's clearer that this is a method call when you add the brackets. In order for the correct <code class="literal">ActorRef</code> to be referred to, <code class="literal">sender()</code> must be called in the main thread and the reference stored into a variable. That variable will correctly be passed into the lambda's closure when it is executed. There is a better way to handle the reply called Pipe, which we'll look at shortly, but this is an<a id="id265" class="indexterm"></a> important quality of closures to understand.</p>
         </div>
         <div title="Timeouts are required" class="section">
           <div class="titlepage">
@@ -363,9 +386,10 @@ public PartialFunction receive() {
           </div>
           <p>Each ask you use has a<a id="id268" class="indexterm"></a> timeout. In our example, the operation spans multiple asks, so there are multiple places where timeouts can occur. The ask timeouts will throw exceptions from Akka's scheduler thread rather<a id="GBS.0107.04"></a> than a thread local to the Actor, so you won't be able to tell from printing the <code class="literal">AskTimeoutExceptions</code> stacktrace specifically which ask operation timed out. It can be difficult to debug an application when all you have is an exception like the following:</p>
           <div class="informalexample">
-            <pre class="programlisting">akka.pattern.AskTimeoutException: Ask timed out on [Actor[akka://system/user/actor#778114812]] after [2000 ms]
-        at akka.pattern.PromiseActorRef$$anonfun$<a id="GBS.0107.05"></a>1.apply$mcV$sp(AskSupport.scala:335)
-        at akka.actor.Scheduler$$anon$7.run(Scheduler.scala:117)</pre>
+            <pre class="programlisting">
+akka<code class="hl opt">.</code>pattern<code class="hl opt">.</code>AskTimeoutException<code class="hl opt">:</code> Ask timed out on <code class="hl opt">[</code>Actor<code class="hl opt">[</code>akka<code class="hl opt">:</code><code class="hl slc">//system/user/actor#778114812]] after [2000 ms]</code>
+  at akka<code class="hl opt">.</code>pattern<code class="hl opt">.</code>PromiseActorRef$$anonfun$<code class="hl num">1</code><code class="hl opt">.</code>apply$mcV$<code class="hl kwd">sp</code><code class="hl opt">(</code>AskSupport<code class="hl opt">.</code>scala<code class="hl opt">:</code><code class="hl num">335</code><code class="hl opt">)</code>
+  at akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>Scheduler$$anon$<code class="hl num">7</code><code class="hl opt">.</code><code class="hl kwd">run</code><code class="hl opt">(</code>Scheduler<code class="hl opt">.</code>scala<code class="hl opt">:</code><code class="hl num">117</code><code class="hl opt">)</code></pre>
           </div>
           <p>One more thing to watch out for is if your actor throws an unexpected exception and doesn't reply with the failure. It may appear that the error occurred due to the timeout, but the cause might be elsewhere.</p>
           <p>The lesson here is that when using ask, you should always reply to messages with failures<a id="GBS.0108.01"></a> when errors are encountered in your code. If an Actor throws an exception, the Actor will not reply with a message. In an Actor, you're responsible for implementing all message handling behavior—if an actor expects a reply, Akka will not implicitly handle any replies for you—you must always reply to messages yourself when a reply is expected.</p>
@@ -383,7 +407,7 @@ public PartialFunction receive() {
               </div>
             </div>
           </div>
-          <p>The ask pattern may seem simple<a id="id269" class="indexterm"></a> but it has some <code class="literal">hidden</code> overhead. First, Ask causes Akka to create a new temporary Actor in the<code class="literal">/temp</code> path. That Actor awaits the response from the Actor that receives the Ask message. Next, there is also the overhead of the future. Ask creates a future that the temporary Actor completes. It's not a huge overhead, but it is worth considering if<a id="GBS.0109.02"></a> your ask operations occur with extremely high frequency. Ask can be simpler, but there are more efficient solutions using only tell where performance matters.</p>
+          <p>The ask pattern may seem simple<a id="id269" class="indexterm"></a> but it has some <code class="literal">hidden</code> overhead. First, Ask causes Akka to create a new temporary Actor in the <code class="literal">/temp</code> path. That Actor awaits the response from the Actor that receives the Ask message. Next, there is also the overhead of the future. Ask creates a future that the temporary Actor completes. It's not a huge overhead, but it is worth considering if your ask operations occur with extremely high frequency. Ask can be simpler, but there are more efficient solutions using only tell where performance matters.</p>
         </div>
         <div title="Complexity of Actors and Ask" class="section">
           <div class="titlepage">
@@ -418,13 +442,13 @@ public PartialFunction receive() {
           <img src="graphics/B04006_03_07.jpg" alt="Tell" />
           <a id="GBS.0110.02"></a>
         </div>
-        <p>Tell is a method of the <code class="literal">ActorRef</code>/<code class="literal">ActorSelection </code>classes. It can take a reply to as an argument as well which becomes <code class="literal">sender()</code>in the Actor that receives the Message. By default, in Scala, the sender is implicitly defined as the Actor that sent the message. If there is no sender—for example, invoking ask from outside of an Actor—then the response address default is no mailbox (called <code class="literal">DeadLetters</code>).</p>
+        <p>Tell is a method of the <code class="literal">ActorRef</code>/<code class="literal">ActorSelection </code>classes. It can take a reply to as an argument as well which becomes <code class="literal">sender()</code> in the Actor that receives the Message. By default, in Scala, the sender is implicitly defined as the Actor that sent the message. If there is no sender—for example, invoking ask from outside of an Actor—then the response address default is no mailbox (called <code class="literal">DeadLetters</code>).</p>
         <p><a id="GBS.0110.03"></a>In Java, there are no implicits or default values, so you have to supply the sender. If you don't want to supply any specific sender to reply to, you should use the following convention:</p>
         <div class="itemizedlist">
           <ul class="itemizedlist">
-            <li style="list-style-type: disc;" class="listitem">Use <code class="literal">self()</code> if sending from an actor:<div class="informalexample"><pre class="programlisting">actor.tell(message, self());</pre></div></li>
-            <li style="list-style-type: disc;" class="listitem">Use <code class="literal">noSender</code> if sending from outside of the actor system:<div class="informalexample"><pre class="programlisting">actor.tell("message", akka.actor.ActorRef.noSender());</pre></div></li>
-            <li style="list-style-type: disc;" class="listitem">As covered in Scala, this is all<a id="GBS.0110.04"></a> default/implicit, so you get this for free implicitly with the simple syntax:<div class="informalexample"><pre class="programlisting">actor ! "message"</pre></div></li>
+            <li style="list-style-type: disc;" class="listitem">Use <code class="literal">self()</code> if sending from an actor:<div class="informalexample"><pre class="programlisting">actor<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code>message<code class="hl opt">,</code> <code class="hl kwd">self</code><code class="hl opt">());</code></pre></div></li>
+            <li style="list-style-type: disc;" class="listitem">Use <code class="literal">noSender</code> if sending from outside of the actor system:<div class="informalexample"><pre class="programlisting">actor<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl str">"message"</code><code class="hl opt">,</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>ActorRef<code class="hl opt">.</code><code class="hl kwd">noSender</code><code class="hl opt">());</code></pre></div></li>
+            <li style="list-style-type: disc;" class="listitem">As covered in Scala, this is all<a id="GBS.0110.04"></a> default/implicit, so you get this for free implicitly with the simple syntax:<div class="informalexample"><pre class="programlisting">actor <code class="hl opt">!</code> <code class="hl str">"message"</code></pre></div></li>
           </ul>
         </div>
         <p>This is the <a id="id274" class="indexterm"></a>expected behavior with tell—the reply reference should <a id="id275" class="indexterm"></a>be the Actor sending the message or it should be none if it's not an Actor sending the message. However, using a different sender can be quite important when using tell—we can actually eliminate asks through some creative use of reply<a id="GBS.0111.01"></a> addresses and storing state in Actors, as we'll see soon:</p>
@@ -466,11 +490,12 @@ public PartialFunction receive() {
             <p>We'll introduce the scheduler here<a id="GBS.0112.02"></a> as a minor element. The scheduler is capable of repeating messages at an interval; however, it is most commonly used as a way of deferring a tell. For example, if an Actor wants to send itself a "check-for-timeout" message after 3 seconds, the scheduler is the mechanism that can be used to accomplish that.</p>
             <p>Very often in our Actors, we expect some event to occur before a certain period of time<a id="GBS.0112.03"></a> elapses, and if that event has not occurred, then we want to fail in some manner. The scheduler can be used to schedule such an event (for example, a timeout). The following is an example of sending an Actor a timeout message after 3 seconds:</p>
             <div class="informalexample">
-              <pre class="programlisting">//Java
-context().system().scheduler().scheduleOnce(Duration.create(3, TimeUnit.SECONDS), actor, "timeout");
+              <pre class="programlisting"><code class="hl slc">// Java</code>
+<code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">system</code><code class="hl opt">().</code><code class="hl kwd">scheduler</code><code class="hl opt">().</code><code class="hl kwd">scheduleOnce</code><code class="hl opt">(</code>
+  Duration<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl num">3</code><code class="hl opt">,</code> TimeUnit<code class="hl opt">.</code>SECONDS<code class="hl opt">),</code> actor<code class="hl opt">,</code> <code class="hl str">&quot;timeout&quot;</code><code class="hl opt">);</code>
 
-//Scala
-context.system.scheduler.scheduleOnce(3<a id="GBS.0112.04"></a> seconds, actor, "timeout")</pre>
+<code class="hl slc">// Scala</code>
+context<code class="hl opt">.</code>system<code class="hl opt">.</code>scheduler<code class="hl opt">.</code><code class="hl kwd">scheduleOnce</code><code class="hl opt">(</code><code class="hl num">3</code> seconds<code class="hl opt">,</code> actor<code class="hl opt">,</code> <code class="hl str">&quot;timeout&quot;</code><code class="hl opt">)</code></pre>
             </div>
             <p>We'll see how this comes into play shortly.</p>
             <p>Tell Don't Ask–<span class="emphasis"><em>Procedural code gets information then makes decisions. Object-oriented code tells objects to do things</em></span>—Alec Sharp, SmallTalk by Example.</p>
@@ -490,29 +515,31 @@ context.system.scheduler.scheduleOnce(3<a id="GBS.0112.04"></a> seconds, actor, 
             <p>We'll cover using tell instead of ask in an example. In this example, we'll create a temporary Actor to handle the response to a message. Note that this is very similar to how Akka handles ask under the hood—it creates a temporary Actor to handle the response sent to the sender to complete the future.</p>
             <p>We'll demonstrate the receive<a id="GBS.0113.04"></a> block only (Java and then Scala):</p>
             <div class="informalexample">
-              <pre class="programlisting">//Java
-public PartialFunction receive() {
-        return ReceiveBuilder.
-                match(ParseArticle.class, msg -&gt; {
-                    ActorRef extraActor = buildExtraActor(sender(), msg.url);
-                    cacheActor.tell(new GetRequest(msg.url), extraActor);
-                    httpClientActor.tell(msg.url, extraActor);
-                    context().system().sch<a id="GBS.0113.05"></a>eduler().scheduleOnce(timeout.duration(),
-                            extraActor, "timeout", context().system().dispatcher(), ActorRef.noSender());
-                }).build();
-    }
+              <pre class="programlisting"><code class="hl slc">// Java</code>
+<code class="hl kwa">public</code> PartialFunction <code class="hl kwd">receive</code><code class="hl opt">() {</code>
+  <code class="hl kwa">return</code> ReceiveBuilder
+    <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>ParseArticle<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> msg <code class="hl opt">-&gt; {</code>
+        ActorRef extraActor <code class="hl opt">=</code> <code class="hl kwd">buildExtraActor</code><code class="hl opt">(</code><code class="hl kwd">sender</code><code class="hl opt">(),</code> msg<code class="hl opt">.</code>url<code class="hl opt">);</code>
+        cacheActor<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">GetRequest</code><code class="hl opt">(</code>msg<code class="hl opt">.</code>url<code class="hl opt">),</code> extraActor<code class="hl opt">);</code>
+        httpClientActor<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code>msg<code class="hl opt">.</code>url<code class="hl opt">,</code> extraActor<code class="hl opt">);</code>
+        <code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">system</code><code class="hl opt">().</code><code class="hl kwd">scheduler</code><code class="hl opt">().</code><code class="hl kwd">scheduleOnce</code><code class="hl opt">(</code>timeout<code class="hl opt">.</code><code class="hl kwd">duration</code><code class="hl opt">(),</code>
+          extraActor<code class="hl opt">,</code> <code class="hl str">"timeout"</code><code class="hl opt">,</code>
+          <code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">system</code><code class="hl opt">().</code><code class="hl kwd">dispatcher</code><code class="hl opt">(),</code> ActorRef<code class="hl opt">.</code><code class="hl kwd">noSender</code><code class="hl opt">());</code>
+    <code class="hl opt">}).</code><code class="hl kwd">build</code><code class="hl opt">();</code>
+<code class="hl opt">}</code>
 
-//Scala
-  override def receive: Receive = {
-    case msg @ ParseArticle(uri) =&gt;
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">override def</code> receive<code class="hl opt">:</code> Receive <code class="hl opt">= {</code>
+  <code class="hl kwa">case</code> msg @ <code class="hl kwd">ParseArticle</code><code class="hl opt">(</code>uri<code class="hl opt">) =&gt;</code>
 
-      val extraActor = buildExtraActor(sender(), uri)
+    <code class="hl kwa">val</code> extraActor <code class="hl opt">=</code> <code class="hl kwd">buildExtraActor</code><code class="hl opt">(</code><code class="hl kwd">sender</code><code class="hl opt">(),</code> uri<code class="hl opt">)</code>
 
-      cacheActor.tell(GetRequest(uri), extraActor)
-      httpClientActor.tell("te<a id="GBS.0114.01"></a>st", extraActor)
+    cacheActor<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwd">GetRequest</code><code class="hl opt">(</code>uri<code class="hl opt">),</code> extraActor<code class="hl opt">)</code>
+    httpClientActor<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl str">"test"</code><code class="hl opt">,</code> extraActor<code class="hl opt">)</code>
 
-      context.system.scheduler.scheduleOnce(timeout.duration, extraActor, "timeout")
-  }</pre>
+    context<code class="hl opt">.</code>system<code class="hl opt">.</code>scheduler<code class="hl opt">.</code><code class="hl kwd">scheduleOnce</code><code class="hl opt">(</code>
+      timeout<code class="hl opt">.</code>duration<code class="hl opt">,</code> extraActor<code class="hl opt">,</code> <code class="hl str">"timeout"</code><code class="hl opt">)</code>
+<code class="hl opt">}</code></pre>
             </div>
             <p>This looks a bit simpler because we're not composing any Futures, but there is an extra actor that is created in the <code class="literal">buildExtraActor</code> method.</p>
             <p>We'll demonstrate<a id="id279" class="indexterm"></a> the <code class="literal">buildExtraActor</code> method in a moment, but we'll walk through this first. The block gets the <code class="literal">ParseArticle</code> message and begins by creating<a id="GBS.0114.02"></a> the <code class="literal">extraActor</code>. The term extra is a term attributed to Jamie Allen in his book <span class="emphasis"><em>Effective Akka</em></span> from <span class="emphasis"><em>O'Reilly</em></span> publications where he demonstrates a similar pattern which he refers to as the Extra Pattern.</p>
@@ -541,66 +568,84 @@ public PartialFunction receive() {
             </div>
             <p>Here is the code for the factory method for the extra Actor:</p>
             <div class="informalexample">
-              <pre class="programlisting">//Java
-private ActorRef buildExtraActor(ActorRef senderRef, String uri){
+              <pre class="programlisting"><code class="hl slc">// Java</code>
+<code class="hl kwa">private</code> ActorRef <code class="hl kwd">buildExtraActor</code><code class="hl opt">(</code>ActorRef senderRef<code class="hl opt">,</code> String uri<code class="hl opt">) {</code>
 
-        class MyActor extends AbstractActor {
-            public MyActor() {
-            receive(ReceiveBuilder
-                        .matchEquals(String.class, x -&gt; x.equals("timeout"), x -&gt; { //if we get timeout, then fail
-                            senderRef.tell(new<a id="GBS.0115.03"></a> Status.Failure(new TimeoutException("timeout!")), self());
-                            context().stop(self());
-                        })
-                        .match(HttpResponse.class, httpResponse -&gt; { //If we get the cache response first, then we handle it and shut down.
-                            //The cache response will come back before the HTTP response so we never parse in<a id="GBS.0115.04"></a> this case.
-                            artcileParseActor.tell(new ParseHtmlArticle(uri, httpResponse.body), self());
-                        })
-                        .match(String.class, body -&gt; { //If we get the cache response first, then we handle it and shut down.
-                            //The cache response will come back before the HTTP response so we never parse in this case.
-       <a id="GBS.0116.01"></a>                     senderRef.tell(body, self());
-                            context().stop(self());
-                        })
-                        .match(ArticleBody.class, articleBody -&gt; {//If we get the parsed article back, then we've just parsed it
-                            cacheActor.tell(new SetRequest(articleBody.uri, articleBody.body), self());
-                            senderRef.tell(articleBody.bo<a id="GBS.0116.02"></a>dy, self());
-                            context().stop(self());
-                        })
-                        .matchAny(t -&gt; { //We can get a cache miss
-                            System.out.println("ignoring msg: " + t.getClass());
-                        })
-                        .build());
-            }
-        }
+  <code class="hl kwa">class</code> MyActor <code class="hl kwa">extends</code> AbstractActor <code class="hl opt">{</code>
+    <code class="hl kwa">public</code> <code class="hl kwd">MyActor</code><code class="hl opt">() {</code>
+    <code class="hl kwd">receive</code><code class="hl opt">(</code>ReceiveBuilder
+      <code class="hl slc">// if we get timeout, then fail</code>
+      <code class="hl opt">.</code><code class="hl kwd">matchEquals</code><code class="hl opt">(</code>String<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> x <code class="hl opt">-&gt;</code> x<code class="hl opt">.</code><code class="hl kwd">equals</code><code class="hl opt">(</code><code class="hl str">"timeout"</code><code class="hl opt">),</code> x <code class="hl opt">-&gt; {</code>
+        senderRef<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code>
+          <code class="hl kwa">new</code> <code class="hl kwd">TimeoutException</code><code class="hl opt">(</code><code class="hl str">"timeout!"</code><code class="hl opt">)),</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+        <code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">stop</code><code class="hl opt">(</code><code class="hl kwd">self</code><code class="hl opt">());</code>
+      <code class="hl opt">})</code>
+      <code class="hl slc">// If we get the cache response first,</code>
+      <code class="hl slc">// then we handle it and shut down.</code>
+      <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>HttpResponse<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> httpResponse <code class="hl opt">-&gt; {</code>
+        <code class="hl slc">// The cache response will come back before the HTTP</code>
+        <code class="hl slc">// response so we never parse in this case.</code>
+        artcileParseActor<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">ParseHtmlArticle</code><code class="hl opt">(</code>
+          uri<code class="hl opt">,</code> httpResponse<code class="hl opt">.</code>body<code class="hl opt">),</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+      <code class="hl opt">})</code>
+      <code class="hl slc">// If we get the cache response first, then we handle it</code>
+      <code class="hl slc">// and shut down.</code>
+      <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>String<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> body <code class="hl opt">-&gt; {</code>
+        <code class="hl slc">// The cache response will come back before the HTTP response</code>
+        <code class="hl slc">// so we never parse in this case.</code>
+        senderRef<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code>body<code class="hl opt">,</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+        <code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">stop</code><code class="hl opt">(</code><code class="hl kwd">self</code><code class="hl opt">());</code>
+      <code class="hl opt">})</code>
+      <code class="hl slc">// If we get the parsed article back, then we've just parsed it</code>
+      <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>ArticleBody<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> articleBody <code class="hl opt">-&gt; {</code>
+        cacheActor<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>
+          articleBody<code class="hl opt">.</code>uri<code class="hl opt">,</code> articleBody<code class="hl opt">.</code>body<code class="hl opt">),</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+        senderRef<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code>articleBody<code class="hl opt">.</code>body<code class="hl opt">,</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+        <code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">stop</code><code class="hl opt">(</code><code class="hl kwd">self</code><code class="hl opt">());</code>
+      <code class="hl opt">})</code>
+    <code class="hl slc">// We can get a cache miss</code>
+      <code class="hl opt">.</code><code class="hl kwd">matchAny</code><code class="hl opt">(</code>t <code class="hl opt">-&gt; {</code>
+        System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">"ignoring msg: "</code> <code class="hl opt">+</code> t<code class="hl opt">.</code><code class="hl kwd">getClass</code><code class="hl opt">());</code>
+      <code class="hl opt">})</code>
+      <code class="hl opt">.</code><code class="hl kwd">build</code><code class="hl opt">());</code>
+    <code class="hl opt">}</code>
+  <code class="hl opt">}</code>
+  <code class="hl kwa">return</code> <code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>
+    MyActor<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">, () -&gt;</code> <code class="hl kwa">new</code> <code class="hl kwd">MyActor</code><code class="hl opt">()));</code>
+<code class="hl opt">}</code>
 
-        return context().actorOf(Props.create(MyActor.class,<a id="GBS.0116.03"></a> () -&gt; new MyActor()));
-    }
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">private def</code> <code class="hl kwd">buildExtraActor</code><code class="hl opt">(</code>senderRef<code class="hl opt">:</code> ActorRef<code class="hl opt">,</code> uri<code class="hl opt">:</code> String<code class="hl opt">):</code> ActorRef <code class="hl opt">= {</code>
+  <code class="hl kwa">return</code> context<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code><code class="hl kwd">Props</code><code class="hl opt">(</code><code class="hl kwa">new</code> Actor <code class="hl opt">{</code>
+    <code class="hl kwa">override def</code> receive <code class="hl opt">= {</code>
 
-//Scala
-  private def buildExtraActor(senderRef: ActorRef, uri: String): ActorRef = {
-    return context.actorOf(Props(new Actor{
-      override def receive = {
-        case "timeout" =&gt; //if we get timeout, then fail
-          senderRef ! Failure(new TimeoutException("timeout!"))
-          context.stop(self)
+    <code class="hl slc">// if we get timeout, then fail</code>
+    <code class="hl kwa">case</code> <code class="hl str">"timeout"</code> <code class="hl opt">=&gt;</code>
+      senderRef <code class="hl opt">!</code> <code class="hl kwd">Failure</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">TimeoutException</code><code class="hl opt">(</code><code class="hl str">"timeout!"</code><code class="hl opt">))</code>
+      context<code class="hl opt">.</code><code class="hl kwd">stop</code><code class="hl opt">(</code>self<code class="hl opt">)</code>
 
-        case HttpResponse(body) =&gt; //If we get the<a id="GBS.0116.04"></a> http response first, we pass it to be parsed.
-          articleParserActor ! ParseHtmlArticle(uri, body)
+    <code class="hl slc">// If we get the http response first, we pass it to be parsed.</code>
+    <code class="hl kwa">case</code> <code class="hl kwd">HttpResponse</code><code class="hl opt">(</code>body<code class="hl opt">) =&gt;</code>
+      articleParserActor <code class="hl opt">!</code> <code class="hl kwd">ParseHtmlArticle</code><code class="hl opt">(</code>uri<code class="hl opt">,</code> body<code class="hl opt">)</code>
 
-        case body: String =&gt; //If we get the cache response first, then we handle it and shut down.
-          //The cache response will come back before the HTTP response so we never parse in this case.
-          senderRef ! body
-          context.stop(self)
+    <code class="hl slc">// If we get the cache response first, then we handle it and shut down.</code>
+    <code class="hl kwa">case</code> body<code class="hl opt">:</code> String <code class="hl opt">=&gt;</code>
+      <code class="hl slc">// The cache response will come back before the HTTP</code>
+      <code class="hl slc">// response so we never parse in this case.</code>
+      senderRef <code class="hl opt">!</code> body
+      context<code class="hl opt">.</code><code class="hl kwd">stop</code><code class="hl opt">(</code>self<code class="hl opt">)</code>
 
-        case ArticleBody(uri, body)<a id="GBS.0116.05"></a> =&gt; //If we get the parsed article back, then we've just parsed it
-          cacheActor ! SetRequest(uri, body) //Cache it as we just parsed it
-          senderRef ! body
-          context.stop(self)
+    <code class="hl slc">// If we get the parsed article back, then we've just parsed it</code>
+    <code class="hl kwa">case</code> <code class="hl kwd">ArticleBody</code><code class="hl opt">(</code>uri<code class="hl opt">,</code> body<code class="hl opt">) =&gt;</code>
+      cacheActor <code class="hl opt">!</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>uri<code class="hl opt">,</code> body<code class="hl opt">)</code> <code class="hl slc">// Cache it as we just parsed it</code>
+      senderRef <code class="hl opt">!</code> body
+      context<code class="hl opt">.</code><code class="hl kwd">stop</code><code class="hl opt">(</code>self<code class="hl opt">)</code>
 
-        case t =&gt; //We can get a cache miss
-          println("ignoring msg: " + t.getClass)
-      }
-    }))
-  }</pre>
+    <code class="hl kwa">case</code> t <code class="hl opt">=&gt;</code> <code class="hl slc">// We can get a cache miss</code>
+      <code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">"ignoring msg: "</code> <code class="hl opt">+</code> t<code class="hl opt">.</code>getClass<code class="hl opt">)</code>
+    <code class="hl opt">}</code>
+  <code class="hl opt">}))</code>
+<code class="hl opt">}</code></pre>
             </div>
             <p>Note that there are <a id="id281" class="indexterm"></a>three possible outcomes:</p>
             <div class="itemizedlist">
@@ -649,10 +694,10 @@ private ActorRef buildExtraActor(ActorRef senderRef, String uri){
           <p>The intermediate Actor hands off the message, or possibly a new one, but the original sender is passed with the new message. An example use case could be getting a history from a bank account. There may be one History Actor who then delegates<a id="GBS.0118.04"></a> the request for account history to either a <code class="literal">ChequingAccount </code>or <code class="literal">CreditCardAccount </code>Actor. The message requesting the account history would be forwarded to the more specific Actor to complete.</p>
           <p>There is nothing special about forward, and you can accomplish the same thing with <code class="literal">ActorRef.tell</code> (message, sender) by supplying the sender. It is semantically clearer to use forward where it makes sense (especially<a id="GBS.0119.01"></a> in Scala where the <code class="literal">!</code> method is generally used):</p>
           <div class="informalexample">
-            <pre class="programlisting">//Java
-actor.forward(result, getContext());
+            <pre class="programlisting"><code class="hl slc">// Java</code>
+actor<code class="hl opt">.</code><code class="hl kwd">forward</code><code class="hl opt">(</code>result<code class="hl opt">,</code> <code class="hl kwd">getContext</code><code class="hl opt">());</code>
 
-//Scala
+<code class="hl slc">// Scala</code>
 actor forward message</pre>
           </div>
           <p>Note that the <a id="id285" class="indexterm"></a>context<a id="id286" class="indexterm"></a> is implicit in Scala.</p>
@@ -667,23 +712,23 @@ actor forward message</pre>
           </div>
           <p>Very often you will <a id="id287" class="indexterm"></a>have a future in your Actor that you want to send <a id="id288" class="indexterm"></a>back to the sender. We've covered that <code class="literal">sender()</code> is a method, so you have to store a reference to sender when using callbacks in Futures:</p>
           <div class="informalexample">
-            <pre class="programlisting">//Java
-final ActorRef<a id="GBS.0119.02"></a> senderRef = sender();
-future.map(x -&gt; {senderRef.tell(x, ActorRef.noSender()}));
+            <pre class="programlisting"><code class="hl slc">// Java</code>
+<code class="hl kwa">final</code> ActorRef senderRef <code class="hl opt">=</code> <code class="hl kwd">sender</code><code class="hl opt">();</code>
+future<code class="hl opt">.</code><code class="hl kwd">map</code><code class="hl opt">(</code>x <code class="hl opt">-&gt; {</code>senderRef<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code>x<code class="hl opt">,</code> ActorRef<code class="hl opt">.</code><code class="hl kwd">noSender</code><code class="hl opt">()}));</code>
 
-//Scala
-val senderRef = sender();
-future.map(x =&gt; senderRef ! ActorRef.noSender);</pre>
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">val</code> senderRef <code class="hl opt">=</code> <code class="hl kwd">sender</code><code class="hl opt">();</code>
+future<code class="hl opt">.</code><code class="hl kwd">map</code><code class="hl opt">(</code>x <code class="hl opt">=&gt;</code> senderRef <code class="hl opt">!</code> ActorRef<code class="hl opt">.</code>noSender<code class="hl opt">);</code></pre>
           </div>
           <p>Callbacks registered on a future, such as map in this example, will execute in another thread, so they don't have access to the correct value from <code class="literal">sender()</code>. It's very unclear why the sender is stored and it is hard to understand code<a id="GBS.0119.03"></a> like this. It likely won't make sense to anyone who hasn't encountered this issue on their own. Quite possibly, as you read this, you may wonder why you don't just call <code class="literal">sender()</code> in the lambda. Try it out and you'll see unexpected results as <code class="literal">sender()</code> returns something different when it's called from the lambda.</p>
           <p>We can skirt around this entire confusing mess by using the Pipe pattern. Pipe will<a id="GBS.0119.04"></a> take the result of a future and reply to the sender with the result of the future, whether success or failure, which is exactly what we want:</p>
           <div class="informalexample">
-            <pre class="programlisting">//Java
-pipe(future, system.dispatcher()).to(sender());
+            <pre class="programlisting"><code class="hl slc">// Java</code>
+<code class="hl kwd">pipe</code><code class="hl opt">(</code>future<code class="hl opt">,</code> system<code class="hl opt">.</code><code class="hl kwd">dispatcher</code><code class="hl opt">()).</code><code class="hl kwd">to</code><code class="hl opt">(</code><code class="hl kwd">sender</code><code class="hl opt">());</code>
 
-//Scala
-future pipeTo sender()
-pipe(future) to sender()</pre>
+<code class="hl slc">// Scala</code>
+future pipeTo <code class="hl kwd">sender</code><code class="hl opt">()</code>
+<code class="hl kwd">pipe</code><code class="hl opt">(</code>future<code class="hl opt">)</code> to <code class="hl kwd">sender</code><code class="hl opt">()</code></pre>
           </div>
           <p>Again, pipe takes the result of the future and pipes it to the Actor <code class="literal">ref</code> provided. In these examples, we show <code class="literal">sender(),</code> and because <code class="literal">sender()</code> is<a id="GBS.0119.05"></a> executed on the current thread, it all behaves as expected without doing anything strange like storing a reference in a variable. Much better!</p>
           <p>If this is at all unclear, trust <a id="id289" class="indexterm"></a>me you will run into this problem sooner or later and<a id="id290" class="indexterm"></a> ask yourself what is wrong once you start seeing dead-letter messages in your logs. Once you've gone through this once, you can pat yourself on the back and welcome yourself<a id="GBS.0120.01"></a> to the async club. This is an important lesson and you will learn it as you work with the APIs, especially when using ask.</p>

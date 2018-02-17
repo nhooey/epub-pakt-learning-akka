@@ -83,13 +83,14 @@
         <p>Let's take a look at a non-atomic increment operation called from two threads at the same time, to see what happens when state is shared across threads.<a id="GBS.0031.04"></a> We'll have multiple threads read a value from memory, and then write an incremented value back to memory. This is a <span class="emphasis"><em>race condition</em></span> and can be partly solved by ensuring mutually exclusive access to the value in memory. Let's actually demonstrate this with a Scala example:</p>
         <p>If we try to concurrently <a id="id15" class="indexterm"></a>increment an integer 100000 times with multiple threads, there is a good chance that we will lose<a id="GBS.0031.05"></a> some writes.</p>
         <div class="informalexample">
-          <pre class="programlisting">import concurrent.Future
-import concurrent.ExecutionContext.Implicits.global
-var i, j = 0
-(1 to 100000).foreach(_ =&gt; Future{i = i + 1})
-(1 to 100000).foreach(_ =&gt; j = j + 1)
-Thread.sleep(1000)
-println(s"${i} ${j}")</pre>
+          <pre class="programlisting">
+<code class="hl kwa">import</code> concurrent<code class="hl opt">.</code>Future
+<code class="hl kwa">import</code> concurrent<code class="hl opt">.</code>ExecutionContext<code class="hl opt">.</code>Implicits<code class="hl opt">.</code>global
+<code class="hl kwa">var</code> i<code class="hl opt">,</code> j <code class="hl opt">=</code> <code class="hl num">0</code>
+<code class="hl opt">(</code><code class="hl num">1</code> to <code class="hl num">100000</code><code class="hl opt">).</code><code class="hl kwd">foreach</code><code class="hl opt">(</code>_ <code class="hl opt">=&gt;</code> Future<code class="hl opt">{</code>i <code class="hl opt">=</code> i <code class="hl opt">+</code> <code class="hl num">1</code><code class="hl opt">})</code>
+<code class="hl opt">(</code><code class="hl num">1</code> to <code class="hl num">100000</code><code class="hl opt">).</code><code class="hl kwd">foreach</code><code class="hl opt">(</code>_ <code class="hl opt">=&gt;</code> j <code class="hl opt">=</code> j <code class="hl opt">+</code> <code class="hl num">1</code><code class="hl opt">)</code>
+Thread<code class="hl opt">.</code><code class="hl kwd">sleep</code><code class="hl opt">(</code><code class="hl num">1000</code><code class="hl opt">)</code>
+<code class="hl kwd">println</code><code class="hl opt">(</code>s<code class="hl str">&quot;${i} ${j}&quot;</code><code class="hl opt">)</code></pre>
         </div>
         <p>Both <code class="literal">i</code> and <code class="literal">j</code> are incremented 100000 times using this very simple function—<code class="literal">x = x + 1</code>. <code class="literal">i</code> is incremented from multiple threads concurrently while <code class="literal">j</code> is incremented by only<a id="GBS.0032.01"></a> one thread. We wait for a second before printing to ensure all of the updates are done. If you think the output is <code class="literal">100000 100000</code> you are very wrong.</p>
         <div class="mediaobject">
@@ -99,15 +100,16 @@ println(s"${i} ${j}")</pre>
         <p>Shared state is not safe. Values are being read by two threads, and then saved back incremented. Because the same value is read by multiple threads, increment operations are lost along the way. This is a race-condition and is one of the fundamental problems with shared-state concurrency models.</p>
         <p>We can demonstrate what may be happening with the race condition more clearly by reasoning about the<a id="GBS.0032.03"></a> reads and write operations:</p>
         <div class="informalexample">
-          <pre class="programlisting">[...]
-Thread 2 reads value in memory - value read as 9
-Thread 2 writes value in memory - value set to 10 (9 + 1)
-Thread 1 reads value in memory - value read as 10
-Thread 2 reads value in memory - value read as 10
-Thread 1 writes value in memory - value set to 11 (10 + 1) !! LOST INCREMENT !!
-Thread 2 writes value in memory - value set to 11 (10 + 1)
-Thread 1 reads value<a id="GBS.0032.04"></a> in memory - value read as 11
-[...]</pre>
+          <pre class="programlisting">
+<code class="hl opt">[...]</code>
+Thread <code class="hl num">2</code> reads value in memory <code class="hl opt">-</code> value read as <code class="hl num">9</code>
+Thread <code class="hl num">2</code> writes value in memory <code class="hl opt">-</code> value set to <code class="hl kwd">10</code> <code class="hl opt">(</code><code class="hl num">9</code> <code class="hl opt">+</code> <code class="hl num">1</code><code class="hl opt">)</code>
+Thread <code class="hl num">1</code> reads value in memory <code class="hl opt">-</code> value read as <code class="hl num">10</code>
+Thread <code class="hl num">2</code> reads value in memory <code class="hl opt">-</code> value read as <code class="hl num">10</code>
+Thread <code class="hl num">1</code> writes value in memory <code class="hl opt">-</code> value set to <code class="hl kwd">11</code> <code class="hl opt">(</code><code class="hl num">10</code> <code class="hl opt">+</code> <code class="hl num">1</code><code class="hl opt">) !!</code> LOST INCREMENT <code class="hl opt">!!</code>
+Thread <code class="hl num">2</code> writes value in memory <code class="hl opt">-</code> value set to <code class="hl kwd">11</code> <code class="hl opt">(</code><code class="hl num">10</code> <code class="hl opt">+</code> <code class="hl num">1</code><code class="hl opt">)</code>
+Thread <code class="hl num">1</code> reads value in memory <code class="hl opt">-</code> value read as <code class="hl num">11</code>
+<code class="hl opt">[...]</code></pre>
         </div>
         <p>For shared state in memory to work correctly, we have to apply locks and synchronization to stop threads from reading and writing from a value at the same time. This introduces complexity and it's hard to reason about it and to ensure it is done right.</p>
         <p>The biggest threat is that<a id="id16" class="indexterm"></a> often your code will appear correct in testing but it will fail intermittently once<a id="GBS.0032.05"></a> you have a bunch of concurrent users working on it. The bugs are easily missed because testing often excludes situations with lots of traffic. Dion Almaer once blogged that most Java applications are so rife with concurrency bugs that they only work by accident. Actors help safeguard against these problems by reducing shared state. If you move state inside an actor, access to that state can be<a id="GBS.0033.01"></a> limited only to the actor (effectively only one thread can access that state). If you treat all messages as immutable, then you can effectively eliminate shared state in your actor system and build safer applications.</p>

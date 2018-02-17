@@ -31,11 +31,11 @@
         <p>Blocking code is familiar to almost<a id="id154" class="indexterm"></a> any developer. It's where we start <a id="id155" class="indexterm"></a>when we begin with IO. When we make a call to a synchronous API, the calling method does not return immediately—the application waits for execution<a id="GBS.0069.03"></a> to complete. For example, if you make an HTTP request, you'll get back a response object once the request is completed. Code that waits for IO to complete is called blocking as a thread sits and waits—it is blocked from doing any other work until the IO is complete. We can demonstrate blocking code by showing a query using <a id="id156" class="indexterm"></a>
 <span class="strong"><strong>Java Database Connectivity</strong></span> (<span class="strong"><strong>JDBC</strong></span>):</p>
         <div class="informalexample">
-          <pre class="programlisting">      stmt = conn.createStatement();<a id="GBS.0069.04"></a>
-      String sql = "select name from users where id='123'";
-      ResultSet rs = stmt.executeQuery(sql);
-      rs.next()
-      String name  = rs.getString("name");</pre>
+          <pre class="programlisting">stmt <code class="hl opt">=</code> conn<code class="hl opt">.</code><code class="hl kwd">createStatement</code><code class="hl opt">();</code>
+String sql <code class="hl opt">=</code> <code class="hl str">&quot;select name from users where id=&apos;123&apos;&quot;</code><code class="hl opt">;</code>
+ResultSet rs <code class="hl opt">=</code> stmt<code class="hl opt">.</code><code class="hl kwd">executeQuery</code><code class="hl opt">(</code>sql<code class="hl opt">);</code>
+rs<code class="hl opt">.</code><code class="hl kwd">next</code><code class="hl opt">()</code>
+String name  <code class="hl opt">=</code> rs<code class="hl opt">.</code><code class="hl kwd">getString</code><code class="hl opt">(</code><code class="hl str">&quot;name&quot;</code><code class="hl opt">);</code></pre>
         </div>
         <p>Here we retrieve a user's name from a database using JDBC. The code looks very simple but there are hidden effects that make this simple code less readable:</p>
         <div class="itemizedlist">
@@ -60,11 +60,11 @@
         <p>The downside is that it can take a bit of time to understand how to write code using event-driven<a id="GBS.0071.02"></a> paradigms. We'll look at an example of each model to better understand how the two design approaches work.</p>
         <p>First, we'll look at a very simple call to a database using blocking IO.</p>
         <div class="informalexample">
-          <pre class="programlisting">//Java
-String username = getUsernameFromDatabase(userId); System.out.println(username);
-//Scala
-val username = getUsernameFromDatabase(userId)
-println(username)</pre>
+          <pre class="programlisting"><code class="hl slc">// Java</code>
+String username <code class="hl opt">=</code> <code class="hl kwd">getUsernameFromDatabase</code><code class="hl opt">(</code>userId<code class="hl opt">);</code> System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code>username<code class="hl opt">);</code>
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">val</code> username <code class="hl opt">=</code> <code class="hl kwd">getUsernameFromDatabase</code><code class="hl opt">(</code>userId<code class="hl opt">)</code>
+<code class="hl kwd">println</code><code class="hl opt">(</code>username<code class="hl opt">)</code></pre>
         </div>
         <p>The method is invoked and the thread continues into the<a id="GBS.0071.03"></a> method, returning once there is a result.</p>
         <p>If you were debugging, you could step into the method with the thread and see each line of the method <code class="literal">getUsernameFromDatabase</code> method called. Once the actual IO is executed, the thread will sleep until the result comes back. Then the thread returns the method, and jumps back out of the method and continues to print the result.</p>
@@ -75,17 +75,19 @@ println(username)</pre>
         <p>The event-driven <a id="id159" class="indexterm"></a>equivalent will look different because <a id="id160" class="indexterm"></a>we have to describe what happens when the completion event occurs, and that code is executed in a different context. To turn our example above into an event-driven equivalent, the code needs to express the print statement as something that happens when the result comes back from the database. It can take some time to adjust to this model,<a id="GBS.0071.05"></a> but you only have to learn it once.</p>
         <p>To move to an event-driven model, we have to express the result in code differently. We have to use placeholders for values that will eventually be there—a future. The printing of the result is registered as something to do when the completion event occurs. We register some code that we to be invoked when the value the placeholder represents becomes available.<a id="GBS.0072.01"></a> The term "event-driven" describes the way that we express code to execute on certain events:</p>
         <div class="informalexample">
-          <pre class="programlisting">//Java
-CompletableFuture&lt;String&gt; usernameFuture = getUsernameFromDatabaseAsync(userId);
-usernameFuture.thenRun(username -&gt;
-    //executed somewhere else
-    System.out.println(username)
-);
-//Scala val future = getUsernameFromDatabaseAsync(userId)
-future.onComplete(username =&gt;
-  //executed somewhere else<a id="GBS.0072.02"></a>
-  println(username)
-)</pre>
+          <pre class="programlisting"><code class="hl slc">// Java</code>
+CompletableFuture<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;</code> usernameFuture <code class="hl opt">=</code> <code class="hl kwd">getUsernameFromDatabaseAsync</code><code class="hl opt">(</code>userId<code class="hl opt">);</code>
+usernameFuture<code class="hl opt">.</code><code class="hl kwd">thenRun</code><code class="hl opt">(</code>username <code class="hl opt">-&gt;</code>
+    <code class="hl slc">// executed somewhere else</code>
+    System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code>username<code class="hl opt">)</code>
+<code class="hl opt">);</code>
+
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">val</code> future <code class="hl opt">=</code> <code class="hl kwd">getUsernameFromDatabaseAsync</code><code class="hl opt">(</code>userId<code class="hl opt">)</code>
+future<code class="hl opt">.</code><code class="hl kwd">onComplete</code><code class="hl opt">(</code>username <code class="hl opt">=&gt;</code>
+  <code class="hl slc">// executed somewhere else</code>
+  <code class="hl kwd">println</code><code class="hl opt">(</code>username<code class="hl opt">)</code>
+<code class="hl opt">)</code></pre>
         </div>
         <p>From the thread's perspective, the code will call the method and go into the method, and then return with a Future/Completable Future almost immediately. The result is only a placeholder of the value that will eventually be there.</p>
         <p>We won't look at the method invocation itself in too much detail—you should understand that the method will return immediately and the database<a id="GBS.0072.03"></a> call and result will happen somewhere else, on another thread. There is an <code class="literal">ExecutionContext</code> that represents the threads where the other work is done, which we'll look at later in this book. (In Akka, you'll see a dispatcher in the <code class="literal">ActorSystem</code>, which is an <code class="literal">ExecutionContext</code> implementation.)</p>
@@ -144,7 +146,7 @@ future.onComplete(username =&gt;
             <p>The Play Promise API is also a good choice if you're building a Play application. I personally prefer the semantics used in the Play Promise API over the Java8 <code class="literal">CompletableFuture</code> API, but the Java8 API may be more readable for those not accustomed to working with asynchronous code yet. It's recommended if your code may<a id="GBS.0075.01"></a> be placed into a library that you use the Java8 <code class="literal">CompletableFuture</code> so you do not have a dependency on Play in your code outside the controller.</p>
             <p>To start, we need to add this dependency from the Scala team to your <code class="literal">build.sbt</code> to be able to convert between Scala and Java8 Futures:</p>
             <div class="informalexample">
-              <pre class="programlisting">"org.scala-lang.modules" %% "scala-java8-compat" % "0.6.0"</pre>
+              <pre class="programlisting"><code class="hl str">&quot;org.scala-lang.modules&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;scala-java8-compat&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;0.6.0&quot;</code></pre>
             </div>
           </div>
           <div title="Test case" class="section">
@@ -157,28 +159,29 @@ future.onComplete(username =&gt;
             </div>
             <p>The following is the complete<a id="id174" class="indexterm"></a> test case. Next,<a id="GBS.0075.02"></a> we'll look at each element of the APIs in detail:</p>
             <div class="informalexample">
-              <pre class="programlisting">package pong;
-//[...imports] 
-import static scala.compat.java8.FutureConverters.*;
-public class PongActorTest { 
-    ActorSystem system = ActorSystem.create(); 
-    ActorRef actorRef = 
-            system.actorOf(Props.create(JavaPongActor.class)); 
-    @Test
-    public void shouldReplyToPingWithPong() throws Exception { 
-        Future sFuture<a id="GBS.0075.03"></a> = ask(actorRef, "Ping", 1000); 
-        final CompletionStage&lt;String&gt; cs = toJava(sFuture); 
-        final CompletableFuture&lt;String&gt; jFuture = (CompletableFuture&lt;String&gt;) cs; 
-        assert(jFuture.get(1000, TimeUnit.MILLISECONDS).equals("Pong")); 
-    }
-    @Test(expected = ExecutionException.class) 
-    public void shouldReplyToUnknownMessageWithFailure() throws Exception { 
-        Future sFuture<a id="GBS.0075.04"></a> = ask(actorRef, "unknown", 1000); 
-        final CompletionStage&lt;String&gt; cs = toJava(sFuture); 
-        final CompletableFuture&lt;String&gt; jFuture = (CompletableFuture&lt;String&gt;) cs; 
-        jFuture.get(1000, TimeUnit.MILLISECONDS); 
-    }
-}</pre>
+              <pre class="programlisting"><code class="hl kwa">package</code> pong<code class="hl opt">;</code>
+
+<code class="hl slc">// [...imports]</code>
+<code class="hl kwa">import static</code> scala<code class="hl opt">.</code>compat<code class="hl opt">.</code>java8<code class="hl opt">.</code>FutureConverters<code class="hl opt">.*;</code>
+
+<code class="hl kwa">public class</code> PongActorTest <code class="hl opt">{</code>
+  ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">();</code>
+  ActorRef actorRef <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>JavaPongActor<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">));</code>
+  <code class="hl kwc">&#64;Test</code>
+  <code class="hl kwa">public void</code> <code class="hl kwd">shouldReplyToPingWithPong</code><code class="hl opt">()</code> <code class="hl kwa">throws</code> Exception <code class="hl opt">{</code>
+    Future sFuture <code class="hl opt">=</code> <code class="hl kwd">ask</code><code class="hl opt">(</code>actorRef<code class="hl opt">,</code> <code class="hl str">&quot;Ping&quot;</code><code class="hl opt">,</code> <code class="hl num">1000</code><code class="hl opt">);</code>
+    <code class="hl kwa">final</code> CompletionStage<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;</code> cs <code class="hl opt">=</code> <code class="hl kwd">toJava</code><code class="hl opt">(</code>sFuture<code class="hl opt">);</code>
+    <code class="hl kwa">final</code> CompletableFuture<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;</code> jFuture <code class="hl opt">= (</code>CompletableFuture<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;)</code> cs<code class="hl opt">;</code>
+    <code class="hl kwa">assert</code><code class="hl opt">(</code>jFuture<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code><code class="hl num">1000</code><code class="hl opt">,</code> TimeUnit<code class="hl opt">.</code>MILLISECONDS<code class="hl opt">).</code><code class="hl kwd">equals</code><code class="hl opt">(</code><code class="hl str">&quot;Pong&quot;</code><code class="hl opt">));</code>
+  <code class="hl opt">}</code>
+  <code class="hl kwc">&#64;Test</code><code class="hl opt">(</code>expected <code class="hl opt">=</code> ExecutionException<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">)</code>
+  <code class="hl kwa">public void</code> <code class="hl kwd">shouldReplyToUnknownMessageWithFailure</code><code class="hl opt">()</code> <code class="hl kwa">throws</code> Exception <code class="hl opt">{</code>
+    Future sFuture <code class="hl opt">=</code> <code class="hl kwd">ask</code><code class="hl opt">(</code>actorRef<code class="hl opt">,</code> <code class="hl str">&quot;unknown&quot;</code><code class="hl opt">,</code> <code class="hl num">1000</code><code class="hl opt">);</code>
+    <code class="hl kwa">final</code> CompletionStage<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;</code> cs <code class="hl opt">=</code> <code class="hl kwd">toJava</code><code class="hl opt">(</code>sFuture<code class="hl opt">);</code>
+    <code class="hl kwa">final</code> CompletableFuture<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;</code> jFuture <code class="hl opt">= (</code>CompletableFuture<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;)</code> cs<code class="hl opt">;</code>
+    jFuture<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code><code class="hl num">1000</code><code class="hl opt">,</code> TimeUnit<code class="hl opt">.</code>MILLISECONDS<code class="hl opt">);</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
             </div>
             <p>Our Pong Actor <a id="id175" class="indexterm"></a>test has a test for both the success case and failure case.</p>
           </div>
@@ -192,13 +195,13 @@ public class PongActorTest {
             </div>
             <p>We begin by <a id="id176" class="indexterm"></a>creating an <code class="literal">ActorSystem</code>, and then an actor in that actor<a id="GBS.0075.05"></a> system with <code class="literal">actorOf</code>, as previously covered:</p>
             <div class="informalexample">
-              <pre class="programlisting">ActorSystem system = ActorSystem.create();
-ActorRef actorRef = 
-system.actorOf(Props.create(JavaPongActor.class));</pre>
+              <pre class="programlisting">ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">();</code>
+ActorRef actorRef <code class="hl opt">=</code>
+  system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>JavaPongActor<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">));</code></pre>
             </div>
             <p>Now, we ask the actor for a response to a message:</p>
             <div class="informalexample">
-              <pre class="programlisting">final Future sFuture = ask(actorRef, "Ping", 1000);</pre>
+              <pre class="programlisting"><code class="hl kwa">final</code> Future sFuture <code class="hl opt">=</code> <code class="hl kwd">ask</code><code class="hl opt">(</code>actorRef<code class="hl opt">,</code> <code class="hl str">&quot;Ping&quot;</code><code class="hl opt">,</code> <code class="hl num">1000</code><code class="hl opt">);</code></pre>
             </div>
             <p>This is fairly straightforward—we call the ask method, passing:</p>
             <div class="itemizedlist">
@@ -211,7 +214,8 @@ system.actorOf(Props.create(JavaPongActor.class));</pre>
             <p>This gives us back the placeholder of the response we'll get in the future—a Scala Future. In the actor code, the actor will send a message back to <code class="literal">sender()</code>, which we will receive as the response to this future.</p>
             <p>We can't use the Scala Future from Java8, but we can convert it with the library we imported earlier:</p>
             <div class="informalexample">
-              <pre class="programlisting"><a id="GBS.0076.02"></a>final CompletionStage&lt;String&gt; cs = toJava(sFuture); final CompletableFuture&lt;String&gt; jFuture = (CompletableFuture&lt;String&gt;) cs;</pre>
+              <pre class="programlisting"><code class="hl kwa">final</code> CompletionStage<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;</code> cs <code class="hl opt">=</code> <code class="hl kwd">toJava</code><code class="hl opt">(</code>sFuture<code class="hl opt">);</code>
+<code class="hl kwa">final</code> CompletableFuture<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;</code> jFuture <code class="hl opt">= (</code>CompletableFuture<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;)</code> cs<code class="hl opt">;</code></pre>
             </div>
             <p>We first convert the Scala future with <code class="literal">scala.compat.java8.FutureConverters.toJava</code>,<code class="literal"> </code>which gives us a <code class="literal">CompletionStage</code>. The <code class="literal">CompletionStage</code> is the interface for the <code class="literal">CompletableFuture</code>—specifically it is a read-only interface. In this case, we cast the future to gain access to<a id="GBS.0076.03"></a> the get method. You won't need to cast the <code class="literal">CompletionStage</code> outside of test cases.</p>
             <p>Note that we're <a id="id177" class="indexterm"></a>placing a String type on the future. Actors are untyped and return an Object, so you may find the unchecked casting a little iffy. Certainly, some care is needed when talking to Actors from outside of the <code class="literal">ActorSystem</code> in this regard. We know that the Actor will always return a String on this message,<a id="GBS.0076.04"></a> though, so it's a safe assertion that the type of the future is a String.</p>
@@ -238,14 +242,28 @@ system.actorOf(Props.create(JavaPongActor.class));</pre>
             </div>
             <p>The following is the complete Scala <a id="id179" class="indexterm"></a>test case. Next, we'll cover the test in detail:</p>
             <div class="informalexample">
-              <pre class="programlisting">package pong
-//[...imports]
-import akka.pattern.ask import scala.concurrent.duration._ 
-class ScalaAskExamplesTest extends FunSpecLike with Matchers { val system = ActorSystem() implicit val timeout<a id="GBS.0077.01"></a> = Timeout(5 seconds) val pongActor = system.actorOf(Props(classOf[ScalaPongActor])) describe("Pong actor") { it("should respond with Pong") { val future = pongActor ? "Ping" //uses the implicit timeout val result = Await.result(future.mapTo[String], 1 second) assert(result == "Pong") }it("should fail on unknown message") { val future = pongActor ? "unknown" intercept[Exception]{ Await.result(future.mapTo[String],<a id="GBS.0077.02"></a> 1 second)
-      }
-    }
-  }
-}</pre>
+              <pre class="programlisting"><code class="hl kwa">package</code> pong
+
+<code class="hl slc">// [...imports]</code>
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>pattern<code class="hl opt">.</code>ask <code class="hl kwa">import</code> scala<code class="hl opt">.</code>concurrent<code class="hl opt">.</code>duration<code class="hl opt">.</code>_
+
+<code class="hl kwa">class</code> ScalaAskExamplesTest <code class="hl kwa">extends</code> FunSpecLike <code class="hl kwa">with</code> Matchers <code class="hl opt">{</code>
+  <code class="hl kwa">val</code> system <code class="hl opt">=</code> <code class="hl kwd">ActorSystem</code><code class="hl opt">()</code> <code class="hl kwa">implicit</code>
+  <code class="hl kwa">val</code> timeout <code class="hl opt">=</code> <code class="hl kwd">Timeout</code><code class="hl opt">(</code><code class="hl num">5</code> seconds<code class="hl opt">)</code>
+  <code class="hl kwa">val</code> pongActor <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code><code class="hl kwd">Props</code><code class="hl opt">(</code>classOf<code class="hl opt">[</code>ScalaPongActor<code class="hl opt">]))</code>
+  <code class="hl kwd">describe</code><code class="hl opt">(</code><code class="hl str">&quot;Pong actor&quot;</code><code class="hl opt">) {</code>
+    <code class="hl kwd">it</code><code class="hl opt">(</code><code class="hl str">&quot;should respond with Pong&quot;</code><code class="hl opt">) {</code>
+      <code class="hl kwa">val</code> future <code class="hl opt">=</code> pongActor ? <code class="hl str">&quot;Ping&quot;</code> <code class="hl slc">// uses the implicit timeout</code>
+      <code class="hl kwa">val</code> result <code class="hl opt">=</code> Await<code class="hl opt">.</code><code class="hl kwd">result</code><code class="hl opt">(</code>future<code class="hl opt">.</code>mapTo<code class="hl opt">[</code>String<code class="hl opt">],</code> <code class="hl num">1</code> second<code class="hl opt">)</code>
+      <code class="hl kwa">assert</code><code class="hl opt">(</code>result <code class="hl opt">==</code> <code class="hl str">&quot;Pong&quot;</code><code class="hl opt">)</code>
+    <code class="hl opt">}</code> <code class="hl kwd">it</code><code class="hl opt">(</code><code class="hl str">&quot;should fail on unknown message&quot;</code><code class="hl opt">) {</code>
+        <code class="hl kwa">val</code> future <code class="hl opt">=</code> pongActor ? <code class="hl str">&quot;unknown&quot;</code>
+        intercept<code class="hl opt">[</code>Exception<code class="hl opt">] {</code>
+          Await<code class="hl opt">.</code><code class="hl kwd">result</code><code class="hl opt">(</code>future<code class="hl opt">.</code>mapTo<code class="hl opt">[</code>String<code class="hl opt">],</code> <code class="hl num">1</code> second<code class="hl opt">)</code>
+        <code class="hl opt">}</code>
+    <code class="hl opt">}</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
             </div>
           </div>
           <div title="Actor creation" class="section">
@@ -259,13 +277,13 @@ class ScalaAskExamplesTest extends FunSpecLike with Matchers { val system = Acto
             <p>We begin by creating an <code class="literal">ActorSystem</code> and then creating an actor in that actor system with <code class="literal">actorOf</code>, as <a id="id180" class="indexterm"></a>previously covered.</p>
             <p>We also create an implicit <code class="literal">Timeout</code> for the future creation (note that the import of <code class="literal">scala.concurrent.duration</code> is needed for the duration passed in to the Timeout):</p>
             <div class="informalexample">
-              <pre class="programlisting">  implicit val system = ActorSystem()
-  implicit val timeout =<a id="GBS.0077.03"></a> Timeout(5 seconds)
-  val pongActor = system.actorOf(Props(classOf[ScalaPongActor]))</pre>
+              <pre class="programlisting"><code class="hl kwa">implicit val</code> system <code class="hl opt">=</code> <code class="hl kwd">ActorSystem</code><code class="hl opt">()</code>
+<code class="hl kwa">implicit val</code> timeout <code class="hl opt">=</code> <code class="hl kwd">Timeout</code><code class="hl opt">(</code><code class="hl num">5</code> seconds<code class="hl opt">)</code>
+<code class="hl kwa">val</code> pongActor <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code><code class="hl kwd">Props</code><code class="hl opt">(</code>classOf<code class="hl opt">[</code>ScalaPongActor<code class="hl opt">]))</code></pre>
             </div>
             <p>Now, we ask the actor for a response to a message:</p>
             <div class="informalexample">
-              <pre class="programlisting">val future = pongActor ? "Ping"</pre>
+              <pre class="programlisting"><code class="hl kwa">val</code> future <code class="hl opt">=</code> pongActor ? <code class="hl str">&quot;Ping&quot;</code></pre>
             </div>
             <div title="Note" style="" class="note">
               <div class="inner">
@@ -284,7 +302,7 @@ class ScalaAskExamplesTest extends FunSpecLike with Matchers { val system = Acto
             <p>This gives us back a placeholder—a Future—that represents the actor's reply. In the actor code, the actor will send a message back to <code class="literal">sender()</code>, which we will receive as the response to this future.</p>
             <p>Finally, we want to block the test until we have the result available. We use <code class="literal">Await.result</code> on the future with a timeout value:</p>
             <div class="informalexample">
-              <pre class="programlisting">val result = Await.result(future.mapTo[String],<a id="GBS.0077.05"></a> 1 second)</pre>
+              <pre class="programlisting"><code class="hl kwa">val</code> result <code class="hl opt">=</code> Await<code class="hl opt">.</code><code class="hl kwd">result</code><code class="hl opt">(</code>future<code class="hl opt">.</code>mapTo<code class="hl opt">[</code>String<code class="hl opt">],</code> <code class="hl num">1</code> second<code class="hl opt">)</code></pre>
             </div>
             <p>The Actor is untyped, so we get back a <code class="literal">Future[AnyRef].</code> We call <code class="literal">future.mapTo[String]</code> to change the future's type to the expected type of the result.</p>
             <p>You can build on this example now—play around with the Future API as we continue through the next sections of this chapter.</p>
@@ -308,12 +326,13 @@ class ScalaAskExamplesTest extends FunSpecLike with Matchers { val system = Acto
           </div>
           <p>In tests, the preferred way to block with the Java8 completable future is to call the get() method on the Future. The get() method will block the thread until the result is available:</p>
           <div class="informalexample">
-            <pre class="programlisting">jFuture.get().equals("Pong")</pre>
+            <pre class="programlisting">jFuture<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">().</code><code class="hl kwd">equals</code><code class="hl opt">(</code><code class="hl str">&quot;Pong&quot;</code><code class="hl opt">)</code></pre>
           </div>
           <p>While <code class="literal">get()</code> will sleep forever if you don't specify a timeout, the Scala future requires a timeout (specified<a id="GBS.0078.03"></a> in the ask method), so the future will fail if the timeout is violated.</p>
           <p>Getting the result from the Scala Future can be accomplished by using <code class="literal">scala.concurrent.Await.result</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">import scala.concurrent.duration._ val result: String = Await.result(future.mapTo[String], 1 second)</pre>
+            <pre class="programlisting"><code class="hl kwa">import</code> scala<code class="hl opt">.</code>concurrent<code class="hl opt">.</code>duration<code class="hl opt">.</code>_
+<code class="hl kwa">val</code> result<code class="hl opt">:</code> String <code class="hl opt">=</code> Await<code class="hl opt">.</code><code class="hl kwd">result</code><code class="hl opt">(</code>future<code class="hl opt">.</code>mapTo<code class="hl opt">[</code>String<code class="hl opt">],</code> <code class="hl num">1</code> second<code class="hl opt">)</code></pre>
           </div>
           <p>Here the timeout is required—it's redundant as the ask method has already placed a timeout on the future.</p>
           <p>In both the Java<a id="GBS.0078.04"></a> and Scala examples, if the future fails, blocking will result in the exception that the future failed with being thrown. The Java8 <code class="literal">CompletableFuture</code> will throw an <code class="literal">ExecutionException</code> caused by the <code class="literal">Throwable</code> the future fails with. The Scala API will throw the actual <code class="literal">Throwable</code>. (Scala has no checked exceptions, so the API can do this—Java throws an unchecked exception type here.)</p>
@@ -348,16 +367,18 @@ class ScalaAskExamplesTest extends FunSpecLike with Matchers { val system = Acto
             </div>
             <p>First, for the <a id="id187" class="indexterm"></a>Java8 examples, we'll simplify the ask by placing it into a method to eliminate duplication. This now looks like a real asynchronous API:</p>
             <div class="informalexample">
-              <pre class="programlisting">public CompletionStage&lt;String&gt; askPong(String message){ Future sFuture = ask(actorRef, "Ping", 1000); CompletionStage&lt;String&gt; cs = toJava(sFuture); return cs;
-}</pre>
+              <pre class="programlisting"><code class="hl kwa">public</code> CompletionStage<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code>String message<code class="hl opt">) {</code>
+  Future sFuture <code class="hl opt">=</code> <code class="hl kwd">ask</code><code class="hl opt">(</code>actorRef<code class="hl opt">,</code> <code class="hl str">&quot;Ping&quot;</code><code class="hl opt">,</code> <code class="hl num">1000</code><code class="hl opt">);</code>
+  CompletionStage<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;</code> cs <code class="hl opt">=</code> <code class="hl kwd">toJava</code><code class="hl opt">(</code>sFuture<code class="hl opt">);</code>
+  <code class="hl kwa">return</code> cs<code class="hl opt">;</code>
+<code class="hl opt">}</code></pre>
             </div>
             <p>Then we'll build simple test<a id="GBS.0079.04"></a> cases:</p>
             <div class="informalexample">
-              <pre class="programlisting">@Test public void printToConsole() throws Exception { 
-    askPong("Ping").
-        thenAccept(x -&gt; System.out.println("replied with: " + x)); 
-    Thread.sleep(100); 
-}</pre>
+              <pre class="programlisting"><code class="hl kwc">&#64;Test</code> <code class="hl kwa">public void</code> <code class="hl kwd">printToConsole</code><code class="hl opt">()</code> <code class="hl kwa">throws</code> Exception <code class="hl opt">{</code>
+  <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">).</code><code class="hl kwd">thenAccept</code><code class="hl opt">(</code>x <code class="hl opt">-&gt;</code> System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;replied with: &quot;</code> <code class="hl opt">+</code> x<code class="hl opt">));</code>
+  Thread<code class="hl opt">.</code><code class="hl kwd">sleep</code><code class="hl opt">(</code><code class="hl num">100</code><code class="hl opt">);</code>
+<code class="hl opt">}</code></pre>
             </div>
           </div>
           <div title="Preparing for Scala examples" class="section">
@@ -370,18 +391,21 @@ class ScalaAskExamplesTest extends FunSpecLike with Matchers { val system = Acto
             </div>
             <p>We'll start by<a id="id188" class="indexterm"></a> defining a simple method to remove any redundancy and make the examples a bit easier to read:</p>
             <div class="informalexample">
-              <pre class="programlisting">def askPong(message: String): Future[String] = (pongActor ? message).mapTo[String]</pre>
+              <pre class="programlisting"><code class="hl kwa">def</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code>message<code class="hl opt">:</code> String<code class="hl opt">):</code> Future<code class="hl opt">[</code>String<code class="hl opt">] =</code>
+  <code class="hl opt">(</code>pongActor ? message<code class="hl opt">).</code>mapTo<code class="hl opt">[</code>String<code class="hl opt">]</code></pre>
             </div>
             <p><a id="GBS.0079.05"></a>We're going to look at asynchronous work running on multiple threads, so you'll need to import an implicit <code class="literal">ExecutionContext</code> now.</p>
             <p>We can make a test case like the following to play around in:</p>
             <div class="informalexample">
-              <pre class="programlisting">describe("FutureExamples"){
-  import scala.concurrent.ExecutionContext.Implicits.global
-  it("should print to console"){
-    (pongActor ? "Ping").onSuccess({
-      case x: String =&gt; println("replied with: "<a id="GBS.0080.01"></a> + x)     })
-    Thread.sleep(100) }
-}</pre>
+              <pre class="programlisting"><code class="hl kwd">describe</code><code class="hl opt">(</code><code class="hl str">&quot;FutureExamples&quot;</code><code class="hl opt">) {</code>
+  <code class="hl kwa">import</code> scala<code class="hl opt">.</code>concurrent<code class="hl opt">.</code>ExecutionContext<code class="hl opt">.</code>Implicits<code class="hl opt">.</code>global
+  <code class="hl kwd">it</code><code class="hl opt">(</code><code class="hl str">&quot;should print to console&quot;</code><code class="hl opt">) {</code>
+    <code class="hl opt">(</code>pongActor ? <code class="hl str">&quot;Ping&quot;</code><code class="hl opt">).</code><code class="hl kwd">onSuccess</code><code class="hl opt">({</code>
+      <code class="hl kwa">case</code> x<code class="hl opt">:</code> String <code class="hl opt">=&gt;</code> <code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;replied with: &quot;</code> <code class="hl opt">+</code> x<code class="hl opt">)</code>
+    <code class="hl opt">})</code>
+    Thread<code class="hl opt">.</code><code class="hl kwd">sleep</code><code class="hl opt">(</code><code class="hl num">100</code><code class="hl opt">)</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
             </div>
           </div>
           <div title="Note on sleeping" class="section">
@@ -425,11 +449,13 @@ class ScalaAskExamplesTest extends FunSpecLike with Matchers { val system = Acto
               <p><a id="GBS.0080.04"></a>Sometimes we <a id="id193" class="indexterm"></a>need to simply "do something" with the result. Maybe we want to log the event or maybe we want to send a response over the network. We can "register" events  to occur once the result becomes available.</p>
               <p>As demonstrated, we can use <code class="literal">thenAccept</code> to consume the value in Java8:</p>
               <div class="informalexample">
-                <pre class="programlisting">askPong("Ping").thenAccept(x -&gt; System.out.println("replied with: " + x));</pre>
+                <pre class="programlisting"><code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">).</code><code class="hl kwd">thenAccept</code><code class="hl opt">(</code>x <code class="hl opt">-&gt;</code> System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;replied with: &quot;</code> <code class="hl opt">+</code> x<code class="hl opt">));</code></pre>
               </div>
               <p>And, in Scala, we can use onSuccess:</p>
               <div class="informalexample">
-                <pre class="programlisting"><a id="GBS.0080.05"></a>(pongActor ? "Ping").onSuccess(){ case x: String =&gt; println("replied with: " + x) })</pre>
+                <pre class="programlisting"><code class="hl opt">(</code>pongActor ? <code class="hl str">&quot;Ping&quot;</code><code class="hl opt">).</code><code class="hl kwd">onSuccess</code><code class="hl opt">() {</code>
+  <code class="hl kwa">case</code> x<code class="hl opt">:</code> String <code class="hl opt">=&gt;</code> <code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;replied with: &quot;</code> <code class="hl opt">+</code> x<code class="hl opt">)</code>
+<code class="hl opt">})</code></pre>
               </div>
               <div title="Note" style="" class="note">
                 <div class="inner">
@@ -449,12 +475,12 @@ class ScalaAskExamplesTest extends FunSpecLike with Matchers { val system = Acto
               <p>The most common use<a id="id195" class="indexterm"></a> case is the need to transform a response asynchronously before doing something with it. For example,<a id="GBS.0081.01"></a> we may need to get data from a database and then transform that into an HTTP response to give back to a client.</p>
               <p>Transformation of a value is done with map in most APIs, as it is with Scala's Future:</p>
               <div class="informalexample">
-                <pre class="programlisting">askPong("Ping").map(x =&gt; x.charAt(0))</pre>
+                <pre class="programlisting"><code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">).</code><code class="hl kwd">map</code><code class="hl opt">(</code>x <code class="hl opt">=&gt;</code> x<code class="hl opt">.</code><code class="hl kwd">charAt</code><code class="hl opt">(</code><code class="hl num">0</code><code class="hl opt">))</code></pre>
               </div>
               <p>In Java8, we call <code class="literal">thenApply:</code>
 </p>
               <div class="informalexample">
-                <pre class="programlisting">askPong("Ping").thenApply(x -&gt; x.charAt(0))</pre>
+                <pre class="programlisting"><code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">).</code><code class="hl kwd">thenApply</code><code class="hl opt">(</code>x <code class="hl opt">-&gt;</code> x<code class="hl opt">.</code><code class="hl kwd">charAt</code><code class="hl opt">(</code><code class="hl num">0</code><code class="hl opt">))</code></pre>
               </div>
               <p>These will give you back new Futures of type <code class="literal">Char</code>. You can transform the result and then<a id="GBS.0081.02"></a> pass the modified future on to other methods for further processing.</p>
             </div>
@@ -468,16 +494,22 @@ class ScalaAskExamplesTest extends FunSpecLike with Matchers { val system = Acto
               </div>
               <p>If we need to make an asynchronous call, and then make another asynchronous call with the result of the first, it could start to look a little bit messy: </p>
               <div class="informalexample">
-                <pre class="programlisting">//Java CompletionStage&lt;CompletionStage&lt;String&gt;&gt; futureFuture = askPong("Ping").thenApply(x -&gt; askPong(x)); //Scala val futureFuture:<a id="GBS.0081.03"></a> Future[Future[String]] = askPong("Ping").map(x =&gt; { askPong(x) })</pre>
+                <pre class="programlisting"><code class="hl slc">// Java</code>
+CompletionStage<code class="hl opt">&lt;</code>CompletionStage<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;&gt;</code> futureFuture <code class="hl opt">=</code>
+  <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">).</code><code class="hl kwd">thenApply</code><code class="hl opt">(</code>x <code class="hl opt">-&gt;</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code>x<code class="hl opt">));</code>
+
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">val</code> futureFuture<code class="hl opt">:</code> Future<code class="hl opt">[</code>Future<code class="hl opt">[</code>String<code class="hl opt">]] =</code>
+  <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">).</code><code class="hl kwd">map</code><code class="hl opt">(</code>x <code class="hl opt">=&gt; {</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code>x<code class="hl opt">) })</code></pre>
               </div>
               <p>Very often you'll need to make an asynchronous call, and then make another asynchronous call as we have done in this example. However, right now, our result is buried inside a future inside another future! This is very difficult to work with—what we want to do instead is to flatten that out so the result is inside of a single future,<a id="GBS.0081.04"></a> we want a <code class="literal">Future[String]/CompletionStage[String]</code>.</p>
               <p>There are ways to compose our futures to make these chained asynchronous operations. using <code class="literal">thenCompose</code> in Java:</p>
               <div class="informalexample">
-                <pre class="programlisting">CompletionStage&lt;String&gt; cs = askPong("Ping").thenCompose(x -&gt; askPong("Ping"));
+                <pre class="programlisting">CompletionStage<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;</code> cs <code class="hl opt">=</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">).</code><code class="hl kwd">thenCompose</code><code class="hl opt">(</code>x <code class="hl opt">-&gt;</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">));</code>
 
-Orpredictably, flatMap in Scala:
+<code class="hl slc">// Or predictably, flatMap in Scala:</code>
 
-val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
+<code class="hl kwa">val</code> f<code class="hl opt">:</code> Future<code class="hl opt">[</code>String<code class="hl opt">] =</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">).</code><code class="hl kwd">flatMap</code><code class="hl opt">(</code>x <code class="hl opt">=&gt;</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">))</code></pre>
               </div>
               <p>Once the first "Ping" is responded to, then we send<a id="GBS.0081.05"></a> a second "Ping" and return the response as the value of the future.</p>
               <p>Note you can<a id="id196" class="indexterm"></a> continue to string together asynchronous computation like this. This is a very powerful way of handling pipelines of data processing. You can make a call to a remote service and then make a call to a second service with the result.</p>
@@ -504,12 +536,16 @@ val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
               <p>Very often you <a id="id199" class="indexterm"></a>will want to do something with a failure. The most basic case is to log something<a id="GBS.0082.02"></a> in the case of failure.</p>
               <p>In Scala, there is a simple way to do this—<code class="literal">onFailure</code>. This method accepts a partial function accepting a <code class="literal">Throwable</code>:</p>
               <div class="informalexample">
-                <pre class="programlisting">    askPong("causeError").onFailure{ case e: Exception =&gt; println("Got exception") } }</pre>
+                <pre class="programlisting"><code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;causeError&quot;</code><code class="hl opt">).</code>onFailure <code class="hl opt">{</code>
+  <code class="hl kwa">case</code> e<code class="hl opt">:</code> Exception <code class="hl opt">=&gt;</code> <code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;Got exception&quot;</code><code class="hl opt">)</code>
+<code class="hl opt">}</code></pre>
               </div>
               <p>Unfortunately, in Java8, there is no consumer-based method for failure, so we will introduce <code class="literal">handle()</code> here for this case:</p>
               <div class="informalexample">
-                <pre class="programlisting">askPong("cause error").handle((x, t) -&gt; { if(t!=null){System.out.p<a id="GBS.0082.03"></a>rintln("Error: " + t); } return null; });</pre>
-              </div>
+                <pre class="programlisting"><code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;cause error&quot;</code><code class="hl opt">).</code><code class="hl kwd">handle</code><code class="hl opt">((</code>x<code class="hl opt">,</code> t<code class="hl opt">) -&gt; {</code>
+  <code class="hl kwa">if</code> <code class="hl opt">(</code>t <code class="hl opt">!=</code> <code class="hl kwb">null</code><code class="hl opt">) {</code> System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;Error: &quot;</code> <code class="hl opt">+</code> t<code class="hl opt">); }</code>
+  <code class="hl kwa">return</code> <code class="hl kwb">null</code><code class="hl opt">;</code>
+<code class="hl opt">});</code></pre></div>
               <p>Handle takes a <code class="literal">BiFunction</code> that transforms either the success or failure case. The function in handle will provide you with either the successful result or the <code class="literal">Throwable</code>, so we have to check to see if the <code class="literal">Throwable</code> is present (only the result or the <code class="literal">Throwable</code> will be not null). If the <code class="literal">Throwable</code> is present, then we log the statement. We have to return a value<a id="GBS.0082.04"></a> on the function, so we simply return null as we're not doing anything with the value in the failure case.</p>
             </div>
             <div title="Recovering from failure" class="section">
@@ -523,11 +559,13 @@ val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
               <p>Often we want <a id="id200" class="indexterm"></a>to use a value if there is an error. If you want to recover from failure, you transform the future to have a successful value.</p>
               <p>In Java, we can use exceptionally to take the <code class="literal">Throwable</code> and transform it into a usable value:</p>
               <div class="informalexample">
-                <pre class="programlisting">        CompletionStage&lt;String&gt;<a id="GBS.0082.05"></a> cs = askPong("cause error").exceptionally(t -&gt; { return "default"; });</pre>
+                <pre class="programlisting">CompletionStage<code class="hl opt">&lt;</code>String<code class="hl opt">&gt;</code> cs <code class="hl opt">=</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;cause error&quot;</code><code class="hl opt">).</code><code class="hl kwd">exceptionally</code><code class="hl opt">(</code>
+  t <code class="hl opt">-&gt; {</code> <code class="hl kwa">return</code> <code class="hl str">&quot;default&quot;</code><code class="hl opt">; }</code>
+<code class="hl opt">);</code></pre>
               </div>
               <p>In Scala, there is a recover method that is the equivalent. Again, this takes a <code class="literal">PartialFunction</code>, so we can pattern match on the exception type:</p>
               <div class="informalexample">
-                <pre class="programlisting">      val f = askPong("causeError").recover{ case t: Exception =&gt; "default" }</pre>
+                <pre class="programlisting"><code class="hl kwa">val</code> f <code class="hl opt">=</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;causeError&quot;</code><code class="hl opt">).</code>recover<code class="hl opt">{</code> <code class="hl kwa">case</code> t<code class="hl opt">:</code> Exception <code class="hl opt">=&gt;</code> <code class="hl str">&quot;default&quot;</code> <code class="hl opt">}</code></pre>
               </div>
             </div>
             <div title="Recovering from failure asynchronously" class="section">
@@ -547,16 +585,16 @@ val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
               </div>
               <p>We'll demonstrate a retry as follows:</p>
               <div class="informalexample">
-                <pre class="programlisting">askPong("cause error")
-        .handle( (pong, ex) -&gt; ex == null 
-                ? CompletableFuture.completedFuture(pong) 
-                : askPong("Ping")
-        ).thenCompose(x -&gt; x);</pre>
+                <pre class="programlisting"><code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;cause error&quot;</code><code class="hl opt">)</code>
+  <code class="hl opt">.</code><code class="hl kwd">handle</code><code class="hl opt">( (</code>pong<code class="hl opt">,</code> ex<code class="hl opt">) -&gt;</code> ex <code class="hl opt">==</code> <code class="hl kwb">null</code>
+          ? CompletableFuture<code class="hl opt">.</code><code class="hl kwd">completedFuture</code><code class="hl opt">(</code>pong<code class="hl opt">)</code>
+          <code class="hl opt">:</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">)</code>
+  <code class="hl opt">).</code><code class="hl kwd">thenCompose</code><code class="hl opt">(</code>x <code class="hl opt">-&gt;</code> x<code class="hl opt">);</code></pre>
               </div>
               <p>We have to do this in two steps. First,<a id="GBS.0083.02"></a> we check if the exception is not null and return either a future of the result or the new retry future. Then we call <code class="literal">thenCompose</code> to <code class="literal">flatten</code> the <code class="literal">CompletionState[CompletionStage[String]]</code>. </p>
               <p>In Scala, <code class="literal">recoverWith</code> is the function we want to invoke—this is like <code class="literal">flatMap</code> for the error case, so is considerably more readable and succinct than the Java equivalent:</p>
               <div class="informalexample">
-                <pre class="programlisting">askPong("causeError").recoverWith({ case<a id="GBS.0083.03"></a> t: Exception =&gt; askPong("Ping") })</pre>
+                <pre class="programlisting"><code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;causeError&quot;</code><code class="hl opt">).</code><code class="hl kwd">recoverWith</code><code class="hl opt">({</code> <code class="hl kwa">case</code> t<code class="hl opt">:</code> Exception <code class="hl opt">=&gt;</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">) })</code></pre>
               </div>
             </div>
           </div>
@@ -582,15 +620,21 @@ val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
               <p>Putting it all together,<a id="GBS.0083.05"></a> we may have several operations and then one recovery function at the end to deal with any errors that may have occurred. It's possible to combine these functions (aka combinators) in any order you can dream up to accomplish the work you need to get done.</p>
               <p>In Java:</p>
               <div class="informalexample">
-                <pre class="programlisting">askPong("Ping").
-    thenCompose(x -&gt; askPong("Ping" + x)).
-    handle((x, t) -&gt; { if(t != null){ return "default"; }else{ return x;<a id="GBS.0084.01"></a> } });</pre>
+                <pre class="programlisting"><code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">)</code>
+  <code class="hl opt">.</code><code class="hl kwd">thenCompose</code><code class="hl opt">(</code>x <code class="hl opt">-&gt;</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code> <code class="hl opt">+</code> x<code class="hl opt">))</code>
+  <code class="hl opt">.</code><code class="hl kwd">handle</code><code class="hl opt">((</code>x<code class="hl opt">,</code> t<code class="hl opt">) -&gt; {</code>
+    <code class="hl kwa">if</code> <code class="hl opt">(</code>t <code class="hl opt">!=</code> <code class="hl kwb">null</code><code class="hl opt">) {</code>
+      <code class="hl kwa">return</code> <code class="hl str">&quot;default&quot;</code><code class="hl opt">;</code>
+    <code class="hl opt">}</code> <code class="hl kwa">else</code> <code class="hl opt">{</code>
+      <code class="hl kwa">return</code> x<code class="hl opt">;</code>
+    <code class="hl opt">}</code>
+  <code class="hl opt">});</code></pre>
               </div>
               <p>In Scala:</p>
               <div class="informalexample">
-                <pre class="programlisting">val f = askPong("Ping").
-  flatMap(x =&gt; askPong("Ping" + x)).
-  recover({ case Exception =&gt; "There was an error" })</pre>
+                <pre class="programlisting"><code class="hl kwa">val</code> f <code class="hl opt">=</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">)</code>
+  <code class="hl opt">.</code><code class="hl kwd">flatMap</code><code class="hl opt">(</code>x <code class="hl opt">=&gt;</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code> <code class="hl opt">+</code> x<code class="hl opt">))</code>
+  <code class="hl opt">.</code><code class="hl kwd">recover</code><code class="hl opt">({</code> <code class="hl kwa">case</code> Exception <code class="hl opt">=&gt;</code> <code class="hl str">&quot;There was an error&quot;</code> <code class="hl opt">})</code></pre>
               </div>
               <p>In these examples, we get a future, then call <code class="literal">thenCompose</code>/<code class="literal">flatMap</code> to asynchronously make a call when the first completes, and then, in the case of an error, we recover with a String value to ensure the future is successful.</p>
               <p>Any failure along the way becomes the failure<a id="GBS.0084.02"></a> at the end of the chain. This leaves us with an elegant pipeline of operations where exceptions are handled at the end regardless of which operation caused the failure. We can focus on describing the happy path without extraneous error checking throughout the pipeline. At the end, failure as an effect is described separately.</p>
@@ -605,12 +649,17 @@ val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
               </div>
               <p>You'll often have<a id="id204" class="indexterm"></a> multiple futures executing that<a id="GBS.0084.03"></a> you need to get access to. There are facilities for handling these cases as well. In Java, the <code class="literal">thenCombine</code> method on <code class="literal">CompletableFuture</code> will let you access the values of two futures once they are available:</p>
               <div class="informalexample">
-                <pre class="programlisting">askPong("Ping").
-    thenCombine(askPong("Ping"), (a,b) -&gt; { return a + b; //"PongPong" });</pre>
+                <pre class="programlisting"><code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">).</code><code class="hl kwd">thenCombine</code><code class="hl opt">(</code><code class="hl kwd">askPong</code><code class="hl opt">(</code><code class="hl str">&quot;Ping&quot;</code><code class="hl opt">), (</code>a<code class="hl opt">,</code>b<code class="hl opt">) -&gt; {</code>
+  <code class="hl kwa">return</code> a <code class="hl opt">+</code> b<code class="hl opt">;</code>
+  <code class="hl slc">// &quot;PongPong&quot;</code>
+<code class="hl opt">});</code></pre>
               </div>
               <p>In Scala, for comprehensions offer an alternative syntax for composing together several futures. We're<a id="GBS.0084.04"></a> able to extract the results of two futures and handle them together like we would with any other collection. (Note that this is syntactic sugar for <code class="literal">flatMap</code>—I prefer this notation over <code class="literal">flatMap</code>.):</p>
               <div class="informalexample">
-                <pre class="programlisting">val f1 = Future{4} val f2 = Future{5} val futureAddition: Future[Int] = for( res1 &lt;- f1; res2 &lt;- f2 ) yield res1 + res2</pre>
+                <pre class="programlisting"><code class="hl kwa">val</code> f1 <code class="hl opt">=</code> Future<code class="hl opt">{</code><code class="hl num">4</code><code class="hl opt">}</code>
+<code class="hl kwa">val</code> f2 <code class="hl opt">=</code> Future<code class="hl opt">{</code><code class="hl num">5</code><code class="hl opt">}</code>
+<code class="hl kwa">val</code> futureAddition<code class="hl opt">:</code> Future<code class="hl opt">[</code>Int<code class="hl opt">] =</code> <code class="hl kwa">for</code> <code class="hl opt">(</code>res1 <code class="hl opt">&lt;-</code> f1
+                                       res2 <code class="hl opt">&lt;-</code> f2<code class="hl opt">)</code> <code class="hl kwa">yield</code> res1 <code class="hl opt">+</code> res2</pre>
               </div>
               <p>These examples yield simple mechanisms for handling multiple futures of varying types.<a id="GBS.0084.05"></a> In this way, we can parallelize work, making multiple requests at the same time to get responses back to users faster. This use of parallelization can help us improve system responsiveness.</p>
             </div>
@@ -624,16 +673,19 @@ val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
               </div>
               <p>If you have a collection<a id="id205" class="indexterm"></a> and you execute an asynchronous method on each element, you'll end up with a list of Futures.</p>
               <p>For example, in Scala, if we take a list of messages,<a id="GBS.0085.01"></a> and ask the Pong actor to reply to each method, we end up with a list of futures like the following:</p>
-              <div class="informalexample">
-                <pre class="programlisting">val listOfFutures = List[Future[String]] = List("Pong", "Pong", "failed").map(x =&gt; askPong(x))</pre>
+              <div class="informalexample"><pre class="programlisting">
+<code class="hl kwa">val</code> listOfFutures <code class="hl opt">=</code> List<code class="hl opt">[</code>Future<code class="hl opt">[</code>String<code class="hl opt">]] =</code>
+  <code class="hl kwd">List</code><code class="hl opt">(</code><code class="hl str">&quot;Pong&quot;</code><code class="hl opt">,</code> <code class="hl str">&quot;Pong&quot;</code><code class="hl opt">,</code> <code class="hl str">&quot;failed&quot;</code><code class="hl opt">).</code><code class="hl kwd">map</code><code class="hl opt">(</code>x <code class="hl opt">=&gt;</code> <code class="hl kwd">askPong</code><code class="hl opt">(</code>x<code class="hl opt">))</code></pre>
               </div>
               <p>If you try to work with that, you'll see it's not easy. What we want is to get at the list of results—really, we want to flip the types so the <code class="literal">List[Future]</code> becomes <code class="literal">Future[List]</code>. This is a job for sequence,<a id="GBS.0085.02"></a> which is a member of Future:</p>
-              <div class="informalexample">
-                <pre class="programlisting">val futureOfList: Future[List[String]] = Future.sequence(listOfFutures)</pre>
+              <div class="informalexample"><pre class="programlisting">
+<code class="hl kwa">val</code> futureOfList<code class="hl opt">:</code> Future<code class="hl opt">[</code>List<code class="hl opt">[</code>String<code class="hl opt">]] =</code> Future<code class="hl opt">.</code><code class="hl kwd">sequence</code><code class="hl opt">(</code>listOfFutures<code class="hl opt">)</code></pre>
               </div>
               <p>Now we have a usable type. If we call map on <code class="literal">futureOfList</code>, for example, we get a <code class="literal">List[String]</code>, which is what we want to work with. There is a problem here though. The future generated by sequence will fail if any of the futures in the list fail. We can recover each future before sequencing if we<a id="GBS.0085.03"></a> want to get any successful values instead of failing everything:</p>
-              <div class="informalexample">
-                <pre class="programlisting">Future.sequence(listOfFutures.map(future =&gt; future.recover{case Exception =&gt; ""}))</pre>
+              <div class="informalexample"><pre class="programlisting">
+Future<code class="hl opt">.</code><code class="hl kwd">sequence</code><code class="hl opt">(</code>listOfFutures<code class="hl opt">.</code><code class="hl kwd">map</code><code class="hl opt">(</code>future <code class="hl opt">=&gt;</code> future<code class="hl opt">.</code>recover <code class="hl opt">{</code>
+  <code class="hl kwa">case</code> Exception <code class="hl opt">=&gt;</code> <code class="hl str">&quot;&quot;</code>
+<code class="hl opt">}))</code></pre>
               </div>
               <p>There is no<a id="id206" class="indexterm"></a> equivalent in the Java8 core library, but there are gists around that cover the functionality for sequencing futures in the same manner.</p>
             </div>
@@ -673,10 +725,10 @@ val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
                         <p>Transform Value</p>
                       </td>
                       <td style="text-align: left;" valign="top">
-                        <p>.map(x =&gt; y)</p>
+                        <pre><code class="hl opt">.</code><code class="hl kwd">map</code><code class="hl opt">(</code>x <code class="hl opt">=&gt;</code> y<code class="hl opt">)</code></pre>
                       </td>
                       <td style="text-align: left;" valign="top">
-                        <p>.thenApply(x -&gt; y)</p>
+                        <pre><code class="hl opt">.</code><code class="hl kwd">thenApply</code><code class="hl opt">(</code>x <code class="hl opt">-&gt;</code> y<code class="hl opt">)</code></pre>
                       </td>
                     </tr>
                     <tr>
@@ -684,10 +736,10 @@ val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
                         <p>Transform Value Async</p>
                       </td>
                       <td style="text-align: left;" valign="top">
-                        <p>.flatMap(x =&gt; futureOfY)</p>
+                        <pre><code class="hl opt">.</code><code class="hl kwd">flatMap</code><code class="hl opt">(</code>x <code class="hl opt">=&gt;</code> futureOfY<code class="hl opt">)</code></pre>
                       </td>
                       <td style="text-align: left;" valign="top">
-                        <p>.thenCompose(x -&gt; futureOfY)</p>
+                        <pre><code class="hl opt">.</code><code class="hl kwd">thenCompose</code><code class="hl opt">(</code>x <code class="hl opt">-&gt;</code> futureOfY<code class="hl opt">)</code></pre>
                       </td>
                     </tr>
                     <tr>
@@ -695,10 +747,10 @@ val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
                         <p>Return Value if Error</p>
                       </td>
                       <td style="text-align: left;" valign="top">
-                        <p>.recover(t =&gt; y)</p>
+                        <pre><code class="hl opt">.</code><code class="hl kwd">recover</code><code class="hl opt">(</code>t <code class="hl opt">=&gt;</code> y<code class="hl opt">)</code></pre>
                       </td>
                       <td style="text-align: left;" valign="top">
-                        <p>.exceptionally(t -&gt; y)</p>
+                        <pre><code class="hl opt">.</code><code class="hl kwd">exceptionally</code><code class="hl opt">(</code>t <code class="hl opt">-&gt;</code> y<code class="hl opt">)</code></pre>
                       </td>
                     </tr>
                     <tr>
@@ -706,10 +758,10 @@ val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
                         <p>Return Value Async if Error</p>
                       </td>
                       <td style="text-align: left;" valign="top">
-                        <p>.recoverWith(t =&gt; futureOfY)</p>
+                        <pre><code class="hl opt">.</code><code class="hl kwd">recoverWith</code><code class="hl opt">(</code>t <code class="hl opt">=&gt;</code> futureOfY<code class="hl opt">)</code></pre>
                       </td>
                       <td style="text-align: left;" valign="top">
-                        <p>.handle(t,x -&gt; futureOfY).thenCompose(x-&gt;x)</p>
+                        <pre><code class="hl opt">.</code><code class="hl kwd">handle</code><code class="hl opt">(</code>t<code class="hl opt">,</code>x <code class="hl opt">-&gt;</code> futureOfY<code class="hl opt">).</code><code class="hl kwd">thenCompose</code><code class="hl opt">(</code>x<code class="hl opt">-&gt;</code>x<code class="hl opt">)</code></pre>
                       </td>
                     </tr>
                   </tbody>
@@ -767,16 +819,34 @@ val f: Future[String] = askPong("Ping").flatMap(x =&gt; askPong("Ping"))</pre>
           <p>As we'll be using remoting to send<a id="id214" class="indexterm"></a> messages between separate networked applications, we need all of the messages to be serializable so that Akka can turn them into representations of the objects as they transfer over the networks between the applications. We'll implement <code class="literal">SetRequest</code>, <code class="literal">GetRequest</code>, and <code class="literal">KeyNotFoundException</code>.</p>
           <p>The Java messages:</p>
           <div class="informalexample">
-            <pre class="programlisting"><a id="GBS.0087.03"></a>public class SetRequest implements Serializable { public final String key; public final Object value;
-    public SetRequest(String key, Object value) { this.key = key; this.value = value; }
-}
-public class GetRequest implements Serializable { public final String key;
-    public GetRequest(String key) { this.key = key; } } public class KeyNotFoundException extends Exception implements Serializable<a id="GBS.0087.04"></a> { public final String key; public KeyNotFoundException(String key) { this.key = key; }
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">public class</code> SetRequest <code class="hl kwa">implements</code> Serializable <code class="hl opt">{</code>
+  <code class="hl kwa">public final</code> String key<code class="hl opt">;</code>
+  <code class="hl kwa">public final</code> Object value<code class="hl opt">;</code>
+  <code class="hl kwa">public</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>String key<code class="hl opt">,</code> Object value<code class="hl opt">) {</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>key <code class="hl opt">=</code> key<code class="hl opt">;</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>value <code class="hl opt">=</code> value<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code>
+
+<code class="hl kwa">public class</code> GetRequest <code class="hl kwa">implements</code> Serializable <code class="hl opt">{</code>
+  <code class="hl kwa">public final</code> String key<code class="hl opt">;</code>
+  <code class="hl kwa">public</code> <code class="hl kwd">GetRequest</code><code class="hl opt">(</code>String key<code class="hl opt">) {</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>key <code class="hl opt">=</code> key<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code>
+
+<code class="hl kwa">public class</code> KeyNotFoundException <code class="hl kwa">extends</code> Exception <code class="hl kwa">implements</code> Serializable <code class="hl opt">{</code>
+  <code class="hl kwa">public final</code> String key<code class="hl opt">;</code>
+  <code class="hl kwa">public</code> <code class="hl kwd">KeyNotFoundException</code><code class="hl opt">(</code>String key<code class="hl opt">) {</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>key <code class="hl opt">=</code> key<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>The Scala messages:</p>
           <div class="informalexample">
-            <pre class="programlisting">case class SetRequest(key: String, value: Object) case class GetRequest(key: String) case class KeyNotFoundException(key: String) extends Exception</pre>
+            <pre class="programlisting"><code class="hl kwa">case class</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>key<code class="hl opt">:</code> String<code class="hl opt">,</code> value<code class="hl opt">:</code> Object<code class="hl opt">)</code>
+<code class="hl kwa">case class</code> <code class="hl kwd">GetRequest</code><code class="hl opt">(</code>key<code class="hl opt">:</code> String<code class="hl opt">)</code>
+<code class="hl kwa">case class</code> <code class="hl kwd">KeyNotFoundException</code><code class="hl opt">(</code>key<code class="hl opt">:</code> String<code class="hl opt">)</code> <code class="hl kwa">extends</code> Exception</pre>
           </div>
           <p>These are simple objects. We omit the Java getter as the message is immutable anyway—you can include one if you like.</p>
           <div title="Note" style="" class="note">
@@ -798,14 +868,50 @@ public class GetRequest implements Serializable { public final String key;
           <p>We've covered how to reply to<a id="id215" class="indexterm"></a> messages with <code class="literal">sender() tell/!</code>. We also covered how to reply with <code class="literal">Status.Failure</code>(<code class="literal">Exception</code>). We'll implement replies to all messages and we'll also add failure responses if the <code class="literal">GetRequest</code> encounters a miss in the key/value store.</p>
           <p>The Java code's receive statements:</p>
           <div class="informalexample">
-            <pre class="programlisting"><a id="GBS.0088.01"></a> receive(ReceiveBuilder. match(SetRequest.class, message -&gt; { log.info("Received Set request: {}", message); map.put(message.key, message.value); sender().tell(new Status.Success(message.key), self()); }). match(GetRequest.class, message -&gt; { log.info("Received Get request: {}", message);
-                            String value = map.get(message.key); Object response = (value != null) ? value : new<a id="GBS.0088.02"></a> Status.Failure(new KeyNotFoundException(message.key)); sender().tell(response, self()); }). matchAny(o -&gt; sender().tell(new Status.Failure(new ClassNotFoundException()), self()) ).build() );</pre>
+            <pre class="programlisting"><code class="hl kwd">receive</code><code class="hl opt">(</code>
+  ReceiveBuilder
+    <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>SetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> message <code class="hl opt">-&gt; {</code>
+      log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;Received Set request: {}&quot;</code><code class="hl opt">,</code> message<code class="hl opt">);</code>
+      map<code class="hl opt">.</code><code class="hl kwd">put</code><code class="hl opt">(</code>message<code class="hl opt">.</code>key<code class="hl opt">,</code> message<code class="hl opt">.</code>value<code class="hl opt">);</code>
+      <code class="hl kwd">sender</code><code class="hl opt">().</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> Status<code class="hl opt">.</code><code class="hl kwd">Success</code><code class="hl opt">(</code>message<code class="hl opt">.</code>key<code class="hl opt">),</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+    <code class="hl opt">})</code>
+    <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>GetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> message <code class="hl opt">-&gt; {</code>
+      log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;Received Get request: {}&quot;</code><code class="hl opt">,</code> message<code class="hl opt">);</code>
+      String value <code class="hl opt">=</code> map<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code>message<code class="hl opt">.</code>key<code class="hl opt">);</code>
+
+      Object response <code class="hl opt">= (</code>value <code class="hl opt">!=</code> <code class="hl kwb">null</code><code class="hl opt">)</code>
+        ? value
+        <code class="hl opt">:</code> <code class="hl kwa">new</code> Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code>
+            <code class="hl kwa">new</code> <code class="hl kwd">KeyNotFoundException</code><code class="hl opt">(</code>message<code class="hl opt">.</code>key<code class="hl opt">));</code>
+
+      <code class="hl kwd">sender</code><code class="hl opt">().</code><code class="hl kwd">tell</code><code class="hl opt">(</code>response<code class="hl opt">,</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+    <code class="hl opt">})</code>
+    <code class="hl opt">.</code><code class="hl kwd">matchAny</code><code class="hl opt">(</code>o <code class="hl opt">-&gt;</code> <code class="hl kwd">sender</code><code class="hl opt">().</code><code class="hl kwd">tell</code><code class="hl opt">(</code>
+      <code class="hl kwa">new</code> Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code>
+        <code class="hl kwa">new</code> <code class="hl kwd">ClassNotFoundException</code><code class="hl opt">()),</code> <code class="hl kwd">self</code><code class="hl opt">()))</code>
+    <code class="hl opt">.</code><code class="hl kwd">build</code><code class="hl opt">();</code>
+<code class="hl opt">);</code></pre>
           </div>
           <p>The Scala code's <code class="literal">receive</code> method:</p>
           <div class="informalexample">
-            <pre class="programlisting">  override def receive = { case SetRequest(key, value) =&gt; log.info("received SetRequest - key: {} value: {}", key, value)
-      map.put(key, value) sender() ! Status.Success<a id="GBS.0088.03"></a> case GetRequest(key) =&gt; log.info("received GetRequest - key: {}", key) val response: Option[String] = map.get(key) response match{ case Some(x) =&gt; sender() ! x case None =&gt; sender() ! Status.Failure(new KeyNotFoundException(key)) }
-    case o =&gt; Status.Failure(new ClassNotFoundException) }</pre>
+            <pre class="programlisting"><code class="hl kwa">override def</code> receive <code class="hl opt">= {</code>
+  <code class="hl kwa">case</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">) =&gt;</code>
+    log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received SetRequest - key: {} value: {}&quot;</code><code class="hl opt">,</code> key<code class="hl opt">,</code> value<code class="hl opt">)</code>
+    map<code class="hl opt">.</code><code class="hl kwd">put</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">)</code>
+    <code class="hl kwd">sender</code><code class="hl opt">() !</code> Status<code class="hl opt">.</code>Success
+
+  <code class="hl kwa">case</code> <code class="hl kwd">GetRequest</code><code class="hl opt">(</code>key<code class="hl opt">) =&gt;</code>
+    log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received GetRequest - key: {}&quot;</code><code class="hl opt">,</code> key<code class="hl opt">)</code>
+    <code class="hl kwa">val</code> response<code class="hl opt">:</code> Option<code class="hl opt">[</code>Object<code class="hl opt">] =</code> map<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code>key<code class="hl opt">)</code>
+
+    response <code class="hl kwa">match</code> <code class="hl opt">{</code>
+      <code class="hl kwa">case</code> <code class="hl kwd">Some</code><code class="hl opt">(</code>x<code class="hl opt">) =&gt;</code> <code class="hl kwd">sender</code><code class="hl opt">() !</code> x
+      <code class="hl kwa">case</code> None <code class="hl opt">=&gt;</code> <code class="hl kwd">sender</code><code class="hl opt">() !</code> Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">KeyNotFoundException</code><code class="hl opt">(</code>key<code class="hl opt">))</code>
+    <code class="hl opt">}</code>
+
+  <code class="hl kwa">case</code> o <code class="hl opt">=&gt;</code>
+    Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code><code class="hl kwa">new</code> ClassNotFoundException<code class="hl opt">)</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>These are both roughly equivalent, languages aside. If the actor receives a <code class="literal">SetRequest</code>, the actor stores<a id="GBS.0088.04"></a> the value in the map. The behavior has been updated from the first chapter to send back a Success message. For the <code class="literal">GetRequest</code>, the actor tries to retrieve the value from the map. If it's found, it sends back the value. If it's not found, the actor sends back a Failure containing the <code class="literal">KeyNotFoundException</code>. Finally, we've changed the behavior for unknown messages to reply with a failure—we stuck a <code class="literal"><a id="GBS.0088.05"></a>ClassNotFound</code> exception in, but <a id="id216" class="indexterm"></a>you could make a custom one for greater clarity.</p>
         </div>
@@ -819,12 +925,22 @@ public class GetRequest implements Serializable { public final String key;
           </div>
           <p>We need to enable remote access<a id="id217" class="indexterm"></a> to the actor from a remote application over <a id="id218" class="indexterm"></a>the network. This is a trivial task fortunately. We need to add the remoting dependency to the <code class="literal">build.sbt</code> file:</p>
           <div class="informalexample">
-            <pre class="programlisting">"com.typesafe.akka" %% "akka-remote" % "2.3.6"</pre>
+            <pre class="programlisting"><code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-remote&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code></pre>
           </div>
-          <p>Then we simply add configuration to enable remote access to our<a id="GBS.0089.01"></a> actor. Add a new file in the <code class="literal">src/main/resources</code> file called <code class="literal">application.conf</code> and put the following configuration in the file with the interface and port to listen on. The <code class="literal">application.conf</code> file is recognized by Akka. It is a <code class="literal">typesafe-config HOCON</code> file, which is a JSON like format that is quite usable relative to other configuration formats—you'll see the configuration file referenced in the Akka<a id="GBS.0089.02"></a> documentation often and I personally find the HOCON format is quite a nice alternative to properties files if more than a few properties are needed. Note that properties files are usable as well if desired simply by naming the file <code class="literal">application.properties</code> and using the properties format (for example, <code class="literal">keypath.key=value</code>).Here is the application.conf::</p>
+          <p>Then we simply add configuration to enable remote access to our<a id="GBS.0089.01"></a> actor. Add a new file in the <code class="literal">src/main/resources</code> file called <code class="literal">application.conf</code> and put the following configuration in the file with the interface and port to listen on. The <code class="literal">application.conf</code> file is recognized by Akka. It is a <code class="literal">typesafe-config HOCON</code> file, which is a JSON like format that is quite usable relative to other configuration formats—you'll see the configuration file referenced in the Akka<a id="GBS.0089.02"></a> documentation often and I personally find the HOCON format is quite a nice alternative to properties files if more than a few properties are needed. Note that properties files are usable as well if desired simply by naming the file <code class="literal">application.properties</code> and using the properties format (for example, <code class="literal">keypath.key=value</code>). Here is the application.conf:</p>
           <div class="informalexample">
-            <pre class="programlisting">akka { actor { provider = "akka.remote.RemoteActorRefProvider"<a id="GBS.0089.03"></a> } remote { enabled-transports = ["akka.remote.netty.tcp"] netty.tcp { hostname = "127.0.0.1" port = 2552 } }
-}</pre>
+            <pre class="programlisting">akka <code class="hl opt">{</code>
+  actor <code class="hl opt">{</code>
+    provider <code class="hl opt">=</code> <code class="hl str">&quot;akka.remote.RemoteActorRefProvider&quot;</code>
+  <code class="hl opt">}</code>
+  remote <code class="hl opt">{</code>
+    enabled<code class="hl opt">-</code>transports <code class="hl opt">= [</code><code class="hl str">&quot;akka.remote.netty.tcp&quot;</code><code class="hl opt">]</code>
+    netty<code class="hl opt">.</code>tcp <code class="hl opt">{</code>
+      hostname <code class="hl opt">=</code> <code class="hl str">&quot;127.0.0.1&quot;</code>
+      port <code class="hl opt">=</code> <code class="hl num">2552</code>
+    <code class="hl opt">}</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
         </div>
         <div title="Main" class="section">
@@ -838,11 +954,19 @@ public class GetRequest implements Serializable { public final String key;
           <p>Finally, for the datastore, we need to add <a id="id219" class="indexterm"></a>a main<a id="id220" class="indexterm"></a> method to start the actor system and create the actor.</p>
           <p>In Java, we'll add a class: <code class="literal">com.akkademy.Main</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">public class Main { public static void main(String... args) { ActorSystem system = ActorSystem.create("akkademy"); system.actorOf(Props.create(A<a id="GBS.0089.04"></a>kkademyDb.class), "akkademy-db"); } }</pre>
+            <pre class="programlisting"><code class="hl kwa">public class</code> Main <code class="hl opt">{</code>
+  <code class="hl kwa">public static void</code> <code class="hl kwd">main</code><code class="hl opt">(</code>String<code class="hl opt">...</code> args<code class="hl opt">) {</code>
+    ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl str">&quot;akkademy&quot;</code><code class="hl opt">);</code>
+    system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>AkkademyDb<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">),</code> <code class="hl str">&quot;akkademy-db&quot;</code><code class="hl opt">);</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>In Scala, we can put a Main object in the <code class="literal">com.akkademy.AkkademyDb.scala</code> file:</p>
           <div class="informalexample">
-            <pre class="programlisting">object Main extends App { val system = ActorSystem("akkademy") system.actorOf(Props[AkkademyDb], name = "akkademy-db") }</pre>
+            <pre class="programlisting"><code class="hl kwa">object</code> Main <code class="hl kwa">extends</code> App <code class="hl opt">{</code>
+  <code class="hl kwa">val</code> system <code class="hl opt">=</code> <code class="hl kwd">ActorSystem</code><code class="hl opt">(</code><code class="hl str">&quot;akkademy&quot;</code><code class="hl opt">)</code>
+  system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">[</code>AkkademyDb<code class="hl opt">],</code> name <code class="hl opt">=</code> <code class="hl str">&quot;akkademy-db&quot;</code><code class="hl opt">)</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>We simply <a id="id221" class="indexterm"></a>need to create an <code class="literal">ActorSystem</code>, and<a id="id222" class="indexterm"></a> then create the actor in it. Note we give the actor a name—<code class="literal">akkademy-db</code>—we use a name to be able to easily look up the<a id="GBS.0089.05"></a> actor in the client, and also to ease debugging as Akka will log the Actor's name in error scenarios.</p>
         </div>
@@ -857,20 +981,23 @@ public class GetRequest implements Serializable { public final String key;
           <p>We need to publish the <a id="id223" class="indexterm"></a>messages locally now so that we can use them in the client project. To publish to Nexus or Artifactory, we would set up the repository information in the <code class="literal">build.sbt</code>, but we'll simply publish them locally.</p>
           <p>We need to add an organization and version<a id="GBS.0090.01"></a> to the <code class="literal">build.sbt</code> file like the following:</p>
           <div class="informalexample">
-            <pre class="programlisting">name := "akkademy-db"
-organization := "com.akkademy-db"
-version := "0.0.1-SNAPSHOT"</pre>
+            <pre class="programlisting">name <code class="hl opt">:=</code> <code class="hl str">&quot;akkademy-db&quot;</code>
+organization <code class="hl opt">:=</code> <code class="hl str">&quot;com.akkademy-db&quot;</code>
+version <code class="hl opt">:=</code> <code class="hl str">&quot;0.0.1-SNAPSHOT&quot;</code></pre>
           </div>
           <p>'-SNAPSHOT' indicates that the version is unstable and can change. As we will probably republish the server, we should add this tag to the version. If we were to release the code, then we would remove the '-SNAPSHOT' tag from the version to indicate that it will not (and<a id="GBS.0090.02"></a> cannot) change again.</p>
           <p>Lastly, we need to exclude the <code class="literal">application.conf</code> file so that the client doesn't try to start a remote server. Again, it's better to put the messages in a standalone library—we're cutting corners for brevity. Put this in your <code class="literal">build.sbt</code> file to exclude the application.conf when publishing:</p>
           <div class="informalexample">
-            <pre class="programlisting">mappings in (Compile, packageBin) ~= { _.filterNot { case (_, name) =&gt;
-  Seq("application.conf").contain<a id="GBS.0090.03"></a>s(name)
-}}</pre>
+            <pre class="programlisting">mappings <code class="hl kwd">in</code> <code class="hl opt">(</code>Compile<code class="hl opt">,</code> packageBin<code class="hl opt">)</code> ~<code class="hl opt">= {</code>
+  _<code class="hl opt">.</code>filterNot <code class="hl opt">{</code>
+    <code class="hl kwa">case</code> <code class="hl opt">(</code>_<code class="hl opt">,</code> name<code class="hl opt">) =&gt;</code>
+      <code class="hl kwd">Seq</code><code class="hl opt">(</code><code class="hl str">&quot;application.conf&quot;</code><code class="hl opt">).</code><code class="hl kwd">contains</code><code class="hl opt">(</code>name<code class="hl opt">)</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>If we put the messages in a separate library (and you certainly can), we wouldn't have needed to exclude the configuration from the build. We're done with the build configuration. From the command line, in the root of our project, we simply run the activator <code class="literal">publish-local</code> target to publish the project:</p>
           <div class="informalexample">
-            <pre class="programlisting">$activator publish-local</pre>
+            <pre class="programlisting">$ activator publish-local</pre>
           </div>
         </div>
         <div title="Starting the DB" class="section">
@@ -883,7 +1010,7 @@ version := "0.0.1-SNAPSHOT"</pre>
           </div>
           <p>We're going to build the client<a id="id224" class="indexterm"></a> next,<a id="GBS.0090.04"></a> and to demonstrate integration, we're going to write some integration tests, so we need the server to be running. We can start the database now:</p>
           <div class="informalexample">
-            <pre class="programlisting">$activator run</pre>
+            <pre class="programlisting">$ activator run</pre>
           </div>
           <p>Akka will log that it is listening for remote connections and tells us the address (which we will use shortly in the client):</p>
           <div class="informalexample">
@@ -920,12 +1047,12 @@ version := "0.0.1-SNAPSHOT"</pre>
           </div>
           <p>We need to add the dependency<a id="id227" class="indexterm"></a> for our project into the <code class="literal">build.sbt</code> file. In the new project, add the following dependencies for our messages in <code class="literal">build.sbt</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">"com.akkademy-db"   %% "akkademy-db"     % "0.0.1-SNAPSHOT"</pre>
+            <pre class="programlisting"><code class="hl str">&quot;com.akkademy-db&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akkademy-db&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;0.0.1-SNAPSHOT&quot;</code></pre>
           </div>
           <p>Apart from the testing frameworks<a id="GBS.0091.02"></a> included in the scaffolding, this dependency includes the dependencies we need to get going with the Scala project.</p>
           <p>In the Java project, we need to also add the scala-java8-compat library to be able to convert the futures the actor will produce:</p>
           <div class="informalexample">
-            <pre class="programlisting">"org.scala-lang.modules" %% "scala-java8-compat" % "0.6.0"</pre>
+            <pre class="programlisting"><code class="hl str">&quot;org.scala-lang.modules&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;scala-java8-compat&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;0.6.0&quot;</code></pre>
           </div>
         </div>
         <div title="Building the client" class="section">
@@ -939,17 +1066,35 @@ version := "0.0.1-SNAPSHOT"</pre>
           <p>In this section, we'll <a id="id228" class="indexterm"></a>build the client to connect to the remote actor,<a id="GBS.0091.03"></a> and then implement methods for the <code class="literal">SetRequest</code> and <code class="literal">GetRequest</code> messages.</p>
           <p>First, the Java code can be placed in <code class="literal">com.akkademy.JClient</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">public class JClient { private final ActorSystem system = ActorSystem.create("LocalSystem"); private final ActorSelection remoteDb; 
-    public JClient(String remoteAddress){ remoteDb = system.actorSelection("akka.tcp://akkademy@" + remoteAddress + "/user/akkademy-db");<a id="GBS.0091.04"></a> }
-    public CompletionStage set(String key, Object value) { return toJava(ask(remoteDb, new SetRequest(key, value), 2000));}
-    public CompletionStage&lt;Object&gt; get(String key){ return toJava(ask(remoteDb, new GetRequest(key), 2000)); }
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">public class</code> JClient <code class="hl opt">{</code>
+  <code class="hl kwa">private final</code> ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl str">&quot;LocalSystem&quot;</code><code class="hl opt">);</code>
+  <code class="hl kwa">private final</code> ActorSelection remoteDb<code class="hl opt">;</code>
+
+  <code class="hl kwa">public</code> <code class="hl kwd">JClient</code><code class="hl opt">(</code>String remoteAddress<code class="hl opt">) {</code>
+    remoteDb <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>
+      <code class="hl str">&quot;akka.tcp://akkademy&#64;&quot;</code> <code class="hl opt">+</code> remoteAddress <code class="hl opt">+</code> <code class="hl str">&quot;/user/akkademy-db&quot;</code><code class="hl opt">);</code>
+  <code class="hl opt">}</code>
+  <code class="hl kwa">public</code> CompletionStage <code class="hl kwd">set</code><code class="hl opt">(</code>String key<code class="hl opt">,</code> Object value<code class="hl opt">) {</code>
+    <code class="hl kwa">return</code> <code class="hl kwd">toJava</code><code class="hl opt">(</code><code class="hl kwd">ask</code><code class="hl opt">(</code>remoteDb<code class="hl opt">,</code> <code class="hl kwa">new</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">),</code> <code class="hl num">2000</code><code class="hl opt">));</code>
+  <code class="hl opt">}</code>
+  <code class="hl kwa">public</code> CompletionStage<code class="hl opt">&lt;</code>Object<code class="hl opt">&gt;</code> <code class="hl kwd">get</code><code class="hl opt">(</code>String key<code class="hl opt">) {</code>
+    <code class="hl kwa">return</code> <code class="hl kwd">toJava</code><code class="hl opt">(</code><code class="hl kwd">ask</code><code class="hl opt">(</code>remoteDb<code class="hl opt">,</code> <code class="hl kwa">new</code> <code class="hl kwd">GetRequest</code><code class="hl opt">(</code>key<code class="hl opt">),</code> <code class="hl num">2000</code><code class="hl opt">));</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>The Scala code can be placed in <code class="literal">com.akkademy.SClient</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">class SClient(remoteAddress: String){ private implicit val timeout = Timeout(2 seconds) private implicit<a id="GBS.0091.05"></a> val system = ActorSystem("LocalSystem") private val remoteDb = system.actorSelection(s"akka.tcp://akkademy@$remoteAddress/user/akkademy-db") def set(key: String, value: Object) = { remoteDb ? SetRequest(key, value) }
-  def get(key: String) = { remoteDb ? GetRequest(key) }
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">class</code> <code class="hl kwd">SClient</code><code class="hl opt">(</code>remoteAddress<code class="hl opt">:</code> String<code class="hl opt">) {</code>
+  <code class="hl kwa">private implicit val</code> timeout <code class="hl opt">=</code> <code class="hl kwd">Timeout</code><code class="hl opt">(</code><code class="hl num">2</code> seconds<code class="hl opt">)</code>
+  <code class="hl kwa">private implicit val</code> system <code class="hl opt">=</code> <code class="hl kwd">ActorSystem</code><code class="hl opt">(</code><code class="hl str">&quot;LocalSystem&quot;</code><code class="hl opt">)</code>
+  <code class="hl kwa">private val</code> remoteDb <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>
+    s<code class="hl str">&quot;akka.tcp://akkademy&#64;$remoteAddress/user/akkademy-db&quot;</code><code class="hl opt">)</code>
+
+  <code class="hl kwa">def</code> <code class="hl kwd">set</code><code class="hl opt">(</code>key<code class="hl opt">:</code> String<code class="hl opt">,</code> value<code class="hl opt">:</code> Object<code class="hl opt">) = {</code>
+    remoteDb ? <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">)</code>
+  <code class="hl opt">}</code>
+  <code class="hl kwa">def</code> <code class="hl kwd">get</code><code class="hl opt">(</code>key<code class="hl opt">:</code> String<code class="hl opt">) = {</code> remoteDb ? <code class="hl kwd">GetRequest</code><code class="hl opt">(</code>key<code class="hl opt">) }</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>The code is fairly simple. First, we create a local <code class="literal">ActorSystem</code>, and then get a reference to the remote actor at the address<a id="GBS.0092.01"></a> provided in the constructor. Next, we create a method for each of the behaviors—get and set. We ask the actor using the messages we imported into our project, and then we return the future. Note we're using an arbitrary timeout value in the asks. Ideally, the timeout should be configurable.</p>
           <p>For the Java code, we convert the <code class="literal">scala.concurrent.Future</code> to <code class="literal">CompletionStage</code> and return that. This gives<a id="GBS.0092.02"></a> us a better Java API for the consumer of our library to work with.</p>
@@ -966,17 +1111,30 @@ version := "0.0.1-SNAPSHOT"</pre>
           <p>We need to make sure the <code class="literal">db</code> is running as these are <a id="id229" class="indexterm"></a>integration tests. Here we'll simply create and then retrieve a record from the remote database.</p>
           <p>The Java example:</p>
           <div class="informalexample">
-            <pre class="programlisting">public class JClientIntegrationTest { JClient client = new JClient("127.0.0.1:2552");<a id="GBS.0092.03"></a>
-    @Test
-    public void itShouldSetRecord() throws Exception { client.set("123", 123); Integer result = (Integer) ((CompletableFuture) client.get("123")).get(); assert(result == 123); }
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">public class</code> JClientIntegrationTest <code class="hl opt">{</code>
+  JClient client <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">JClient</code><code class="hl opt">(</code><code class="hl str">&quot;127.0.0.1:2552&quot;</code><code class="hl opt">);</code>
+  <code class="hl kwc">&#64;Test</code>
+  <code class="hl kwa">public void</code> <code class="hl kwd">itShouldSetRecord</code><code class="hl opt">()</code> <code class="hl kwa">throws</code> Exception <code class="hl opt">{</code>
+    client<code class="hl opt">.</code><code class="hl kwd">set</code><code class="hl opt">(</code><code class="hl str">&quot;123&quot;</code><code class="hl opt">,</code> <code class="hl num">123</code><code class="hl opt">);</code>
+    Integer result <code class="hl opt">= (</code>Integer<code class="hl opt">) (</code>
+      <code class="hl opt">(</code>CompletableFuture<code class="hl opt">)</code> client<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code><code class="hl str">&quot;123&quot;</code><code class="hl opt">)).</code><code class="hl kwd">get</code><code class="hl opt">();</code>
+    <code class="hl kwa">assert</code><code class="hl opt">(</code>result <code class="hl opt">==</code> <code class="hl num">123</code><code class="hl opt">);</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>And the Scala example:</p>
           <div class="informalexample">
-            <pre class="programlisting">class SClientIntegrationSpec extends FunSpecLike with Matchers { val client = new SClient("127.0.0.1:2552")
-  describe("akkademyDbClient") { it("should set a value"){ client.set("123",<a id="GBS.0092.04"></a> new Integer(123)) val futureResult = client.get("123") val result = Await.result(futureResult, 10 seconds) result should equal(123) }
-  }
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">class</code> SClientIntegrationSpec <code class="hl kwa">extends</code> FunSpecLike <code class="hl kwa">with</code> Matchers <code class="hl opt">{</code>
+  <code class="hl kwa">val</code> client <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">SClient</code><code class="hl opt">(</code><code class="hl str">&quot;127.0.0.1:2552&quot;</code><code class="hl opt">)</code>
+  <code class="hl kwd">describe</code><code class="hl opt">(</code><code class="hl str">&quot;akkademyDbClient&quot;</code><code class="hl opt">) {</code>
+    <code class="hl kwd">it</code><code class="hl opt">(</code><code class="hl str">&quot;should set a value&quot;</code><code class="hl opt">) {</code>
+      client<code class="hl opt">.</code><code class="hl kwd">set</code><code class="hl opt">(</code><code class="hl str">&quot;123&quot;</code><code class="hl opt">,</code> <code class="hl kwa">new</code> <code class="hl kwd">Integer</code><code class="hl opt">(</code><code class="hl num">123</code><code class="hl opt">))</code>
+      <code class="hl kwa">val</code> futureResult <code class="hl opt">=</code> client<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code><code class="hl str">&quot;123&quot;</code><code class="hl opt">)</code>
+      <code class="hl kwa">val</code> result <code class="hl opt">=</code> Await<code class="hl opt">.</code><code class="hl kwd">result</code><code class="hl opt">(</code>futureResult<code class="hl opt">,</code> <code class="hl num">10</code> seconds<code class="hl opt">)</code>
+      result should <code class="hl kwd">equal</code><code class="hl opt">(</code><code class="hl num">123</code><code class="hl opt">)</code>
+    <code class="hl opt">}</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>This takes the knowledge we gained about working with Futures to be able to test our API. We use Awaits/get as it's just a test case, but we now have definitive proof that building distributed applications is feasible with Akka. And we're only on <a href="ch02.html" title="Chapter 2. Actors and Concurrency" class="link">Chapter2</a>, <span class="emphasis"><em><a id="GBS.0092.05"></a>Actors and Concurrency</em></span>
 </p>

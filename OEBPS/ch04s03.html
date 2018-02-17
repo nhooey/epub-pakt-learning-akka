@@ -62,16 +62,16 @@
           <p>Similar to this <a id="id338" class="indexterm"></a>example, it's very common for an Actor to be in a state where it can't process certain<a id="GBS.0140.02"></a> messages. If the database client is offline, it isn't <a id="id339" class="indexterm"></a>going to be able to handle any messages until it is online. We could have the client connection continue to restart until it connects, in which case it will drop every message it encounters until it's able to connect successfully. Or we could have the client set the messages it cannot handle aside while waiting for the client to enter a connected<a id="GBS.0140.03"></a> state.</p>
           <p>Akka has a mechanism called <code class="literal">stash</code> to do this. Stashing messages puts the message off to the side in a separate queue that it cannot currently handle:</p>
           <div class="informalexample">
-            <pre class="programlisting">if(cantHandleMessage){ stash(); }else{ handleMessage(message); }</pre>
+            <pre class="programlisting"><code class="hl kwa">if</code> <code class="hl opt">(</code>cantHandleMessage<code class="hl opt">) {</code> <code class="hl kwd">stash</code><code class="hl opt">(); }</code> <code class="hl kwa">else</code> <code class="hl opt">{</code> <code class="hl kwd">handleMessage</code><code class="hl opt">(</code>message<code class="hl opt">); }</code></pre>
           </div>
           <p>Unstash puts the messages that were set aside back into the mailbox queue for the actor to handle.</p>
           <div class="informalexample">
-            <pre class="programlisting">changeStateToOnline(); unstash();
+            <pre class="programlisting"><code class="hl kwd">changeStateToOnline</code><code class="hl opt">();</code> <code class="hl kwd">unstash</code><code class="hl opt">();</code>
 
-To use stash in Java, your Actor will extend<a id="GBS.0140.04"></a> AbstractActorWithStash:
-class RemoteActorProxy extends AbstractActorWithStash { [...] }
-To use stash in Scala, you mix in the stash trait:
-class RemoteActorProxy extends Actor with Stash { [...] }</pre>
+<code class="hl slc">// To use stash in Java, your Actor will extend AbstractActorWithStash:</code>
+<code class="hl kwa">class</code> RemoteActorProxy <code class="hl kwa">extends</code> AbstractActorWithStash <code class="hl opt">{ [...] }</code>
+<code class="hl slc">// To use stash in Scala, you mix in the stash trait:</code>
+<code class="hl kwa">class</code> RemoteActorProxy <code class="hl kwa">extends</code> Actor <code class="hl kwa">with</code> Stash <code class="hl opt">{ [...] }</code></pre>
           </div>
           <p>We'll use this mechanism now to demonstrate how to make a client switch between online and offline states.</p>
           <div title="Note" style="" class="note">
@@ -94,9 +94,29 @@ class RemoteActorProxy extends Actor with Stash { [...] }</pre>
         <p>You can store a Boolean to say if you're connected to the database, and if you're connected, try to handle the message. If you're<a id="GBS.0141.01"></a> not, you can fail.</p>
         <p>The following is a Java example of storing state and handling behavior with conditional statements:</p>
         <div class="informalexample">
-          <pre class="programlisting">private Boolean online = false; public PartialFunction receive() { return RecieveBuilder. match(GetRequest.class, x -&gt; { if(online) { processMessage(x); } else { stash(); } }). match(Connected.class, x -&gt; { online = true; unstash(); ). match(Disconnected.class, x -&gt; online = false).<a id="GBS.0141.02"></a> build(); 
-Here is the Scala equivalent to storing state and changing behavior with conditionals:
- var online = false def receive = { case x: GetRequest =&gt; if(online) processMessage(x) else stash() case _: Connected =&gt; online = true unstash() case _: Disconnected =&gt; online = false }</pre>
+          <pre class="programlisting"><code class="hl kwa">private</code> Boolean online <code class="hl opt">=</code> <code class="hl kwb">false</code><code class="hl opt">;</code>
+<code class="hl kwa">public</code> PartialFunction <code class="hl kwd">receive</code><code class="hl opt">() {</code>
+ <code class="hl kwa">return</code> RecieveBuilder
+   <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>GetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> x <code class="hl opt">-&gt; {</code>
+     <code class="hl kwa">if</code> <code class="hl opt">(</code>online<code class="hl opt">) {</code> <code class="hl kwd">processMessage</code><code class="hl opt">(</code>x<code class="hl opt">); }</code> <code class="hl kwa">else</code> <code class="hl opt">{</code> <code class="hl kwd">stash</code><code class="hl opt">(); }</code>
+   <code class="hl opt">})</code>
+   <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>Connected<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> x <code class="hl opt">-&gt; {</code> online <code class="hl opt">=</code> <code class="hl kwb">true</code><code class="hl opt">;</code> <code class="hl kwd">unstash</code><code class="hl opt">(); )</code>
+   <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>Disconnected<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> x <code class="hl opt">-&gt;</code> online <code class="hl opt">=</code> <code class="hl kwb">false</code><code class="hl opt">)</code>
+   <code class="hl opt">.</code><code class="hl kwd">build</code><code class="hl opt">();</code>
+
+<code class="hl slc">// Here is the Scala equivalent to storing state and changing behavior with conditionals:</code>
+<code class="hl kwa">var</code> online <code class="hl opt">=</code> <code class="hl kwb">false</code>
+<code class="hl kwa">def</code> receive <code class="hl opt">= {</code>
+  <code class="hl kwa">case</code> x<code class="hl opt">:</code> GetRequest <code class="hl opt">=&gt;</code>
+    <code class="hl kwa">if</code> <code class="hl opt">(</code>online<code class="hl opt">)</code> <code class="hl kwd">processMessage</code><code class="hl opt">(</code>x<code class="hl opt">)</code> <code class="hl kwa">else</code> <code class="hl kwd">stash</code><code class="hl opt">()</code>
+
+  <code class="hl kwa">case</code> _<code class="hl opt">:</code> Connected <code class="hl opt">=&gt;</code>
+    online <code class="hl opt">=</code> <code class="hl kwb">true</code>
+    <code class="hl kwd">unstash</code><code class="hl opt">()</code>
+
+  <code class="hl kwa">case</code> _<code class="hl opt">:</code> Disconnected <code class="hl opt">=&gt;</code>
+    online <code class="hl opt">=</code> <code class="hl kwb">false</code>
+<code class="hl opt">}</code></pre>
         </div>
         <p>This conditional statement is the most basic way to express different behavior based on state stored in an actor.<a id="GBS.0141.03"></a> We store a Boolean called <code class="literal">online</code> that represents if the actor is connected or not. If the actor is connected, it processes the message. If it is not connected, it stashes the messages, as covered previously. If it receives a Connected message, then it changes its state to be online and unstashes all of the messages. Because of the use of <code class="literal">stash</code>/<code class="literal">unstash</code>, once it comes online, the actor will then<a id="GBS.0141.04"></a> process any messages it stashed.</p>
         <p>It's very common for an actor to store state and behave differently depending on that state. Using conditionals is a very procedural approach to dealing with behavior and state. Fortunately, Akka<a id="id341" class="indexterm"></a> gives us a couple of better options.</p>
@@ -118,11 +138,38 @@ Here is the Scala equivalent to storing state and changing behavior with conditi
         </div>
         <p>Let's look at how using this mechanism<a id="GBS.0142.01"></a> can improve our previous example:</p>
         <div class="informalexample">
-          <pre class="programlisting">public PartialFunction receive() { return RecieveBuilder. match(GetRequest.class, x -&gt; stash()). match(Connected.class, x -&gt; { context().become(online); unstash(); }). build(); } final private PartialFunction&lt;Object, BoxedUnit&gt; online(final ActorRef another) { return RecieveBuilder. match(GetRequest.class, x -&gt; processMessage(x)). build(); }</pre>
+          <pre class="programlisting"><code class="hl kwa">public</code> PartialFunction <code class="hl kwd">receive</code><code class="hl opt">() {</code>
+  <code class="hl kwa">return</code> RecieveBuilder
+    <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>GetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> x <code class="hl opt">-&gt;</code> <code class="hl kwd">stash</code><code class="hl opt">())</code>
+    <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>Connected<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> x <code class="hl opt">-&gt; {</code>
+      <code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">become</code><code class="hl opt">(</code>online<code class="hl opt">);</code> <code class="hl kwd">unstash</code><code class="hl opt">();</code>
+    <code class="hl opt">})</code>
+    <code class="hl opt">.</code><code class="hl kwd">build</code><code class="hl opt">();</code>
+<code class="hl opt">}</code>
+
+<code class="hl kwa">final private</code> PartialFunction<code class="hl opt">&lt;</code>Object<code class="hl opt">,</code> BoxedUnit<code class="hl opt">&gt;</code>
+    <code class="hl kwd">online</code><code class="hl opt">(</code><code class="hl kwa">final</code> ActorRef another<code class="hl opt">) {</code>
+  <code class="hl kwa">return</code> RecieveBuilder
+    <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>GetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> x <code class="hl opt">-&gt;</code> <code class="hl kwd">processMessage</code><code class="hl opt">(</code>x<code class="hl opt">))</code>
+    <code class="hl opt">.</code><code class="hl kwd">build</code><code class="hl opt">();</code>
+<code class="hl opt">}</code></pre>
         </div>
         <p>Here is the Scala<a id="GBS.0142.02"></a> equivalent:</p>
         <div class="informalexample">
-          <pre class="programlisting">  def receive = { case x: GetRequest =&gt; stash() case _: Connected =&gt; become(online) unstash() } def online: Receive = { case x: GetRequest =&gt; processMessage(x) case _: Disconnected =&gt; unbecome() }</pre>
+          <pre class="programlisting"><code class="hl kwa">def</code> receive <code class="hl opt">= {</code>
+  <code class="hl kwa">case</code> x<code class="hl opt">:</code> GetRequest <code class="hl opt">=&gt;</code>
+    <code class="hl kwd">stash</code><code class="hl opt">()</code>
+  <code class="hl kwa">case</code> _<code class="hl opt">:</code> Connected <code class="hl opt">=&gt;</code>
+    <code class="hl kwd">become</code><code class="hl opt">(</code>online<code class="hl opt">)</code>
+    <code class="hl kwd">unstash</code><code class="hl opt">()</code>
+<code class="hl opt">}</code>
+
+<code class="hl kwa">def</code> online<code class="hl opt">:</code> Receive <code class="hl opt">= {</code>
+  <code class="hl kwa">case</code> x<code class="hl opt">:</code> GetRequest <code class="hl opt">=&gt;</code>
+    <code class="hl kwd">processMessage</code><code class="hl opt">(</code>x<code class="hl opt">)</code>
+  <code class="hl kwa">case</code> _<code class="hl opt">:</code> Disconnected <code class="hl opt">=&gt;</code>
+    <code class="hl kwd">unbecome</code><code class="hl opt">()</code>
+<code class="hl opt">}</code></pre>
         </div>
         <p>This has better readability than conditional statements. Each state's behavior is described in its own <code class="literal">PartialFunction</code> where pattern matching and behavior are described. This lets us read<a id="GBS.0142.03"></a> the behavior of the actor in its different states independently.</p>
         <p>The actor starts in the offline state where it will stash messages it is not able to respond to <code class="literal">(GetRequest)</code>. Those messages get set aside until the <code class="literal">Connected</code> message is received. Once the Connected message is received, then the actor calls become to change its behavior to the online state described in the online method. At this<a id="GBS.0142.04"></a> time, the actor also calls <code class="literal">unstash</code> to put the messages set aside, back into the queue. Now all of the messages will be processed with the new behavior.</p>
@@ -139,12 +186,16 @@ Here is the Scala equivalent to storing state and changing behavior with conditi
           <p>The most basic way to do this is to schedule a timeout message to be sent to the actor after a certain period of time.</p>
           <p>We can schedule one message in the actor's constructor or <code class="literal">postStart </code>hook, and then when it is<a id="GBS.0143.02"></a> received, check that the actor is connected. If it's not connected, then the actor can escalate the problem and have the supervisor take action:</p>
           <div class="informalexample">
-            <pre class="programlisting">system.scheduler().scheduleOnce(Duration.create(1000, TimeUnit.MILLISECONDS), self(), CheckConnected, system.dispatcher(), null);</pre>
+            <pre class="programlisting">system<code class="hl opt">.</code><code class="hl kwd">scheduler</code><code class="hl opt">().</code><code class="hl kwd">scheduleOnce</code><code class="hl opt">(</code>
+  Duration<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl num">1000</code><code class="hl opt">,</code> TimeUnit<code class="hl opt">.</code>MILLISECONDS<code class="hl opt">),</code>
+  <code class="hl kwd">self</code><code class="hl opt">(),</code> CheckConnected<code class="hl opt">,</code> system<code class="hl opt">.</code><code class="hl kwd">dispatcher</code><code class="hl opt">(),</code> <code class="hl kwb">null</code>
+<code class="hl opt">);</code></pre>
           </div>
           <p>If the actor receives the message and it is online, it will be ignored. If the actor receives the message and it is not online,<a id="GBS.0143.03"></a> then it will throw an exception:</p>
           <div class="informalexample">
-            <pre class="programlisting"> .match(CheckConnected.class, msg -&gt; throw new ConnectTimeoutException())
-case _: CheckConnected =&gt; throw new ConnectTimeoutException</pre>
+            <pre class="programlisting"><code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>CheckConnected<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> msg <code class="hl opt">-&gt;</code> <code class="hl kwa">throw new</code> <code class="hl kwd">ConnectTimeoutException</code><code class="hl opt">())</code>
+<code class="hl kwa">case</code> _<code class="hl opt">:</code> CheckConnected <code class="hl opt">=&gt;</code>
+  <code class="hl kwa">throw new</code> ConnectTimeoutException</pre>
           </div>
         </div>
         <div title="Finite State Machines (FSM)" class="section">
@@ -174,7 +225,13 @@ case _: CheckConnected =&gt; throw new ConnectTimeoutException</pre>
 <span class="strong"><strong>Round-trip Delay Time</strong></span> (<span class="strong"><strong>RTD</strong></span> or <span class="strong"><strong>RTT</strong></span>). One of the Reactive Tenets is to be responsive<a id="GBS.0144.03"></a> to our users, so we want to eliminate the amount of time we spend waiting for messages to travel over the network.</p>
           <p>One way we can improve our datastore API is to allow the datastore to accept a list. This would let us send multiple operations in a single request:</p>
           <div class="informalexample">
-            <pre class="programlisting">ask(remoteActorSelection, Arrays.asList( new SetRequest(id, user, sender), new SetRequest("profile-" + id, profile, sender)), timeout);<a id="GBS.0144.04"></a> remoteActorSelection ? List( SetRequest(id, user, sender), SetRequest("profile-"+id, profile, sender) )</pre>
+            <pre class="programlisting"><code class="hl kwd">ask</code><code class="hl opt">(</code>remoteActorSelection<code class="hl opt">,</code> Arrays<code class="hl opt">.</code><code class="hl kwd">asList</code><code class="hl opt">(</code>
+  <code class="hl kwa">new</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>id<code class="hl opt">,</code> user<code class="hl opt">,</code> sender<code class="hl opt">),</code>
+  <code class="hl kwa">new</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code><code class="hl str">&quot;profile-&quot;</code> <code class="hl opt">+</code> id<code class="hl opt">,</code> profile<code class="hl opt">,</code> sender<code class="hl opt">)),</code>
+  timeout<code class="hl opt">);</code>
+
+remoteActorSelection ? <code class="hl kwd">List</code><code class="hl opt">(</code><code class="hl kwd">SetRequest</code><code class="hl opt">(</code>id<code class="hl opt">,</code> user<code class="hl opt">,</code> sender<code class="hl opt">),</code>
+                            <code class="hl kwd">SetRequest</code><code class="hl opt">(</code><code class="hl str">&quot;profile-&quot;</code><code class="hl opt">+</code>id<code class="hl opt">,</code> profile<code class="hl opt">,</code> sender<code class="hl opt">))</code></pre>
           </div>
           <p>Note that on the preceding snippet showing the list, we've included a sender in the messages to allow us to complete futures or reply to Actors.</p>
           <p>Trying to create a single list in an application request could prove to be inconvenient to the users of our library. We can improve the client API<a id="GBS.0144.05"></a> to handle this concern.</p>
@@ -201,11 +258,14 @@ case _: CheckConnected =&gt; throw new ConnectTimeoutException</pre>
           </div>
           <p>We use an <code class="literal">enum</code> in Java for the states:</p>
           <div class="informalexample">
-            <pre class="programlisting">enum State{ DISCONNECTED, CONNECTED, CONNECTED_AND_PENDING, }</pre>
+            <pre class="programlisting"><code class="hl kwa">enum</code> State<code class="hl opt">{</code> DISCONNECTED<code class="hl opt">,</code> CONNECTED<code class="hl opt">,</code> CONNECTED_AND_PENDING<code class="hl opt">, }</code></pre>
           </div>
           <p>In Scala, we can use case objects<a id="GBS.0145.03"></a> instead:</p>
           <div class="informalexample">
-            <pre class="programlisting">sealed trait State case object Disconnected extends State case object Connected extends State case object ConnectedAndPending extends State</pre>
+            <pre class="programlisting"><code class="hl kwa">sealed trait</code> State
+<code class="hl kwa">case object</code> Disconnected <code class="hl kwa">extends</code> State
+<code class="hl kwa">case object</code> Connected <code class="hl kwa">extends</code> State
+<code class="hl kwa">case object</code> ConnectedAndPending <code class="hl kwa">extends</code> State</pre>
           </div>
         </div>
         <div title="Defining the state container" class="section">
@@ -219,13 +279,13 @@ case _: CheckConnected =&gt; throw new ConnectTimeoutException</pre>
           <p>We've described the states, now <a id="id349" class="indexterm"></a>we need to define the state container for the actor. The state container is where we will store the messages. The FSM allows us to define the state container and change it between states,<a id="GBS.0145.04"></a> so our use case maps quite nicely to the FSM as we'll change the state container when we change between states.</p>
           <p>For our state container, we'll store a list of requests to be processed on a flush event:</p>
           <div class="informalexample">
-            <pre class="programlisting">public class EventQueue extends LinkedList&lt;Request&gt; {}</pre>
+            <pre class="programlisting"><code class="hl kwa">public class</code> EventQueue <code class="hl kwa">extends</code> LinkedList<code class="hl opt">&lt;</code>Request<code class="hl opt">&gt; {}</code></pre>
           </div>
           <p>In Scala, we'll use a type definition for this purpose:</p>
           <div class="informalexample">
-            <pre class="programlisting">object StateContainerTypes { type RequestQueue = List[Request] }
-public class Flush<a id="GBS.0145.05"></a> {}
-case object Flush</pre>
+            <pre class="programlisting"><code class="hl kwa">object</code> StateContainerTypes <code class="hl opt">{</code> <code class="hl kwa">type</code> RequestQueue <code class="hl opt">=</code> List<code class="hl opt">[</code>Request<code class="hl opt">] }</code>
+<code class="hl kwa">public class</code> Flush <code class="hl opt">{}</code>
+<code class="hl kwa">case object</code> Flush</pre>
           </div>
           <p>Now we're ready to build the actor's behavior.</p>
         </div>
@@ -241,28 +301,89 @@ case object Flush</pre>
           <p>In Java8, we <a id="id351" class="indexterm"></a>extend <code class="literal">akka.actor.AbstractFSM&lt;S, D&gt;</code>
 </p>
           <div class="informalexample">
-            <pre class="programlisting">public class BunchingAkkademyClient extends AbstractFSM&lt;State, RequestQueue&gt;{ {//init block } }</pre>
+            <pre class="programlisting"><code class="hl kwa">public class</code> BunchingAkkademyClient
+    <code class="hl kwa">extends</code> AbstractFSM<code class="hl opt">&lt;</code>State<code class="hl opt">,</code> RequestQueue<code class="hl opt">&gt; {</code>
+  <code class="hl opt">{</code>
+    <code class="hl slc">// init block</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>Note that we create an init block—we describe the behavior in this init block.</p>
           <p>In Scala, we extend <code class="literal">akka.actor.FSM[S,<a id="GBS.0146.01"></a> D]</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">class BunchingAkkademyClient extends FSM[State, RequestQueue]{ }</pre>
+            <pre class="programlisting"><code class="hl kwa">class</code> BunchingAkkademyClient <code class="hl kwa">extends</code> FSM<code class="hl opt">[</code>State<code class="hl opt">,</code> RequestQueue<code class="hl opt">] { }</code></pre>
           </div>
           <p>In the actors, we can now use the FSM API to describe the behavior in different states. First, we call the <code class="literal">startWith</code> method to describe how the actor starts:</p>
           <div class="informalexample">
-            <pre class="programlisting">{ startWith(DISCONNECTED, null); }
-  startWith(Disconnected, null) //scala needs no init block!</pre>
+            <pre class="programlisting"><code class="hl opt">{</code> <code class="hl kwd">startWith</code><code class="hl opt">(</code>DISCONNECTED<code class="hl opt">,</code> <code class="hl kwb">null</code><code class="hl opt">); }</code>
+<code class="hl kwd">startWith</code><code class="hl opt">(</code>Disconnected<code class="hl opt">,</code> <code class="hl kwb">null</code><code class="hl opt">)</code> <code class="hl slc">// scala needs no init block!</code></pre>
           </div>
           <p>Then we describe how different messages are responded to in different states<a id="GBS.0146.02"></a> and how the state changes depending on the message. There are a few ways to describe the behavior. The one that you'll be most comfortable with is calling <code class="literal">when</code> (S state, <code class="literal">PartialFunction pf</code>). We can build the behavior for each case by calling the <code class="literal">when</code> statement several times.</p>
           <p>In Java, we can build a partial function again using tools that Akka gives us similar to the <code class="literal">ReceiveBuilder</code>.</p>
           <p>We'll describe<a id="GBS.0146.03"></a> each of the<a id="id352" class="indexterm"></a> states and the response to<a id="id353" class="indexterm"></a> Flush, Connected, and Request messages:</p>
           <div class="informalexample">
-            <pre class="programlisting">        when(DISCONNECTED, matchEvent(FlushMsg.class, (msg, container) -&gt; stay()) .event(GetRequest.class, (msg, container) -&gt; { container.add(msg); return stay(); }).event(Tcp.Connected.class, (msg, container) -&gt; { if(container.getFirst() == null){ return goTo(CONNECTED); }else{ return goTo(CONNECTED_AND_PENDING);<a id="GBS.0146.04"></a> } })); when(CONNECTED, matchEvent(FlushMsg.class, (msg, container) -&gt; stay()) .event(GetRequest.class, (msg, container) -&gt; { container.add(msg); return goTo(CONNECTED_AND_PENDING); })); when(CONNECTED_AND_PENDING, matchEvent(FlushMsg.class, (msg, container) -&gt; { container = new EventQueue(); return stay(); }) .event(GetRequest.class, (msg, container) -&gt; { container.add(msg); return goTo(CONNECTED_AND_PENDING);<a id="GBS.0146.05"></a> })); 
-         scala.PartialFunction pf = ReceiveBuilder.match(String.class, x -&gt; System.out.println(x)).build(); when(CONNECTED, pf);</pre>
+            <pre class="programlisting"><code class="hl kwd">when</code><code class="hl opt">(</code>DISCONNECTED<code class="hl opt">,</code> <code class="hl kwd">matchEvent</code><code class="hl opt">(</code>FlushMsg<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">, (</code>msg<code class="hl opt">,</code> container<code class="hl opt">) -&gt;</code> <code class="hl kwd">stay</code><code class="hl opt">())</code>
+  <code class="hl opt">.</code><code class="hl kwd">event</code><code class="hl opt">(</code>GetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">, (</code>msg<code class="hl opt">,</code> container<code class="hl opt">) -&gt; {</code>
+    container<code class="hl opt">.</code><code class="hl kwd">add</code><code class="hl opt">(</code>msg<code class="hl opt">);</code>
+    <code class="hl kwa">return</code> <code class="hl kwd">stay</code><code class="hl opt">();</code>
+  <code class="hl opt">})</code>
+  <code class="hl opt">.</code><code class="hl kwd">event</code><code class="hl opt">(</code>Tcp<code class="hl opt">.</code>Connected<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">, (</code>msg<code class="hl opt">,</code> container<code class="hl opt">) -&gt; {</code>
+    <code class="hl kwa">if</code> <code class="hl opt">(</code>container<code class="hl opt">.</code><code class="hl kwd">getFirst</code><code class="hl opt">() ==</code> <code class="hl kwb">null</code><code class="hl opt">) {</code>
+      <code class="hl kwa">return</code> <code class="hl kwd">goTo</code><code class="hl opt">(</code>CONNECTED<code class="hl opt">);</code>
+    <code class="hl opt">}</code> <code class="hl kwa">else</code> <code class="hl opt">{</code>
+      <code class="hl kwa">return</code> <code class="hl kwd">goTo</code><code class="hl opt">(</code>CONNECTED_AND_PENDING<code class="hl opt">);</code>
+    <code class="hl opt">}</code>
+  <code class="hl opt">})</code>
+<code class="hl opt">);</code>
+
+<code class="hl kwd">when</code><code class="hl opt">(</code>CONNECTED<code class="hl opt">,</code> <code class="hl kwd">matchEvent</code><code class="hl opt">(</code>FlushMsg<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">, (</code>msg<code class="hl opt">,</code> container<code class="hl opt">) -&gt;</code> <code class="hl kwd">stay</code><code class="hl opt">())</code>
+  <code class="hl opt">.</code><code class="hl kwd">event</code><code class="hl opt">(</code>GetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">, (</code>msg<code class="hl opt">,</code> container<code class="hl opt">) -&gt; {</code>
+    container<code class="hl opt">.</code><code class="hl kwd">add</code><code class="hl opt">(</code>msg<code class="hl opt">);</code> <code class="hl kwa">return</code> <code class="hl kwd">goTo</code><code class="hl opt">(</code>CONNECTED_AND_PENDING<code class="hl opt">);</code>
+  <code class="hl opt">})</code>
+<code class="hl opt">);</code>
+
+<code class="hl kwd">when</code><code class="hl opt">(</code>CONNECTED_AND_PENDING<code class="hl opt">,</code> <code class="hl kwd">matchEvent</code><code class="hl opt">(</code>FlushMsg<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code>
+    <code class="hl opt">(</code>msg<code class="hl opt">,</code> container<code class="hl opt">) -&gt; {</code>
+      container <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">EventQueue</code><code class="hl opt">();</code> <code class="hl kwa">return</code> <code class="hl kwd">stay</code><code class="hl opt">();</code>
+  <code class="hl opt">})</code>
+  <code class="hl opt">.</code><code class="hl kwd">event</code><code class="hl opt">(</code>GetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">, (</code>msg<code class="hl opt">,</code> container<code class="hl opt">) -&gt; {</code>
+    container<code class="hl opt">.</code><code class="hl kwd">add</code><code class="hl opt">(</code>msg<code class="hl opt">);</code>
+    <code class="hl kwa">return</code> <code class="hl kwd">goTo</code><code class="hl opt">(</code>CONNECTED_AND_PENDING<code class="hl opt">);</code>
+  <code class="hl opt">})</code>
+<code class="hl opt">);</code>
+
+scala<code class="hl opt">.</code>PartialFunction pf <code class="hl opt">=</code> ReceiveBuilder<code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>
+    String<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> x <code class="hl opt">-&gt;</code> System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code>x<code class="hl opt">))</code>
+  <code class="hl opt">.</code><code class="hl kwd">build</code><code class="hl opt">();</code>
+
+<code class="hl kwd">when</code><code class="hl opt">(</code>CONNECTED<code class="hl opt">,</code> pf<code class="hl opt">);</code></pre>
           </div>
-          <p>And for Scala, we use pattern matching to describe the <code class="literal">PartialFunction</code> in each state with <code class="literal">when</code>(state):</p>
+          <p>And for Scala, we use pattern matching to describe the <code class="literal">PartialFunction</code> in each state with <code><code class="literal">when</code>(state)</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">  when(Disconnected){ case (_: Connected, container: RequestQueue) =&gt; if (container.headOption.isEmpty) goto(Connected) else goto(ConnectedAndPending) case (x:<a id="GBS.0147.01"></a> GetRequest, container: RequestQueue) =&gt; stay using(container :+ x) } when (Connected) { case (x: GetRequest, container: RequestQueue) =&gt; goto(ConnectedAndPending) using(container :+ x) } when (ConnectedAndPending) { case (Flush, container) =&gt; remoteDb ! container; container = Nil goto(Connected) case (x: GetRequest, container: RequestQueue) =&gt; stay using(container :+ x) }</pre>
+            <pre class="programlisting"><code class="hl kwd">when</code> <code class="hl opt">(</code>Disconnected<code class="hl opt">) {</code>
+  <code class="hl kwa">case</code> <code class="hl opt">(</code>_<code class="hl opt">:</code> Connected<code class="hl opt">,</code> container<code class="hl opt">:</code> RequestQueue<code class="hl opt">) =&gt;</code>
+    <code class="hl kwa">if</code> <code class="hl opt">(</code>container<code class="hl opt">.</code>headOption<code class="hl opt">.</code>isEmpty<code class="hl opt">)</code> <code class="hl kwa">goto</code><code class="hl opt">(</code>Connected<code class="hl opt">)</code>
+    <code class="hl kwa">else goto</code><code class="hl opt">(</code>ConnectedAndPending<code class="hl opt">)</code>
+
+  <code class="hl kwa">case</code> <code class="hl opt">(</code>x<code class="hl opt">:</code> GetRequest<code class="hl opt">,</code> container<code class="hl opt">:</code> RequestQueue<code class="hl opt">) =&gt;</code>
+    stay <code class="hl kwd">using</code><code class="hl opt">(</code>container <code class="hl opt">:+</code> x<code class="hl opt">)</code>
+<code class="hl opt">}</code>
+
+<code class="hl kwd">when</code> <code class="hl opt">(</code>Connected<code class="hl opt">) {</code>
+  <code class="hl kwa">case</code> <code class="hl opt">(</code>x<code class="hl opt">:</code> GetRequest<code class="hl opt">,</code> container<code class="hl opt">:</code> RequestQueue<code class="hl opt">) =&gt;</code>
+    <code class="hl kwa">goto</code><code class="hl opt">(</code>ConnectedAndPending<code class="hl opt">)</code>
+    <code class="hl kwd">using</code><code class="hl opt">(</code>container <code class="hl opt">:+</code> x<code class="hl opt">)</code>
+<code class="hl opt">}</code>
+
+<code class="hl kwd">when</code> <code class="hl opt">(</code>ConnectedAndPending<code class="hl opt">) {</code>
+  <code class="hl kwa">case</code> <code class="hl opt">(</code>Flush<code class="hl opt">,</code> container<code class="hl opt">) =&gt;</code>
+    remoteDb <code class="hl opt">!</code> container
+    container <code class="hl opt">=</code> Nil
+    <code class="hl kwa">goto</code><code class="hl opt">(</code>Connected<code class="hl opt">)</code>
+
+  <code class="hl kwa">case</code> <code class="hl opt">(</code>x<code class="hl opt">:</code> GetRequest<code class="hl opt">,</code> container<code class="hl opt">:</code> RequestQueue<code class="hl opt">) =&gt;</code>
+    stay <code class="hl kwd">using</code><code class="hl opt">(</code>container <code class="hl opt">:+</code> x<code class="hl opt">)</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>In Both the Java and<a id="GBS.0147.02"></a> Scala examples, we describe the three states. The <code class="literal">Disconnected</code> state will store messages or go online. It will ignore messages other than <code class="literal">Connected</code> or <code class="literal">GetRequest</code>.</p>
           <p>In the <code class="literal">Connected</code> state, we<a id="id354" class="indexterm"></a> only care about messages<a id="id355" class="indexterm"></a> that make us transition to the <code class="literal">ConnectedAndPending</code> state.</p>
@@ -271,7 +392,7 @@ case object Flush</pre>
           <p>The actor has to return a description of states that it either stays in or moves to in the FSM, which<a id="GBS.0147.04"></a> means that, compared to hotswap, the FSM requires a more descriptive actor. There is some boilerplate to using FSM, but it can produce clearer actor code in some cases. It's possible to use either hotswap or FSM for actor with different behavior in states. You can evaluate which will produce more usable code for your use case. FSM is another tool in your toolbelt—in many cases, hotswap will be enough<a id="GBS.0147.05"></a> and simpler, but FSMs might have maintainability benefits in some cases.</p>
           <p>The last thing we do in the block is call <code class="literal">initialize()</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">initialize();</pre>
+            <pre class="programlisting"><code class="hl kwd">initialize</code><code class="hl opt">();</code></pre>
           </div>
         </div>
       </div>

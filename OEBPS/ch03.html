@@ -63,11 +63,12 @@
               <li class="listitem">Run—<code class="literal">Activator<a id="GBS.0096.01"></a> run</code></li>
               <li class="listitem">Select a <code class="literal">minimal-java</code> or <code class="literal">minimal-scala</code> project.</li>
               <li class="listitem">Call the <code class="literal">akkademaid</code> project.</li>
-              <li class="listitem">Add the <code class="literal">akkademy-db</code> and <code class="literal">boilerpipe</code> dependencies to <code class="literal">build.sbt</code>:<div class="informalexample"><pre class="programlisting">libraryDependencies ++= Seq( 
-"com.syncthemall" % "boilerpipe" % "1.2.2", 
-"com.akkademy-db" %% "akkademy-db-scala" % "0.0.1-SNAPSHOT", 
-"com.syncthemail" % "boilerpipe" % "1.2.2"
-)</pre></div></li>
+              <li class="listitem">Add the <code class="literal">akkademy-db</code> and <code class="literal">boilerpipe</code> dependencies to <code class="literal">build.sbt</code>:<div class="informalexample">
+                  <pre class="programlisting">
+libraryDependencies <code class="hl opt">++=</code> <code class="hl kwd">Seq</code><code class="hl opt">(</code>
+  <code class="hl str">&quot;com.syncthemall&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;boilerpipe&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;1.2.2&quot;</code><code class="hl opt">,</code>
+  <code class="hl str">&quot;com.akkademy-db&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akkademy-db-scala&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;0.0.1-SNAPSHOT&quot;</code><code class="hl opt">,</code>
+  <code class="hl str">&quot;com.syncthemail&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;boilerpipe&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;1.2.2&quot;</code><code class="hl opt">)</code></pre></div></li>
             </ol>
           </div>
           <p><code class="literal">Akkademy-DB</code> is added as a dependency for Akka and the messages needed to<a id="GBS.0096.02"></a> communicate with it. We add the <code class="literal">boilerpipe</code> Java library to help with our requirement of getting the body text from a web page. Test frameworks will be included in <code class="literal">build.sbt</code> by default.</p>

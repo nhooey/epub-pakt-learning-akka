@@ -41,20 +41,29 @@
           <p>First, we need to configure<a id="id446" class="indexterm"></a> Akka to be able to create a cluster. We have to do a few things to the project—first, add <code class="literal">Cluster</code> to the project and, then, add the appropriate entries in <code class="literal">application.conf</code>. You can start a new project using <code class="literal">activator new</code> as we'll go over all of the configuration needed in the project. Completed projects<a id="GBS.0187.05"></a> are available on GitHub at <a href="https://github.com/jasongoodwin/learning-akka/tree/master/ch6" class="ulink">https://github.com/jasongoodwin/learning-akka/tree/master/ch6</a> in both Scala and Java.</p>
           <p>In our <code class="literal">build.sbt</code> file, we first have to add the Akka Cluster dependency:</p>
           <div class="informalexample">
-            <pre class="programlisting">"com.typesafe.akka" %% "akka-cluster" % "2.3.6"</pre>
+            <pre class="programlisting"><code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-cluster&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code></pre>
           </div>
           <p>We'll also add the <code class="literal">contrib</code> package. This is a module of contributions from outside the Akka team—there is an Akka Cluster client in the <code class="literal">contrib</code> package that is a<a id="GBS.0188.01"></a> bit simpler to build on. We'll look at the client features a bit later:</p>
           <div class="informalexample">
-            <pre class="programlisting">"com.typesafe.akka" %% "akka-contrib" % "2.3.6",</pre>
+            <pre class="programlisting"><code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-contrib&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code><code class="hl opt">,</code></pre>
           </div>
           <p>Now that Akka Cluster<a id="id447" class="indexterm"></a> is in the project, we need to add cluster configuration in <code class="literal">src/main/resources/application.conf</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">akka {  actor { provider = "akka.cluster.ClusterActorRefProvider" }
-  remote { netty.tcp { hostname = "127.0.0.1" port = 2552
+            <pre class="programlisting"><code class="hl kwa">akka</code> {
+  actor {
+    provider = <code class="hl str">&quot;akka.cluster.ClusterActorRefProvider&quot;</code>
+  }
+  remote {
+    netty<code class="hl opt">.</code>tcp {
+      hostname = <code class="hl str">&quot;127.0.0.1&quot;</code>
+      port = <code class="hl kwb">2552</code>
     }
   }
-  cluster { seed-nodes<a id="GBS.0188.02"></a> = [ "akka.tcp://Akkademy@127.0.0.1:2552", "akka.tcp://Akkademy@127.0.0.1:2551"] }
-  extensions = ["akka.contrib.pattern.ClusterReceptionistExtension"]
+  cluster {
+    seed-nodes = [ <code class="hl str">&quot;akka.tcp://Akkademy&#64;127.0.0.1:2552&quot;,</code>
+<code class="hl str">                   &quot;</code>akka<code class="hl opt">.</code>tcp<code class="hl opt">:</code><code class="hl kwc">//Akkademy&#64;127.0.0.1:2551&quot;]</code>
+  }
+  extensions = [<code class="hl str">&quot;akka.contrib.pattern.ClusterReceptionistExtension&quot;</code>]
 }</pre>
           </div>
           <p>There are a few pieces that are significant.</p>
@@ -102,27 +111,53 @@
           <p>We'll produce an actor first, calling it <code class="literal">ClusterController</code>, and use this as the basis for our other examples. Later, we'll adapt the code to take action on the events. We'll start by creating the actor, and instantiating a logger, and then the cluster object.</p>
           <p>In Java, the actor looks like the following:</p>
           <div class="informalexample">
-            <pre class="programlisting">importstatic.akka.cluster.ClusterEve<a id="GBS.0190.03"></a>nt.*;
-public class ClusterController extends AbstractActor { protected final LoggingAdapter log = Logging.getLogger(context().system(), this);
-    Cluster cluster = Cluster.get(getContext().system());
-    @Override
-    public void preStart() { cluster.subscribe(self(), initialStateAsEvents(), MemberEvent.class, UnreachableMember.class); }
-    @Override public void postStop() { cluster.unsubscribe(<a id="GBS.0190.04"></a>self()); }
-    private ClusterController(){ receive(ReceiveBuilder. match(MemberEvent.class, message -&gt; { log.info("MemberEvent: {}", message); }). match(UnreachableMember.class, message -&gt; { log.info("UnreachableMember: {}", message);
-                        }).build()
-        );
-    }
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">import static</code><code class="hl opt">.</code>akka<code class="hl opt">.</code>cluster<code class="hl opt">.</code>ClusterEvent<code class="hl opt">.*;</code>
+
+<code class="hl kwa">public class</code> ClusterController <code class="hl kwa">extends</code> AbstractActor <code class="hl opt">{</code>
+  <code class="hl kwa">protected final</code> LoggingAdapter log <code class="hl opt">=</code>
+    Logging<code class="hl opt">.</code><code class="hl kwd">getLogger</code><code class="hl opt">(</code><code class="hl kwd">context</code><code class="hl opt">().</code><code class="hl kwd">system</code><code class="hl opt">(),</code> <code class="hl kwa">this</code><code class="hl opt">);</code>
+  Cluster cluster <code class="hl opt">=</code> Cluster<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code><code class="hl kwd">getContext</code><code class="hl opt">().</code><code class="hl kwd">system</code><code class="hl opt">());</code>
+
+  <code class="hl kwc">&#64;Override</code>
+  <code class="hl kwa">public void</code> <code class="hl kwd">preStart</code><code class="hl opt">() {</code>
+    cluster<code class="hl opt">.</code><code class="hl kwd">subscribe</code><code class="hl opt">(</code><code class="hl kwd">self</code><code class="hl opt">(),</code> <code class="hl kwd">initialStateAsEvents</code><code class="hl opt">(),</code>
+                      MemberEvent<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> UnreachableMember<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">);</code>
+  <code class="hl opt">}</code>
+
+  <code class="hl kwc">&#64;Override</code> <code class="hl kwa">public void</code> <code class="hl kwd">postStop</code><code class="hl opt">() {</code>
+    cluster<code class="hl opt">.</code><code class="hl kwd">unsubscribe</code><code class="hl opt">(</code><code class="hl kwd">self</code><code class="hl opt">());</code>
+  <code class="hl opt">}</code>
+
+  <code class="hl kwa">private</code> <code class="hl kwd">ClusterController</code><code class="hl opt">() {</code>
+    <code class="hl kwd">receive</code><code class="hl opt">(</code>ReceiveBuilder<code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>
+      MemberEvent<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> message <code class="hl opt">-&gt; {</code>
+        log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;MemberEvent: {}&quot;</code><code class="hl opt">,</code> message<code class="hl opt">);</code>
+      <code class="hl opt">}</code>
+    <code class="hl opt">)</code>
+    <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>UnreachableMember<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> message <code class="hl opt">-&gt; {</code>
+      log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;UnreachableMember: {}&quot;</code><code class="hl opt">,</code> message<code class="hl opt">);</code>
+    <code class="hl opt">})</code>
+    <code class="hl opt">.</code><code class="hl kwd">build</code><code class="hl opt">()</code>
+    <code class="hl opt">);</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>In Scala, the actor<a id="id451" class="indexterm"></a> looks the following:</p>
           <div class="informalexample">
-            <pre class="programlisting">class ClusterController extends Actor { val log = Logging(context.system,<a id="GBS.0190.05"></a> this) val cluster = Cluster(context.system)
-  override def preStart() { cluster.subscribe(self, classOf[MemberEvent], classOf[UnreachableMember]) }
-  override def postStop() { cluster.unsubscribe(self)
-  }
-  override def receive = { case x: MemberEvent =&gt; log.info("MemberEvent: {}", x) case x: UnreachableMember =&gt; log.info("UnreachableMember {}: ", x)
-  }
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">class</code> ClusterController <code class="hl kwa">extends</code> Actor <code class="hl opt">{</code>
+  <code class="hl kwa">val</code> log <code class="hl opt">=</code> <code class="hl kwd">Logging</code><code class="hl opt">(</code>context<code class="hl opt">.</code>system<code class="hl opt">,</code> <code class="hl kwa">this</code><code class="hl opt">)</code>
+  <code class="hl kwa">val</code> cluster <code class="hl opt">=</code> <code class="hl kwd">Cluster</code><code class="hl opt">(</code>context<code class="hl opt">.</code>system<code class="hl opt">)</code>
+
+  <code class="hl kwa">override def</code> <code class="hl kwd">preStart</code><code class="hl opt">() {</code>
+    cluster<code class="hl opt">.</code><code class="hl kwd">subscribe</code><code class="hl opt">(</code>self<code class="hl opt">,</code> classOf<code class="hl opt">[</code>MemberEvent<code class="hl opt">],</code>
+                      classOf<code class="hl opt">[</code>UnreachableMember<code class="hl opt">])</code>
+  <code class="hl opt">}</code>
+  <code class="hl kwa">override def</code> <code class="hl kwd">postStop</code><code class="hl opt">() {</code> cluster<code class="hl opt">.</code><code class="hl kwd">unsubscribe</code><code class="hl opt">(</code>self<code class="hl opt">) }</code>
+  <code class="hl kwa">override def</code> receive <code class="hl opt">= {</code>
+    <code class="hl kwa">case</code> x<code class="hl opt">:</code> MemberEvent <code class="hl opt">=&gt;</code> log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;MemberEvent: {}&quot;</code><code class="hl opt">,</code> x<code class="hl opt">)</code>
+    <code class="hl kwa">case</code> x<code class="hl opt">:</code> UnreachableMember <code class="hl opt">=&gt;</code> log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;UnreachableMember {}: &quot;</code><code class="hl opt">,</code> x<code class="hl opt">)</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>First, we define the logger. Then, we<a id="GBS.0191.01"></a> get a reference to the Cluster object. We'll look at the Cluster object and methods available on it throughout this chapter.</p>
           <p>We use the Actor <code class="literal">preStart</code> and <code class="literal">postStop</code> hooks to subscribe to events that we're interested in. The unsubscribe in the <code class="literal">postStop</code> hook is necessary to prevent a leak. We're going to have our actor subscribe to the following two events:</p>
@@ -145,15 +180,21 @@ public class ClusterController extends AbstractActor { protected final LoggingAd
           <p>As a checkpoint to ensure<a id="id453" class="indexterm"></a> that everything is accurate and configured correctly, we'll try to start up<a id="GBS.0191.03"></a> a few nodes now. First, we need to make a <code class="literal">main</code> where we programmatically start the actor system and create the <code class="literal">ClusterController</code> actor.</p>
           <p>In Java:</p>
           <div class="informalexample">
-            <pre class="programlisting">public class Main { public static void main(String... args) { ActorSystem system = ActorSystem.create("Akkademy"); ActorRefclusterController = system.actorOf(Props.create(ClusterController.class), "clusterController");
-    }
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">public class</code> Main <code class="hl opt">{</code>
+  <code class="hl kwa">public static void</code> <code class="hl kwd">main</code><code class="hl opt">(</code>String<code class="hl opt">...</code> args<code class="hl opt">) {</code>
+    ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl str">&quot;Akkademy&quot;</code><code class="hl opt">);</code>
+    ActorRefclusterController <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">.</code>create
+      ClusterController<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">),</code> <code class="hl str">&quot;clusterController&quot;</code><code class="hl opt">);</code>
+    <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>In Scala:</p>
           <div class="informalexample">
-            <pre class="programlisting">object Main extends<a id="GBS.0191.04"></a> App { val system = ActorSystem("Akkademy")
-val clusterController = system.actorOf(Props[ClusterController], "clusterController")
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">object</code> Main <code class="hl kwa">extends</code> App <code class="hl opt">{</code>
+  <code class="hl kwa">val</code> system <code class="hl opt">=</code> <code class="hl kwd">ActorSystem</code><code class="hl opt">(</code><code class="hl str">&quot;Akkademy&quot;</code><code class="hl opt">)</code>
+  <code class="hl kwa">val</code> clusterController <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">[</code>ClusterController<code class="hl opt">],</code>
+                                         <code class="hl str">&quot;clusterController&quot;</code><code class="hl opt">)</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>Our seed node can be started simply with:</p>
           <div class="informalexample">
@@ -162,21 +203,21 @@ val clusterController = system.actorOf(Props[ClusterController], "clusterControl
           <p>However, we're going to enable <code class="literal">jmx</code> remote management of the nodes so that we can have them leave the cluster gracefully. Thus, we're going to tack on a few extra parameters —we'll specify the <code class="literal">jmx</code> port for the<a id="GBS.0191.05"></a> nodes and turn off <code class="literal">jmx</code> security features for use in test. We'll see why we want to enable JMX remote management shortly. With the <code class="literal">jmx</code> configuration, we will start the node like the following:</p>
           <div class="informalexample">
             <pre class="programlisting">activator run \
--Dcom.sun.management.jmxremote.port=9552 \
--Dcom.sun.management.jmxremote.authenticate=false \
--Dcom.sun.management.jmxremote.ssl=false</pre>
+  -Dcom.sun.management.jmxremote.port=9552 \
+  -Dcom.sun.management.jmxremote.authenticate=false \
+  -Dcom.sun.management.jmxremote.ssl=false</pre>
           </div>
           <p>It will start a node on the configured port of <code class="literal">2552</code><a id="GBS.0192.01"></a>. You'll see some logging events indicating that the first seed node is up and probably a few dead letters messages as the node attempts to connect to the other configured seed node configured. Eventually, you'll see our log statement for the <code class="literal">MemberEvent</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">[INFO] [06/14/2015 12:22:46.756] [Akkademy-akka.actor.default-dispatcher-3] [akka://Akkademy/user/clusterController] MemberEvent: MemberUp(Member(address<a id="GBS.0192.02"></a> = akka.tcp://Akkademy@127.0.0.1:2552, status = Up))</pre>
+            <pre class="programlisting">[INFO] [06/14/2015 12:22:46.756] [Akkademy-akka.actor.default-dispatcher-3] [akka://Akkademy/user/clusterController] MemberEvent: MemberUp(Member(address = akka.tcp://Akkademy@127.0.0.1:2552, status = Up))</pre>
           </div>
           <p>In another terminal <a id="id454" class="indexterm"></a>window, we'll start up the second seed node on port <code class="literal">2551</code> by specifying the port as a Java argument:</p>
           <div class="informalexample">
             <pre class="programlisting">activator run \
--Dakka.remote.netty.tcp.port=2551 \
--Dcom.sun.management.jmxremote.port=9551 \
--Dcom.sun.management.jmxremote.authenticate=false \
--Dcom.sun.management.jmxremote.ssl=false</pre>
+  -Dakka.remote.netty.tcp.port=2551 \
+  -Dcom.sun.management.jmxremote.port=9551 \
+  -Dcom.sun.management.jmxremote.authenticate=false \
+  -Dcom.sun.management.jmxremote.ssl=false</pre>
           </div>
           <p>The first node running on <code class="literal">2552</code> should<a id="GBS.0192.03"></a> log the status change when the second seed node connects:</p>
           <div class="informalexample">
@@ -184,7 +225,10 @@ val clusterController = system.actorOf(Props[ClusterController], "clusterControl
           </div>
           <p>We'll add one more node now to demonstrate how we might configure nodes beyond the seed node. Because the seed nodes have defined ports,<a id="GBS.0192.04"></a> we can have Akka assign a random port by configuring it as <code class="literal">0</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">activator run -Dakka.remote.netty.tcp.port=0 \ -Dcom.sun.management.jmxremote.port=9553 \ -Dcom.sun.management.jmxremote.authenticate=false \ -Dcom.sun.management.jmxremote.ssl=false</pre>
+            <pre class="programlisting">activator run -Dakka.remote.netty.tcp.port=0 \
+  -Dcom.sun.management.jmxremote.port=9553 \
+  -Dcom.sun.management.jmxremote.authenticate=false \
+  -Dcom.sun.management.jmxremote.ssl=false</pre>
           </div>
           <p>After a moment, you'll see the third node connect to the cluster. This is quite exciting—we now have the basis for building a distributed actor system.<a id="GBS.0192.05"></a> Akka takes care of numerous things for us that would be quite hard to get right ourselves!</p>
           <div title="Note" style="" class="note">
@@ -205,7 +249,7 @@ val clusterController = system.actorOf(Props[ClusterController], "clusterControl
           <p>If you try shutting<a id="id455" class="indexterm"></a> down one of the nodes by killing the process, you'll notice that Akka marks it unreachable and writes several error messages. In this case,<a id="GBS.0193.01"></a> shutting down the node causes it to become unreachable and Akka will eventually mark it down. This is because we did not leave the cluster gracefully. Before removing a node from the cluster, we should announce to the cluster that the node is leaving.</p>
           <p>We can do it programmatically by calling <code class="literal">cluster.leave</code> with the address of the node we want to remove:</p>
           <div class="informalexample">
-            <pre class="programlisting">cluster.leave(self().path().address());</pre>
+            <pre class="programlisting">cluster<code class="hl opt">.</code><code class="hl kwd">leave</code><code class="hl opt">(</code><code class="hl kwd">self</code><code class="hl opt">().</code><code class="hl kwd">path</code><code class="hl opt">().</code><code class="hl kwd">address</code><code class="hl opt">());</code></pre>
           </div>
           <p><a id="GBS.0193.02"></a>However, we don't have any API that we can use to expose this functionality currently. So, instead, we'll use <code class="literal">jmx</code> and command line tools to remove the node gracefully. We're going to use a tool <a id="id456" class="indexterm"></a>that comes with the Akka distribution: <code class="literal">akka-cluster</code>.</p>
           <p>You may need to download the Akka distribution first to get the<a id="id457" class="indexterm"></a> akka-cluster tool. It should be available at <a href="http://akka.io/downloads/" class="ulink">http://akka.io/downloads/</a>. Unzip the file,<a id="GBS.0193.03"></a> and into the <code class="literal">bin</code> folder.</p>
@@ -268,25 +312,41 @@ val clusterController = system.actorOf(Props[ClusterController], "clusterControl
         <p>We've looked at producing a pool of actors that will parse an article from a web page for us in <a href="ch05.html" title="Chapter 5. Scaling Up" class="link">Chapter 5</a>, <span class="emphasis"><em>Scaling Up</em></span>.</p>
         <p>—we're going to re-use all the code and run it on our cluster example. The receive block<a id="GBS.0195.05"></a> of the actor that we want to cluster looks like the following:</p>
         <div class="informalexample">
-          <pre class="programlisting">//Java
-match(ParseArticle.class, x -&gt;{ ArticleParser.apply(x.htmlBody). onSuccess(body -&gt; sender().tell(body, self())). onFailure(t -&gt; sender().tell(new Status.Failure(t), self()));
-                }
-        )
-//Scala override def receive: Receive = { case ParseArticle(htmlString) =&gt; val body: String = ArticleParser(htmlString) sender()<a id="GBS.0196.01"></a> ! body
-  }</pre>
+          <pre class="programlisting"><code class="hl slc">// Java</code>
+<code class="hl kwa">match</code><code class="hl opt">(</code>ParseArticle<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> x <code class="hl opt">-&gt; {</code>
+  ArticleParser
+    <code class="hl opt">.</code><code class="hl kwd">apply</code><code class="hl opt">(</code>x<code class="hl opt">.</code>htmlBody<code class="hl opt">)</code>
+    <code class="hl opt">.</code><code class="hl kwd">onSuccess</code><code class="hl opt">(</code>body <code class="hl opt">-&gt;</code> <code class="hl kwd">sender</code><code class="hl opt">().</code><code class="hl kwd">tell</code><code class="hl opt">(</code>body<code class="hl opt">,</code> <code class="hl kwd">self</code><code class="hl opt">()))</code>
+    <code class="hl opt">.</code><code class="hl kwd">onFailure</code><code class="hl opt">(</code>t <code class="hl opt">-&gt;</code> <code class="hl kwd">sender</code><code class="hl opt">().</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code>t<code class="hl opt">),</code> <code class="hl kwd">self</code><code class="hl opt">()));</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">)</code>
+
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">override def</code> receive<code class="hl opt">:</code> Receive <code class="hl opt">= {</code>
+  <code class="hl kwa">case</code> <code class="hl kwd">ParseArticle</code><code class="hl opt">(</code>htmlString<code class="hl opt">) =&gt;</code>
+    <code class="hl kwa">val</code> body<code class="hl opt">:</code> String <code class="hl opt">=</code> <code class="hl kwd">ArticleParser</code><code class="hl opt">(</code>htmlString<code class="hl opt">)</code>
+    <code class="hl kwd">sender</code><code class="hl opt">() !</code> body
+  <code class="hl opt">}</code></pre>
         </div>
-        <p>You can refer to <a href="ch05.html" title="Chapter 5. Scaling Up" class="link">Chapter 5</a>, <span class="emphasis"><em>Scaling Up</em></span> examples on GitHub for the full example. We're going to put the pool of article parsers in our cluster and start the cluster up. Once that's complete, we'll demonstrate how to talk to the cluster of services from another actor system. All that we need to do to make a cluster of services is add any dependencies missing to our cluster project, and<a id="GBS.0196.02"></a> then put the <code class="literal">ArcicleParser</code>, <code class="literal">ArticleParseActo</code>
-<code class="literal">r</code>, and the <code class="literal">ParseArticle</code> messages into the application.</p>
+        <p>You can refer to <a href="ch05.html" title="Chapter 5. Scaling Up" class="link">Chapter 5</a>, <span class="emphasis"><em>Scaling Up</em></span> examples on GitHub for the full example. We're going to put the pool of article parsers in our cluster and start the cluster up. Once that's complete, we'll demonstrate how to talk to the cluster of services from another actor system. All that we need to do to make a cluster of services is add any dependencies missing to our cluster project, and<a id="GBS.0196.02"></a> then put the <code class="literal">ArcicleParser</code>, <code class="literal">ArticleParseActor</code>, and the <code class="literal">ParseArticle</code> messages into the application.</p>
         <p>Once you've done that, then we can simply start the actor (or pool of actors) as has been demonstrated in the section on starting the cluster. Then, our main could possibly appear as follows:</p>
         <div class="informalexample">
-          <pre class="programlisting">public class Main { public static void main(String... args) { ActorSystem system = ActorSystem.create("Akkademy");<a id="GBS.0196.03"></a> ActorRefclusterController = system.actorOf(Props.create(ClusterController.class), "clusterController");
-ActorRefworkerPool = system.actorOf(new BalancingPool(5).props(Props.create(ArticleParseActor.class)), "workers");
-    }
-}</pre>
+          <pre class="programlisting"><code class="hl kwa">public class</code> Main <code class="hl opt">{</code>
+  <code class="hl kwa">public static void</code> <code class="hl kwd">main</code><code class="hl opt">(</code>String<code class="hl opt">...</code> args<code class="hl opt">) {</code>
+    ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl str">&quot;Akkademy&quot;</code><code class="hl opt">);</code>
+    ActorRefclusterController <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>
+      Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>ClusterController<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">),</code> <code class="hl str">&quot;clusterController&quot;</code><code class="hl opt">);</code>
+
+    ActorRefworkerPool <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">BalancingPool</code><code class="hl opt">(</code><code class="hl num">5</code><code class="hl opt">).</code><code class="hl kwd">props</code><code class="hl opt">(</code>
+      Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>ArticleParseActor<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">)),</code> <code class="hl str">&quot;workers&quot;</code><code class="hl opt">);</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
         </div>
         <p>We can start up a few nodes now as covered previously in the section on starting the cluster. For brevity, we'll do so without enabling remote management. If you're using<a id="GBS.0196.04"></a> Linux, you can do it in one go by backgrounding the tasks:</p>
         <div class="informalexample">
-          <pre class="programlisting">activator run &amp; activator run -Dakka.remote.netty.tcp.port=2551 &amp; activator run -Dakka.remote.netty.tcp.port=0 &amp;</pre>
+          <pre class="programlisting">activator run &amp;
+activator run -Dakka.remote.netty.tcp.port=2551 &amp;
+activator run -Dakka.remote.netty.tcp.port=0 &amp;</pre>
         </div>
         <p>Now, we have a <a id="id465" class="indexterm"></a>three-node cluster running. We'll move onto the client.</p>
       </div>
@@ -322,29 +382,48 @@ ActorRefworkerPool = system.actorOf(new BalancingPool(5).props(Props.create(Arti
           </div>
           <p>In the server project, we <a id="id468" class="indexterm"></a>added the dependencies necessary to use the cluster client. The Cluster client is in the <code class="literal">contrib</code> package, which are contributions from outside of the Akka team. We added the following dependency:</p>
           <div class="informalexample">
-            <pre class="programlisting">"com.typesafe.akka" %% "akka-contrib" % "2.3.6"</pre>
+            <pre class="programlisting"><code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-contrib&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code></pre>
           </div>
           <p><a id="GBS.0198.01"></a>Then, in the configuration (<code class="literal">application.conf</code>), we added an akka extension for the client:</p>
           <div class="informalexample">
-            <pre class="programlisting">akka.extensions = ["akka.contrib.pattern.ClusterReceptionistExtension"]</pre>
+            <pre class="programlisting">akka<code class="hl opt">.</code>extensions <code class="hl opt">= [</code><code class="hl str">&quot;akka.contrib.pattern.ClusterReceptionistExtension&quot;</code><code class="hl opt">]</code></pre>
           </div>
-          <p>This will start the <code class="literal">ClusterReceptionist</code> on the server, which will handle all the details for our client to be able to talk to the cluster. The cluster receptionist actor is created on the root path in the server<code class="literal">—/user/receptionist.</code> We'll<a id="GBS.0198.02"></a> see how this is used shortly.</p>
+          <p>This will start the <code class="literal">ClusterReceptionist</code> on the server, which will handle all the details for our client to be able to talk to the cluster. The cluster receptionist actor is created on the root path in the server — <code class="literal">/user/receptionist.</code> We'll<a id="GBS.0198.02"></a> see how this is used shortly.</p>
           <p>After doing that, our main need is to be updated to register the worker with the <code class="literal">ClusterReceptionist</code>. We'll use the balancing pool introduced in <a href="ch05.html" title="Chapter 5. Scaling Up" class="link">Chapter 5</a>, <span class="emphasis"><em>Scaling Up</em></span> to create a pool of actors on each server.</p>
           <p>First, we'll look at the Java code:</p>
           <div class="informalexample">
-            <pre class="programlisting">public class Main { public static void main(String... args) { ActorSystem system = ActorSystem.create("Akkademy"); ActorRefclusterControlle<a id="GBS.0198.03"></a>r = system.actorOf(Props.create(ClusterController.class), "clusterController");
-        // router at /user/workers
-ActorRef workers = system.actorOf(new BalancingPool(5).props(Props.create(ArticleParseActor.class)), "workers");
-        ((ClusterReceptionistExtension) akka.contrib.pattern.ClusterReceptionistExtension.apply(system)). registerService(workers); }
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">public class</code> Main <code class="hl opt">{</code>
+  <code class="hl kwa">public static void</code> <code class="hl kwd">main</code><code class="hl opt">(</code>String<code class="hl opt">...</code> args<code class="hl opt">) {</code>
+    ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl str">&quot;Akkademy&quot;</code><code class="hl opt">);</code>
+    ActorRefclusterController <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>
+      Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>ClusterController<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">),</code> <code class="hl str">&quot;clusterController&quot;</code><code class="hl opt">);</code>
+
+      <code class="hl slc">// router at /user/workers</code>
+      ActorRef workers <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>
+        <code class="hl kwa">new</code> <code class="hl kwd">BalancingPool</code><code class="hl opt">(</code><code class="hl num">5</code><code class="hl opt">).</code><code class="hl kwd">props</code><code class="hl opt">(</code>Props<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code>ArticleParseActor<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">)</code>
+          <code class="hl opt">),</code> <code class="hl str">&quot;workers&quot;</code>
+      <code class="hl opt">);</code>
+
+        <code class="hl opt">((</code>ClusterReceptionistExtension<code class="hl opt">)</code>
+          akka<code class="hl opt">.</code>contrib<code class="hl opt">.</code>pattern<code class="hl opt">.</code>ClusterReceptionistExtension<code class="hl opt">.</code><code class="hl kwd">apply</code><code class="hl opt">(</code>system<code class="hl opt">))</code>
+            <code class="hl kwd">registerService</code><code class="hl opt">(</code>workers<code class="hl opt">);</code>
+    <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>You'll see that we have to cast the<a id="GBS.0198.04"></a> <code class="literal">ClusterReceptionistExtension</code>—we're calling the Scala API's apply method. This works perfectly fine for registering the workers.</p>
           <p>The Scala <a id="id469" class="indexterm"></a>example looks a little simpler:</p>
           <div class="informalexample">
-            <pre class="programlisting">object Main extends App { val system = ActorSystem("Akkademy") valclusterController = system.actorOf(Props[ClusterController], "clusterController")
-  // router at /user/workers val workers = system.actorOf(BalancingPool(5).props(Props[ArticlePar<a id="GBS.0198.05"></a>seActor]), "workers")
-ClusterReceptionistExtension(system).registerService(workers)
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">object</code> Main <code class="hl kwa">extends</code> App <code class="hl opt">{</code>
+  <code class="hl kwa">val</code> system <code class="hl opt">=</code> <code class="hl kwd">ActorSystem</code><code class="hl opt">(</code><code class="hl str">&quot;Akkademy&quot;</code><code class="hl opt">)</code>
+  <code class="hl kwa">val</code> clusterController <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>Props<code class="hl opt">[</code>ClusterController<code class="hl opt">],</code>
+                                         <code class="hl str">&quot;clusterController&quot;</code><code class="hl opt">)</code>
+
+  <code class="hl slc">// router at /user/workers</code>
+  <code class="hl kwa">val</code> workers <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>
+    <code class="hl kwd">BalancingPool</code><code class="hl opt">(</code><code class="hl num">5</code><code class="hl opt">).</code><code class="hl kwd">props</code><code class="hl opt">(</code>Props<code class="hl opt">[</code>ArticleParseActor<code class="hl opt">]),</code> <code class="hl str">&quot;workers&quot;</code><code class="hl opt">)</code>
+
+  <code class="hl kwd">ClusterReceptionistExtension</code><code class="hl opt">(</code>system<code class="hl opt">).</code><code class="hl kwd">registerService</code><code class="hl opt">(</code>workers<code class="hl opt">)</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>That's it! If you have nodes running, you'll want to restart them after making the changes.</p>
         </div>
@@ -359,14 +438,23 @@ ClusterReceptionistExtension(system).registerService(workers)
           <p>We can create a <a id="id470" class="indexterm"></a>new project for the client. Run <code class="literal">activator new</code> and select the language template of your choice.</p>
           <p>Edit the <code class="literal">build.sbt</code> file in the new project. You'll need to add the following<a id="GBS.0199.01"></a> dependencies:</p>
           <div class="informalexample">
-            <pre class="programlisting">libraryDependencies ++= Seq( "com.typesafe.akka" %% "akka-actor" % "2.3.6", "com.typesafe.akka" %% "akka-cluster" % "2.3.6", "com.typesafe.akka" %% "akka-contrib" % "2.3.6"
-)</pre>
+            <pre class="programlisting">libraryDependencies <code class="hl opt">++=</code> <code class="hl kwd">Seq</code><code class="hl opt">(</code><code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-actor&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code><code class="hl opt">,</code>
+                            <code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-cluster&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code><code class="hl opt">,</code>
+                            <code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-contrib&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code><code class="hl opt">)</code></pre>
           </div>
           <p>You can add any test dependencies you might like as well, such as <code class="literal">junit</code> or <code class="literal">scalatest.</code> There is nothing new in our dependency list here.</p>
           <p>Next, we have to make/modify <code class="literal">application.conf</code> to ensure the provider is<a id="GBS.0199.02"></a> correct are correct and set up the mailbox for the Cluster client:</p>
           <div class="informalexample">
-            <pre class="programlisting">akka { actor { provider = "akka.cluster.ClusterActorRefProvider" }
-contrib.cluster.client { mailbox { mailbox-type = "akka.dispatch.UnboundedDequeBasedMailbox" stash-capacity = 1000 }
+            <pre class="programlisting"><code class="hl kwa">akka</code> {
+  actor {
+    provider = <code class="hl str">&quot;akka.cluster.ClusterActorRefProvider&quot;</code>
+  }
+
+  contrib<code class="hl opt">.</code>cluster<code class="hl opt">.</code>client {
+    mailbox {
+      mailbox-type = <code class="hl str">&quot;akka.dispatch.UnboundedDequeBasedMailbox&quot;</code>
+      stash-capacity = <code class="hl kwb">1000</code>
+    }
   }
 }</pre>
           </div>
@@ -383,11 +471,15 @@ contrib.cluster.client { mailbox { mailbox-type = "akka.dispatch.UnboundedDequeB
           <p>There are a few<a id="id471" class="indexterm"></a> different ways in which you can share messages across client and server applications. You can build them both in the same project, you can include the server project in the client or vice versa, or you can have an extra project that contains the messages that both projects share. In <a href="ch02.html" title="Chapter 2. Actors and Concurrency" class="link">Chapter 2</a>, <span class="emphasis"><em>Actors and Concurrency</em></span> this was demonstrated<a id="GBS.0199.04"></a> by publishing a library to the local repository. Nexus or Artifactory can be installed to host the assets as a solution for teams on closed-source projects. Sonatype's OSS Repository and Maven Central can be used for open source projects.</p>
           <p>If you're following along, take whichever approach you like—preferably putting the messages in their own project. For the sake of simplicity, in the example,<a id="GBS.0199.05"></a> we can change the <code class="literal">ArticleParseActor</code> to accept and return strings:</p>
           <div class="informalexample">
-            <pre class="programlisting">//Java
-match(String.class, x -&gt; { ArticleParser.apply(x). onSuccess(body -&gt; sender().tell(body, self())). onFailure(t -&gt; sender().tell(new Status.Failure(t), self()));
-//Scala
-    case htmlString: String =&gt; val body: String = ArticleParser(htmlString)
-      sender() ! body</pre>
+            <pre class="programlisting"><code class="hl slc">// Java</code>
+<code class="hl kwa">match</code><code class="hl opt">(</code>String<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> x <code class="hl opt">-&gt; {</code>
+  ArticleParser<code class="hl opt">.</code><code class="hl kwd">apply</code><code class="hl opt">(</code>x<code class="hl opt">).</code> <code class="hl kwd">onSuccess</code><code class="hl opt">(</code>body <code class="hl opt">-&gt;</code> <code class="hl kwd">sender</code><code class="hl opt">().</code><code class="hl kwd">tell</code><code class="hl opt">(</code>body<code class="hl opt">,</code> <code class="hl kwd">self</code><code class="hl opt">()))</code>
+    <code class="hl opt">.</code><code class="hl kwd">onFailure</code><code class="hl opt">(</code>t <code class="hl opt">-&gt;</code> <code class="hl kwd">sender</code><code class="hl opt">().</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code>t<code class="hl opt">),</code> <code class="hl kwd">self</code><code class="hl opt">()));</code>
+
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">case</code> htmlString<code class="hl opt">:</code> String <code class="hl opt">=&gt;</code>
+  <code class="hl kwa">val</code> body<code class="hl opt">:</code> String <code class="hl opt">=</code> <code class="hl kwd">ArticleParser</code><code class="hl opt">(</code>htmlString<code class="hl opt">)</code>
+  <code class="hl kwd">sender</code><code class="hl opt">() !</code> body</pre>
           </div>
           <div title="Note" style="" class="note">
             <div class="inner">
@@ -409,25 +501,55 @@ match(String.class, x -&gt; { ArticleParser.apply(x). onSuccess(body -&gt; sende
           <p>We'll send that to a random member of the cluster, and we should then get back the body of the article from the service. We'll print the result. If you send it a few times, you will see it go to all members of the cluster.</p>
           <p>The following is the Java code for the client project:</p>
           <div class="informalexample">
-            <pre class="programlisting">public static void main(String[] args) throws Exception { Timeout<a id="GBS.0200.03"></a> timeout = new Timeout(Duration.create(5, "seconds"));
-ActorSystem system = ActorSystem.create("clientSystem");
-        Set&lt;ActorSelection&gt;initialContacts = new HashSet&lt;ActorSelection&gt;();
-        initialContacts.add(system.actorSelection("akka.tcp://Akkademy@127.0.0.1:2552/user/receptionist"));
-initialContacts.add(system.actorSelection("akka.tcp://Akkademy@127.0.0.1:2551/user/receptionist")); ActorRef<a id="GBS.0200.04"></a> receptionist = system.actorOf(ClusterClient.defaultProps(initialContacts)); ClusterClient.Sendmsg = new ClusterClient.Send("/user/workers", articleToParse, false); Future f = Patterns.ask(receptionist, msg, timeout); String result = (String) Await.result(f, timeout.duration()); System.out.println("result: " + result);
-    }</pre>
+            <pre class="programlisting"><code class="hl kwa">public static void</code> <code class="hl kwd">main</code><code class="hl opt">(</code>String<code class="hl opt">[]</code> args<code class="hl opt">)</code> <code class="hl kwa">throws</code> Exception <code class="hl opt">{</code>
+  Timeout timeout <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">Timeout</code><code class="hl opt">(</code>Duration<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl num">5</code><code class="hl opt">,</code> <code class="hl str">&quot;seconds&quot;</code><code class="hl opt">));</code>
+  ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl str">&quot;clientSystem&quot;</code><code class="hl opt">);</code>
+
+  Set<code class="hl opt">&lt;</code>ActorSelection<code class="hl opt">&gt;</code> initialContacts <code class="hl opt">=</code> <code class="hl kwa">new</code> HashSet<code class="hl opt">&lt;</code>ActorSelection<code class="hl opt">&gt;();</code>
+  initialContacts<code class="hl opt">.</code><code class="hl kwd">add</code><code class="hl opt">(</code>system<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>
+    <code class="hl str">&quot;akka.tcp://Akkademy&#64;127.0.0.1:2552/user/receptionist&quot;</code><code class="hl opt">));</code>
+
+  initialContacts<code class="hl opt">.</code><code class="hl kwd">add</code><code class="hl opt">(</code>system<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>
+    <code class="hl str">&quot;akka.tcp://Akkademy&#64;127.0.0.1:2551/user/receptionist&quot;</code><code class="hl opt">));</code>
+
+  ActorRef receptionist <code class="hl opt">=</code> system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>
+    ClusterClient<code class="hl opt">.</code><code class="hl kwd">defaultProps</code><code class="hl opt">(</code>initialContacts<code class="hl opt">));</code>
+  ClusterClient<code class="hl opt">.</code>Sendmsg <code class="hl opt">=</code> <code class="hl kwa">new</code> ClusterClient<code class="hl opt">.</code><code class="hl kwd">Send</code><code class="hl opt">(</code>
+    <code class="hl str">&quot;/user/workers&quot;</code><code class="hl opt">,</code> articleToParse<code class="hl opt">,</code> <code class="hl kwb">false</code><code class="hl opt">);</code>
+
+  Future f <code class="hl opt">=</code> Patterns<code class="hl opt">.</code><code class="hl kwd">ask</code><code class="hl opt">(</code>receptionist<code class="hl opt">,</code> msg<code class="hl opt">,</code> timeout<code class="hl opt">);</code>
+  String result <code class="hl opt">= (</code>String<code class="hl opt">)</code>
+  Await<code class="hl opt">.</code><code class="hl kwd">result</code><code class="hl opt">(</code>f<code class="hl opt">,</code> timeout<code class="hl opt">.</code><code class="hl kwd">duration</code><code class="hl opt">());</code>
+  System<code class="hl opt">.</code>out<code class="hl opt">.</code><code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;result: &quot;</code> <code class="hl opt">+</code> result<code class="hl opt">);</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>And the<a id="id473" class="indexterm"></a> following is the Scala code for the client project:</p>
           <div class="informalexample">
-            <pre class="programlisting">def main(args:<a id="GBS.0200.05"></a> Array[String]) { val timeout = new Timeout(Duration.create(5, "seconds")) val system = ActorSystem.create("clientSystem")
-valinitialContacts: Set[ActorSelection] = Set( system.actorSelection("akka.tcp://Akkademy@127.0.0.1:2552/user/receptionist"), system.actorSelection("akka.tcp://Akkademy@127.0.0.1:2551/user/receptionist") )
-    import collection.JavaConversions._ val receptionist = system.actorOf(ClusterClien<a id="GBS.0201.01"></a>t.defaultProps(initialContacts)) valmsg = ClusterClient.Send("/user/workers", articleToParse, false) val f = Patterns.ask(receptionist, msg, timeout) val result = Await.result(f, timeout.duration).asInstanceOf[String] println("result: " + result)
-  }</pre>
+            <pre class="programlisting"><code class="hl kwa">def</code> <code class="hl kwd">main</code><code class="hl opt">(</code>args<code class="hl opt">:</code> Array<code class="hl opt">[</code>String<code class="hl opt">]) {</code>
+  <code class="hl kwa">val</code> timeout <code class="hl opt">=</code> <code class="hl kwa">new</code> <code class="hl kwd">Timeout</code><code class="hl opt">(</code>Duration<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl num">5</code><code class="hl opt">,</code> <code class="hl str">&quot;seconds&quot;</code><code class="hl opt">))</code>
+  <code class="hl kwa">val</code> system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl str">&quot;clientSystem&quot;</code><code class="hl opt">)</code>
+
+  <code class="hl kwa">val</code> initialContacts<code class="hl opt">:</code> Set<code class="hl opt">[</code>ActorSelection<code class="hl opt">] =</code> <code class="hl kwd">Set</code><code class="hl opt">(</code>
+    system<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>
+      <code class="hl str">&quot;akka.tcp://Akkademy&#64;127.0.0.1:2552/user/receptionist&quot;</code><code class="hl opt">),</code>
+    system<code class="hl opt">.</code><code class="hl kwd">actorSelection</code><code class="hl opt">(</code>
+      <code class="hl str">&quot;akka.tcp://Akkademy&#64;127.0.0.1:2551/user/receptionist&quot;</code><code class="hl opt">)</code>
+  <code class="hl opt">)</code>
+
+  <code class="hl kwa">import</code> collection<code class="hl opt">.</code>JavaConversions<code class="hl opt">.</code>_
+  <code class="hl kwa">val</code> receptionist <code class="hl opt">=</code>
+    system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>ClusterClient<code class="hl opt">.</code><code class="hl kwd">defaultProps</code><code class="hl opt">(</code>initialContacts<code class="hl opt">))</code>
+  <code class="hl kwa">val</code> msg <code class="hl opt">=</code> ClusterClient<code class="hl opt">.</code><code class="hl kwd">Send</code><code class="hl opt">(</code><code class="hl str">&quot;/user/workers&quot;</code><code class="hl opt">,</code> articleToParse<code class="hl opt">,</code> <code class="hl kwb">false</code><code class="hl opt">)</code>
+  <code class="hl kwa">val</code> f <code class="hl opt">=</code> Patterns<code class="hl opt">.</code><code class="hl kwd">ask</code><code class="hl opt">(</code>receptionist<code class="hl opt">,</code> msg<code class="hl opt">,</code> timeout<code class="hl opt">)</code>
+  <code class="hl kwa">val</code> result <code class="hl opt">=</code> Await<code class="hl opt">.</code><code class="hl kwd">result</code><code class="hl opt">(</code>f<code class="hl opt">,</code> timeout<code class="hl opt">.</code>duration<code class="hl opt">).</code>asInstanceOf<code class="hl opt">[</code>String<code class="hl opt">]</code>
+  <code class="hl kwd">println</code><code class="hl opt">(</code><code class="hl str">&quot;result: &quot;</code> <code class="hl opt">+</code> result<code class="hl opt">)</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>We'll look at what is happening in the code step by step.</p>
           <p>First, we define a <code class="literal">timeout</code> variable to use in our test here as we will ask and wait for<a id="GBS.0201.02"></a> the result. In real situations, you will likely be using an actual actor to send and receive—this is just for the sake of example. We create the actor system for the client.</p>
           <p>Now, we need to produce the client that talks to the receptionist in the cluster. We create the contact list for the receptionists of the seed nodes for our client to talk to. After getting the set of seed node addresses,<a id="GBS.0201.03"></a> we can then create the <code class="literal">ClusterClient</code> actor:</p>
           <div class="informalexample">
-            <pre class="programlisting">system.actorOf(ClusterClient.defaultProps(initialContacts))</pre>
+            <pre class="programlisting">system<code class="hl opt">.</code><code class="hl kwd">actorOf</code><code class="hl opt">(</code>ClusterClient<code class="hl opt">.</code><code class="hl kwd">defaultProps</code><code class="hl opt">(</code>initialContacts<code class="hl opt">))</code></pre>
           </div>
           <p>At this point, our<a id="id474" class="indexterm"></a> application is able to connect to the cluster and get information about any changes to the cluster topology. The receptionist in the remote actor system will accept a few different messages:</p>
           <div class="itemizedlist">
@@ -439,11 +561,11 @@ valinitialContacts: Set[ActorSelection] = Set( system.actorSelection("akka.tcp:/
           </div>
           <p>We only need to send the message to a random worker; so, <code class="literal">Send</code> is fine for our case. We make the Send object, describing which actor the message is destined for (the "workers" router running on each node of the cluster) and wrapping our message in it:</p>
           <div class="informalexample">
-            <pre class="programlisting">newClusterClient.Send("/user/wor<a id="GBS.0201.05"></a>kers", articleToParse, false)</pre>
+            <pre class="programlisting">newClusterClient<code class="hl opt">.</code><code class="hl kwd">Send</code><code class="hl opt">(</code><code class="hl str">&quot;/user/workers&quot;</code><code class="hl opt">,</code> articleToParse<code class="hl opt">,</code> <code class="hl kwb">false</code><code class="hl opt">)</code></pre>
           </div>
           <p>Finally, we use ask to send the message to the receptionist <code class="literal">ActorRef</code> to deliver, and to get the result back (shown calling ask method, but in Scala we can also use the '?' operator):</p>
           <div class="informalexample">
-            <pre class="programlisting">Patterns.ask(receptionist, msg, timeout);</pre>
+            <pre class="programlisting">Patterns<code class="hl opt">.</code><code class="hl kwd">ask</code><code class="hl opt">(</code>receptionist<code class="hl opt">,</code> msg<code class="hl opt">,</code> timeout<code class="hl opt">);</code></pre>
           </div>
           <p>We take the future that ask gives us and wait for the result—again, this is only for the sake of an example. You never want to block threads by<a id="GBS.0202.01"></a> waiting in your code.</p>
           <div title="Note" style="" class="note">
@@ -515,10 +637,45 @@ valinitialContacts: Set[ActorSelection] = Set( system.actorSelection("akka.tcp:/
           <p>We've already looked at how a <a id="id477" class="indexterm"></a>single node can store an object in a map with a key associated with it. Using a <code class="literal">HashMap</code> gives approximate constant time lookups, so it's a very efficient choice for storing data in memory.</p>
           <p>An actor will<a id="GBS.0204.02"></a> accept <code class="literal">Get</code> messages with a key, and Put messages with a key and a value—exactly as demonstrated in <a href="ch02.html" title="Chapter 2. Actors and Concurrency" class="link">Chapter 2</a>, <span class="emphasis"><em>Actors and Concurrency</em></span>. To recap, our node will have an actor that looks like the following:</p>
           <div class="informalexample">
-            <pre class="programlisting">//Java
-    private AkkademyDb(){ receive(ReceiveBuilder. match(SetRequest.class, message -&gt; { log.info("Received Set request: {}", message); map.put(message.key, message.value); sender().tell(new<a id="GBS.0204.03"></a> Status.Success(message.key), self()); }). match(GetRequest.class, message -&gt; { 
-                             log.info("Received Get request: {}", message); Object value = map.get(message.key); Object response = (value != null) ? value : new Status.Failure(new KeyNotFoundException(message.key)); sender().tell(response, self()); }). matchAny(o -&gt; sender().tell(new Status.Failure(new ClassNotFoundException()),<a id="GBS.0204.04"></a> self()) ).build() ); } //Scala override def receive = { case SetRequest(key, value) =&gt; log.info("received SetRequest - key: {} value: {}", key, value) map.put(key, value) sender() ! Status.Success case GetRequest(key) =&gt; log.info("received GetRequest - key: {}", key) val response: Option[Object] = map.get(key) response match{ case Some(x) =&gt; sender() ! x case None =&gt; sender() ! Status.Failure(new<a id="GBS.0204.05"></a> KeyNotFoundException(key)) } case o =&gt;Status.Failure(new ClassNotFoundException)
-  }</pre>
+            <pre class="programlisting"><code class="hl slc">// Java</code>
+<code class="hl kwa">private</code> <code class="hl kwd">AkkademyDb</code><code class="hl opt">() {</code>
+  <code class="hl kwd">receive</code><code class="hl opt">(</code>ReceiveBuilder<code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>SetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> message <code class="hl opt">-&gt; {</code>
+    log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;Received Set request: {}&quot;</code><code class="hl opt">,</code> message<code class="hl opt">);</code>
+    map<code class="hl opt">.</code><code class="hl kwd">put</code><code class="hl opt">(</code>message<code class="hl opt">.</code>key<code class="hl opt">,</code> message<code class="hl opt">.</code>value<code class="hl opt">);</code>
+    <code class="hl kwd">sender</code><code class="hl opt">().</code><code class="hl kwd">tell</code><code class="hl opt">(</code><code class="hl kwa">new</code> Status<code class="hl opt">.</code><code class="hl kwd">Success</code><code class="hl opt">(</code>message<code class="hl opt">.</code>key<code class="hl opt">),</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+  <code class="hl opt">})</code>
+  <code class="hl opt">.</code><code class="hl kwa">match</code><code class="hl opt">(</code>GetRequest<code class="hl opt">.</code><code class="hl kwa">class</code><code class="hl opt">,</code> message <code class="hl opt">-&gt; {</code>
+    log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;Received Get request: {}&quot;</code><code class="hl opt">,</code> message<code class="hl opt">);</code>
+    Object value <code class="hl opt">=</code> map<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code>message<code class="hl opt">.</code>key<code class="hl opt">);</code>
+    Object response <code class="hl opt">= (</code>value <code class="hl opt">!=</code> <code class="hl kwb">null</code><code class="hl opt">)</code> ?
+      value <code class="hl opt">:</code> <code class="hl kwa">new</code> Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">KeyNotFoundException</code><code class="hl opt">(</code>message<code class="hl opt">.</code>key<code class="hl opt">));</code>
+    <code class="hl kwd">sender</code><code class="hl opt">().</code><code class="hl kwd">tell</code><code class="hl opt">(</code>response<code class="hl opt">,</code> <code class="hl kwd">self</code><code class="hl opt">());</code>
+  <code class="hl opt">})</code>
+  <code class="hl opt">.</code><code class="hl kwd">matchAny</code><code class="hl opt">(</code>o <code class="hl opt">-&gt;</code> <code class="hl kwd">sender</code><code class="hl opt">().</code><code class="hl kwd">tell</code><code class="hl opt">(</code>
+    <code class="hl kwa">new</code> Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">ClassNotFoundException</code><code class="hl opt">()),</code> <code class="hl kwd">self</code><code class="hl opt">()))</code>
+  <code class="hl opt">.</code><code class="hl kwd">build</code><code class="hl opt">() );</code>
+<code class="hl opt">}</code>
+
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">override def</code> receive <code class="hl opt">= {</code>
+  <code class="hl kwa">case</code> <code class="hl kwd">SetRequest</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">) =&gt;</code>
+    log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received SetRequest - key: {} value: {}&quot;</code><code class="hl opt">,</code> key<code class="hl opt">,</code> value<code class="hl opt">)</code>
+    map<code class="hl opt">.</code><code class="hl kwd">put</code><code class="hl opt">(</code>key<code class="hl opt">,</code> value<code class="hl opt">)</code>
+    <code class="hl kwd">sender</code><code class="hl opt">() !</code> Status<code class="hl opt">.</code>Success
+
+  <code class="hl kwa">case</code> <code class="hl kwd">GetRequest</code><code class="hl opt">(</code>key<code class="hl opt">) =&gt;</code>
+    log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;received GetRequest - key: {}&quot;</code><code class="hl opt">,</code> key<code class="hl opt">)</code>
+    <code class="hl kwa">val</code> response<code class="hl opt">:</code> Option<code class="hl opt">[</code>Object<code class="hl opt">] =</code> map<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">(</code>key<code class="hl opt">)</code>
+    response <code class="hl kwa">match</code> <code class="hl opt">{</code>
+      <code class="hl kwa">case</code> <code class="hl kwd">Some</code><code class="hl opt">(</code>x<code class="hl opt">) =&gt;</code>
+        <code class="hl kwd">sender</code><code class="hl opt">() !</code> x
+      <code class="hl kwa">case</code> None <code class="hl opt">=&gt;</code>
+        <code class="hl kwd">sender</code><code class="hl opt">() !</code> Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">KeyNotFoundException</code><code class="hl opt">(</code>key<code class="hl opt">))</code>
+    <code class="hl opt">}</code>
+
+  <code class="hl kwa">case</code> o <code class="hl opt">=&gt;</code>
+    Status<code class="hl opt">.</code><code class="hl kwd">Failure</code><code class="hl opt">(</code><code class="hl kwa">new</code> ClassNotFoundException<code class="hl opt">)</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>I would recommend that you add other messages for common use cases if you're going to attempt to implement this. Semantics like <code class="literal">SetIfNotExist</code>, which sends back a failure if the node is already there, is useful for handling concurrency consistently—getting and then setting the value <a id="id478" class="indexterm"></a>if it does not exist is not<a id="GBS.0205.01"></a> at all consistent enough for a distributed workflow. Redis API docs are a good resource to look at if you want to see the types of messages and datatypes that are useful for a key-value store to handle with multiple clients—it's a simple and readable document that will go a long way to ramp you up in the problem space.</p>
         </div>
@@ -550,11 +707,11 @@ valinitialContacts: Set[ActorSelection] = Set( system.actorSelection("akka.tcp:/
             <p>The first problem we will look <a id="id481" class="indexterm"></a>to solve is how to assign a piece of a problem domain to different nodes in a cluster. In the case of storing data in a key-value store, it's easy to see how you might take slices of data (determined by the key) and assign them to different nodes. In Cassandra, a key used to determine which<a id="GBS.0206.03"></a> node data goes to is called a partition key.</p>
             <p>For our use case of a very simple key-value store, we can take a key and hash it, and then execute modulus on the hash to get an integer value. Let's assume we have three nodes that we want to store data on. A request goes to a node in the cluster to store a key-value pair—for example, <code class="literal">foo</code> as the key and <code class="literal">bar</code> as the value. The coordinating node will<a id="GBS.0206.04"></a> execute <code class="literal">hashCode()</code> on the key:</p>
             <div class="informalexample">
-              <pre class="programlisting">"foo".hashCode() (101574)</pre>
+              <pre class="programlisting"><code class="hl str">&quot;foo&quot;</code><code class="hl opt">.</code><code class="hl kwd">hashCode</code><code class="hl opt">() (</code><code class="hl num">101574</code><code class="hl opt">)</code></pre>
             </div>
             <p>Then, it will call the modulus operator on the <code class="literal">hashcode</code>, giving a result of <code class="literal">0</code>, <code class="literal">1</code>, or <code class="literal">2</code>:</p>
             <div class="informalexample">
-              <pre class="programlisting">101574 % 3 (0)</pre>
+              <pre class="programlisting"><code class="hl num">101574</code> <code class="hl opt">%</code> <code class="hl kwd">3</code> <code class="hl opt">(</code><code class="hl num">0</code><code class="hl opt">)</code></pre>
             </div>
             <p>Now, if we have three nodes that we want to store data on, then we know if we want to set or get a value with the key <code class="literal">foo</code> that it goes on the first node. This approach of sharding data is used in many distributed data-stores today.</p>
           </div>

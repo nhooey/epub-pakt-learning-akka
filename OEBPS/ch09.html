@@ -49,70 +49,69 @@
           <p>We briefly <a id="id575" class="indexterm"></a>introduced logging <a id="id576" class="indexterm"></a>in Akka early in the book, but we'll review logging again here briefly to show how to use more advanced<a id="GBS.0255.05"></a> features. Akka by default will log to the console; however, it offers an event handler for <code class="literal">slf4j</code> that is available by importing an slf4j backend into your project such as <code class="literal">Logback</code>.</p>
           <p>To use the <code class="literal">slf4j</code> logger, you'll need to provide the Akka <code class="literal">slf4j</code> module (it's not in the Akka core), and you'll also need to provide an <code class="literal">slf4j</code> backend such as <code class="literal">Logback</code>. You can add these dependencies to your <code class="literal">build.sbt</code> file<a id="GBS.0256.01"></a> using the following code:</p>
           <div class="informalexample">
-            <pre class="programlisting">"ch.qos.logback" % "logback-classic" % "1.0.0" % "runtime",
-"com.typesafe.akka" %% "akka-slf4j" % "2.3.11"</pre>
+            <pre class="programlisting"><code class="hl str">&quot;ch.qos.logback&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;logback-classic&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;1.0.0&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;runtime&quot;</code><code class="hl opt">,</code>
+<code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-slf4j&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.11&quot;</code></pre>
           </div>
           <p>Then, in your application configuration (the <code class="literal">application.conf file</code>), you can declare the Akka <code class="literal">slf4j</code> event handler to be used as follows:</p>
           <div class="informalexample">
-            <pre class="programlisting">akka {
-  event-handlers = ["akka.event.slf4j.Slf4jEventHandler"]
-loglevel = "DEBUG"
+            <pre class="programlisting"><code class="hl kwa">akka</code> {
+  event-handlers = [<code class="hl str">&quot;akka.event.slf4j.Slf4jEventHandler&quot;</code>]
+  loglevel = <code class="hl str">&quot;DEBUG&quot;</code>
 }</pre>
           </div>
           <p>You can put a <code class="literal">logback.xml</code> file into your<a id="GBS.0256.02"></a> project's resources folder to enable fine-grained log control and more extended control over appenders. If you wanted to log to both a file (<code class="literal">logs/app.log</code>) and the console, a basic configuration will look like this:</p>
           <div class="informalexample">
-            <pre class="programlisting">&lt;configuration&gt;
-&lt;appender name="FILE" class="ch.qos.logback.core.FileAppender"&gt;
-&lt;file&gt;logs/app.log&lt;/file&gt;
+            <pre class="programlisting"><code class="hl kwa">&lt;configuration&gt;</code>
+  <code class="hl kwa">&lt;appender</code> <code class="hl kwb">name</code>=<code class="hl str">&quot;FILE&quot;</code> <code class="hl kwb">class</code>=<code class="hl str">&quot;ch.qos.logback.core.FileAppender&quot;</code><code class="hl kwa">&gt;</code>
+    <code class="hl kwa">&lt;file&gt;</code>logs/app.log<code class="hl kwa">&lt;/file&gt;</code>
 
-&lt;encoder&gt;
-&lt;pattern&gt;%date %level [%thread] %logger{10} [%file:%line] %msg%n&lt;/pattern&gt;<a id="GBS.0256.03"></a>
-&lt;/encoder&gt;
-&lt;/appender&gt;
+    <code class="hl kwa">&lt;encoder&gt;</code>
+      <code class="hl kwa">&lt;pattern&gt;</code>
+        %date %level [%thread] %logger{<code class="hl num">10</code>} [%file:%line] %msg%n
+      <code class="hl kwa">&lt;/pattern&gt;</code>
+    <code class="hl kwa">&lt;/encoder&gt;</code>
+  <code class="hl kwa">&lt;/appender&gt;</code>
 
-&lt;appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"&gt;
-&lt;encoder&gt;
-&lt;pattern&gt;%msg%n&lt;/pattern&gt;
-&lt;/encoder&gt;
-&lt;/appender&gt;
+  <code class="hl kwa">&lt;appender</code> <code class="hl kwb">name</code>=<code class="hl str">&quot;STDOUT&quot;</code> <code class="hl kwb">class</code>=<code class="hl str">&quot;ch.qos.logback.core.ConsoleAppender&quot;</code><code class="hl kwa">&gt;</code>
+    <code class="hl kwa">&lt;encoder&gt;</code>
+      <code class="hl kwa">&lt;pattern&gt;</code>%msg%n<code class="hl kwa">&lt;/pattern&gt;</code>
+    <code class="hl kwa">&lt;/encoder&gt;</code>
+  <code class="hl kwa">&lt;/appender&gt;</code>
 
-&lt;root level="debug"&gt;
-&lt;appender-ref ref="FILE" /&gt;
-&lt;appender-ref ref="STDOUT" /&gt;
-&lt;/root&gt;
-&lt;/configuration&gt;</pre>
+  <code class="hl kwa">&lt;root</code> <code class="hl kwb">level</code>=<code class="hl str">&quot;debug&quot;</code><code class="hl kwa">&gt;</code>
+    <code class="hl kwa">&lt;appender-ref</code> <code class="hl kwb">ref</code>=<code class="hl str">&quot;FILE&quot;</code> <code class="hl kwa">/&gt;</code>
+    <code class="hl kwa">&lt;appender-ref</code> <code class="hl kwb">ref</code>=<code class="hl str">&quot;STDOUT&quot;</code> <code class="hl kwa">/&gt;</code>
+  <code class="hl kwa">&lt;/root&gt;</code>
+<code class="hl kwa">&lt;/configuration&gt;</code></pre>
           </div>
           <p>To use<a id="id577" class="indexterm"></a> Akka<a id="id578" class="indexterm"></a> logging in the application, you can either create a logger explicitly, passing in an <code class="literal">ActorSystem</code> object:</p>
           <div class="informalexample">
-            <pre class="programlisting">//java
-LoggingAdapter<a id="GBS.0256.04"></a> log = Logging.getLogger(getContext().system(), this);
+            <pre class="programlisting"><code class="hl slc">// Java</code>
+LoggingAdapter log <code class="hl opt">=</code> Logging<code class="hl opt">.</code><code class="hl kwd">getLogger</code><code class="hl opt">(</code>
+  <code class="hl kwd">getContext</code><code class="hl opt">().</code><code class="hl kwd">system</code><code class="hl opt">(),</code> <code class="hl kwa">this</code><code class="hl opt">);</code>
 
-//scala
-val log = Logging(context.system, this)</pre>
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">val</code> log <code class="hl opt">=</code> <code class="hl kwd">Logging</code><code class="hl opt">(</code>context<code class="hl opt">.</code>system<code class="hl opt">,</code> <code class="hl kwa">this</code><code class="hl opt">)</code></pre>
           </div>
           <p>Or, if using Scala, you can mix in the logging trait into your actor:</p>
           <div class="informalexample">
-            <pre class="programlisting">class MyActor extends Actor with akka.actor.ActorLogging {
-  log.info("actor startup: {}", self.toString)
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">class</code> MyActor <code class="hl kwa">extends</code> Actor <code class="hl kwa">with</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>ActorLogging <code class="hl opt">{</code>
+  log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code><code class="hl str">&quot;actor startup: {}&quot;</code><code class="hl opt">,</code> self<code class="hl opt">.</code>toString<code class="hl opt">)</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>Note that Akka will accept a variable length argument list as parameters in the messages, where it will replace each<a id="GBS.0256.05"></a> pair of brackets,{}, with the parameters in the order they are provided. Exceptions can be logged by passing them as the first argument:</p>
           <div class="informalexample">
-            <pre class="programlisting">#+BEGIN_SRC
-//java
-log.debug("params {} {} {}", param1, param2, param3);
-log.error(e, "exception encountered: "); //exceptions are first arg
+            <pre class="programlisting"><code class="hl slc">// Java</code>
+log<code class="hl opt">.</code><code class="hl kwd">debug</code><code class="hl opt">(</code><code class="hl str">&quot;params {} {} {}&quot;</code><code class="hl opt">,</code> param1<code class="hl opt">,</code> param2<code class="hl opt">,</code> param3<code class="hl opt">);</code>
+log<code class="hl opt">.</code><code class="hl kwd">error</code><code class="hl opt">(</code>e<code class="hl opt">,</code> <code class="hl str">&quot;exception encountered: &quot;</code><code class="hl opt">);</code> <code class="hl slc">//exceptions are first arg</code>
 
-//scala
-log.debug("params {} {} {}", param1, param2, param3)
-log.info(e, "exception encountered: ") //exceptions are<a id="GBS.0257.01"></a> first arg
-#+END_SRC</pre>
+<code class="hl slc">// Scala</code>
+log<code class="hl opt">.</code><code class="hl kwd">debug</code><code class="hl opt">(</code><code class="hl str">&quot;params {} {} {}&quot;</code><code class="hl opt">,</code> param1<code class="hl opt">,</code> param2<code class="hl opt">,</code> param3<code class="hl opt">)</code>
+log<code class="hl opt">.</code><code class="hl kwd">info</code><code class="hl opt">(</code>e<code class="hl opt">,</code> <code class="hl str">&quot;exception encountered: &quot;</code><code class="hl opt">)</code> <code class="hl slc">// exceptions are first arg</code></pre>
           </div>
           <p>There are performance benefits to letting logger handle the string interpolation, as it will execute the interpolation only if the log level is set so that the logger will actually log the event. If the event is not logged, then the string interpolation will not occur. Thus, this is generally better than doing something such as this:</p>
           <div class="informalexample">
-            <pre class="programlisting">#+BEGIN_SRC
-log.debug("this actor is " +<a id="GBS.0257.02"></a> self().toString);
-#+END_SRC</pre>
+            <pre class="programlisting">log<code class="hl opt">.</code><code class="hl kwd">debug</code><code class="hl opt">(</code><code class="hl str">&quot;this actor is &quot;</code> <code class="hl opt">+</code> <code class="hl kwd">self</code><code class="hl opt">().</code>toString<code class="hl opt">);</code></pre>
           </div>
           <p>The preceding code will always create the joined string in memory, even if the message is never logged.</p>
           <p>This covers <a id="id579" class="indexterm"></a>almost everything you'll need to know about logging in <a id="id580" class="indexterm"></a>Akka. For additional information on configuring logging, you will want to check the <code class="literal">Logback</code> documentation. Rolling log files, multiple appenders, and other advanced features can be handled by configuring<a id="GBS.0257.03"></a> <code class="literal">Logback</code>, especially using <code class="literal">logback.xml</code>. For very advanced use cases, <code class="literal">Logback</code> also supports configurations written in the groovy programming language.</p>
@@ -144,68 +143,73 @@ log.debug("this actor is " +<a id="GBS.0257.02"></a> self().toString);
           <p>Multiple Classifiers are available. As a quick example, assume we have a message called <code class="literal">EventBusMessage</code>, and we want to use the Event Bus to have actors subscribe and publish<a id="GBS.0258.02"></a> to them. The event bus doesn't need to use actors—it can implement any pub/sub behavior you require. A simple <code class="literal">LookupClassifier</code> object will describe the type of the event, the topic/classifier type, and how to lookup the classification of the topic for subscribers. In the case of <code class="literal">LookupClassifier</code>, the subscribers need to have an ordering.</p>
           <p>A simple <a id="id585" class="indexterm"></a>Java message <a id="id586" class="indexterm"></a>might look<a id="id587" class="indexterm"></a> like<a id="id588" class="indexterm"></a> this:</p>
           <div class="informalexample">
-            <pre class="programlisting">public class<a id="GBS.0258.03"></a> EventBusMessage {
-    public final String topic;
-    public final String msg;
+            <pre class="programlisting"><code class="hl kwa">public class</code> EventBusMessage <code class="hl opt">{</code>
+  <code class="hl kwa">public final</code> String topic<code class="hl opt">;</code>
+  <code class="hl kwa">public final</code> String msg<code class="hl opt">;</code>
 
-    public EventBusMessage(String topic, String msg) {
-this.topic = topic;
-        this.msg = msg;
-    }
-}</pre>
+  <code class="hl kwa">public</code> <code class="hl kwd">EventBusMessage</code><code class="hl opt">(</code>String topic<code class="hl opt">,</code> String msg<code class="hl opt">) {</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>topic <code class="hl opt">=</code> topic<code class="hl opt">;</code>
+    <code class="hl kwa">this</code><code class="hl opt">.</code>msg <code class="hl opt">=</code> msg<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>The following are the Java and Scala event bus examples:</p>
           <div class="informalexample">
-            <pre class="programlisting">public class JavaLookupClassifier extends LookupEventBus&lt;EventBusMessage, ActorRef, String&gt; {
+            <pre class="programlisting"><code class="hl kwa">public class</code> JavaLookupClassifier
+    <code class="hl kwa">extends</code> LookupEventBus<code class="hl opt">&lt;</code>EventBusMessage<code class="hl opt">,</code> ActorRef<code class="hl opt">,</code> String<code class="hl opt">&gt; {</code>
 
-    @Override public String classify(EventBusMessage event)<a id="GBS.0258.04"></a> {
-        return event.topic;
-    }
+  <code class="hl kwc">&#64;Override</code> <code class="hl kwa">public</code> String <code class="hl kwd">classify</code><code class="hl opt">(</code>EventBusMessage event<code class="hl opt">) {</code>
+      <code class="hl kwa">return</code> event<code class="hl opt">.</code>topic<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
 
-    @Override public void publish(EventBusMessage event, ActorRef subscriber) {
-subscriber.tell(event.msg, ActorRef.noSender());
-    }
+  <code class="hl kwc">&#64;Override</code> <code class="hl kwa">public void</code> <code class="hl kwd">publish</code><code class="hl opt">(</code>EventBusMessage event<code class="hl opt">,</code>
+                                ActorRef subscriber<code class="hl opt">) {</code>
+    subscriber<code class="hl opt">.</code><code class="hl kwd">tell</code><code class="hl opt">(</code>event<code class="hl opt">.</code>msg<code class="hl opt">,</code> ActorRef<code class="hl opt">.</code><code class="hl kwd">noSender</code><code class="hl opt">());</code>
+  <code class="hl opt">}</code>
 
-    @Override public int compareSubscribers(ActorRef a, ActorRef b) {
-        return a.compareTo(b);
-    }
+  <code class="hl kwc">&#64;Override</code> <code class="hl kwa">public int</code> <code class="hl kwd">compareSubscribers</code><code class="hl opt">(</code>ActorRef a<code class="hl opt">,</code> ActorRef b<code class="hl opt">) {</code>
+    <code class="hl kwa">return</code> a<code class="hl opt">.</code><code class="hl kwd">compareTo</code><code class="hl opt">(</code>b<code class="hl opt">);</code>
+  <code class="hl opt">}</code>
 
-    // determines the initial size of the index data structure
-    @Override public intmapSize() {
-        return 128;<a id="GBS.0258.05"></a>
-    }
-}
+  <code class="hl slc">// determines the initial size of the index data structure</code>
+  <code class="hl kwc">&#64;Override</code> <code class="hl kwa">public</code> <code class="hl kwd">intmapSize</code><code class="hl opt">() {</code>
+    <code class="hl kwa">return</code> <code class="hl num">128</code><code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">}</code>
 
-class ScalaLookupClassifier extends EventBus with LookupClassification {
-    type Event = EventBusMessage
-    type Classifier = String
-    type Subscriber = ActorRef
+<code class="hl kwa">class</code> ScalaLookupClassifier <code class="hl kwa">extends</code> EventBus <code class="hl kwa">with</code> LookupClassification <code class="hl opt">{</code>
+    <code class="hl kwa">type</code> Event <code class="hl opt">=</code> EventBusMessage
+    <code class="hl kwa">type</code> Classifier <code class="hl opt">=</code> String
+    <code class="hl kwa">type</code> Subscriber <code class="hl opt">=</code> ActorRef
 
-    override protected def classify(event: Event): Classifier = event.topic
+    <code class="hl kwa">override protected def</code> <code class="hl kwd">classify</code><code class="hl opt">(</code>event<code class="hl opt">:</code> Event<code class="hl opt">):</code> Classifier <code class="hl opt">=</code> event<code class="hl opt">.</code>topic
 
-    override protected def publish(event: Event, subscriber: Subscriber): Unit = {
-      subscriber ! event.msg
-    }
+    <code class="hl kwa">override protected def</code> <code class="hl kwd">publish</code><code class="hl opt">(</code>event<code class="hl opt">:</code> Event<code class="hl opt">,</code>
+                                   subscriber<code class="hl opt">:</code> Subscriber<code class="hl opt">):</code> Unit <code class="hl opt">= {</code>
+      subscriber <code class="hl opt">!</code> event<code class="hl opt">.</code>msg
+    <code class="hl opt">}</code>
 
-    override protected def<a id="GBS.0259.01"></a> compareSubscribers(a: Subscriber, b: Subscriber): Int =
-a.compareTo(b)
+    <code class="hl kwa">override protected def</code> <code class="hl kwd">compareSubscribers</code><code class="hl opt">(</code>
+      a<code class="hl opt">:</code> Subscriber<code class="hl opt">,</code> b<code class="hl opt">:</code> Subscriber<code class="hl opt">):</code> Int <code class="hl opt">=</code> a<code class="hl opt">.</code><code class="hl kwd">compareTo</code><code class="hl opt">(</code>b<code class="hl opt">)</code>
 
-    //initial size of the index data structure
-    override protected defmapSize: Int = 128
-}</pre>
+    <code class="hl slc">// initial size of the index data structure</code>
+    <code class="hl kwa">override protected</code> defmapSize<code class="hl opt">:</code> Int <code class="hl opt">=</code> <code class="hl num">128</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>The preceding<a id="id589" class="indexterm"></a> code implements some pretty basic logic such as how to<a id="id590" class="indexterm"></a> determine the topic, what to do with<a id="id591" class="indexterm"></a> a publish event for any relevant<a id="id592" class="indexterm"></a> subscribers, and a requirement—how to compare subscribers. Also, the beginning size for the<a id="GBS.0259.02"></a> map needs to be declared, although it will adjust automatically as needed.</p>
           <p>You might use it like this:</p>
           <div class="informalexample">
-            <pre class="programlisting">JavaLookupClassifier lookupBus = new JavaLookupClassifier;
-lookupBus.subscribe(myActor, "greetings");
-lookupBus.publish(new EventBusMessage("time", System.currentTimeMillis().toString));
-lookupBus.publish(new EventBusMessage("greetings", "hello"));
+            <pre class="programlisting">JavaLookupClassifier lookupBus <code class="hl opt">=</code> <code class="hl kwa">new</code> JavaLookupClassifier<code class="hl opt">;</code>
+lookupBus<code class="hl opt">.</code><code class="hl kwd">subscribe</code><code class="hl opt">(</code>myActor<code class="hl opt">,</code> <code class="hl str">&quot;greetings&quot;</code><code class="hl opt">);</code>
+lookupBus<code class="hl opt">.</code><code class="hl kwd">publish</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">EventBusMessage</code><code class="hl opt">(</code>
+  <code class="hl str">&quot;time&quot;</code><code class="hl opt">,</code> System<code class="hl opt">.</code><code class="hl kwd">currentTimeMillis</code><code class="hl opt">().</code>toString<code class="hl opt">));</code>
+lookupBus<code class="hl opt">.</code><code class="hl kwd">publish</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">EventBusMessage</code><code class="hl opt">(</code><code class="hl str">&quot;greetings&quot;</code><code class="hl opt">,</code> <code class="hl str">&quot;hello&quot;</code><code class="hl opt">));</code>
 
-val lookupBus = new JavaLookupClassifier
-lookupBus.subscribe(m<a id="GBS.0259.03"></a>yActor, "greetings")
-lookupBus.publish(new EventBusMessage("time", System.currentTimeMillis().toString))
-lookupBus.publish(new EventBusMessage("greetings", "hello"))</pre>
+<code class="hl kwa">val</code> lookupBus <code class="hl opt">=</code> <code class="hl kwa">new</code> JavaLookupClassifier
+lookupBus<code class="hl opt">.</code><code class="hl kwd">subscribe</code><code class="hl opt">(</code>myActor<code class="hl opt">,</code> <code class="hl str">&quot;greetings&quot;</code><code class="hl opt">)</code>
+lookupBus<code class="hl opt">.</code><code class="hl kwd">publish</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">EventBusMessage</code><code class="hl opt">(</code>
+  <code class="hl str">&quot;time&quot;</code><code class="hl opt">,</code> System<code class="hl opt">.</code><code class="hl kwd">currentTimeMillis</code><code class="hl opt">().</code>toString<code class="hl opt">))</code>
+lookupBus<code class="hl opt">.</code><code class="hl kwd">publish</code><code class="hl opt">(</code><code class="hl kwa">new</code> <code class="hl kwd">EventBusMessage</code><code class="hl opt">(</code><code class="hl str">&quot;greetings&quot;</code><code class="hl opt">,</code> <code class="hl str">&quot;hello&quot;</code><code class="hl opt">))</code></pre>
           </div>
           <p>In this case, our actor subscribes to the topic greetings. Then, we publish an event with the topic time and the topic greetings. As you can probably guess, the only message that gets to the actor will be the one sent with the topic<a id="GBS.0259.04"></a> "greetings."</p>
           <p>The Akka documentation has examples and explanation for the classifiers if you want to further explore using <a id="id593" class="indexterm"></a>Akka's Event Bus features. The Akka documentation can be found here:</p>
@@ -233,7 +237,7 @@ lookupBus.publish(new EventBusMessage("greetings", "hello"))</pre>
           <p>The advantage of Agents is that they are a bit lighter weight than using actors to encapsulate state. If you see a single stateful value or object that you need to safely handle, you can consider if an Agent might<a id="GBS.0260.02"></a> be a good fit, especially if you're thinking about how to make operations atomic (that is, checking the value, and then setting the value if it meets a certain condition where race conditions would be problematic). Thus, when you need to access a single value from across threads, Agents offer a nice alternative. to Actors.</p>
           <p>Agents are not a core feature in Akka, and so they are in a separate module<a id="GBS.0260.03"></a> that you need to place in your project's <code class="literal">build.sbt</code> file:</p>
           <div class="informalexample">
-            <pre class="programlisting">"com.typesafe.akka" %% "akka-agent" % "2.3.6"</pre>
+            <pre class="programlisting"><code class="hl str">&quot;com.typesafe.akka&quot;</code> <code class="hl opt">%%</code> <code class="hl str">&quot;akka-agent&quot;</code> <code class="hl opt">%</code> <code class="hl str">&quot;2.3.6&quot;</code></pre>
           </div>
           <p>A fairly standard example is a bank account withdrawal where we first need to check to see if there is enough money in the bank account; and then, if there is, we can withdraw the money. Because two threads could check the account, and then deduct the money from the account, we need the account<a id="GBS.0260.04"></a> check-and-set operation to be one atomic operation so that we ensure the value isn't modified after it's read.</p>
           <p>If we used an integer shared across threads, it would be possible to do something like this if two people try to withdraw $20 from an account at the same time:</p>
@@ -251,22 +255,22 @@ lookupBus.publish(new EventBusMessage("greetings", "hello"))</pre>
           <p>We need the check and<a id="GBS.0261.02"></a> set operation to be atomic (one complete unit of work) to provide this functionality safely. Doing this with an actor is certainly possible as the actor will only handle one message at a time, but it's a bit more succinct to do this with an agent.</p>
           <p>Agents use actors and<a id="id596" class="indexterm"></a> threads in their underlying implementation, so <a id="id597" class="indexterm"></a>we need to provide an execution context for them. We'll create an actor system<a id="GBS.0261.03"></a> and use its dispatcher to create the agent with the $25 in the account:</p>
           <div class="informalexample">
-            <pre class="programlisting">import akka.actor.ActorSystem;
-import akka.agent.Agent;
+            <pre class="programlisting"><code class="hl kwa">import</code> akka<code class="hl opt">.</code>actor<code class="hl opt">.</code>ActorSystem<code class="hl opt">;</code>
+<code class="hl kwa">import</code> akka<code class="hl opt">.</code>agent<code class="hl opt">.</code>Agent<code class="hl opt">;</code>
 
-//Java
-ActorSystem system = ActorSystem.create();
-Agent&lt;Integer&gt; account = Agent.create(25, dispatcher);
+<code class="hl slc">// Java</code>
+ActorSystem system <code class="hl opt">=</code> ActorSystem<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">();</code>
+Agent<code class="hl opt">&lt;</code>Integer<code class="hl opt">&gt;</code> account <code class="hl opt">=</code> Agent<code class="hl opt">.</code><code class="hl kwd">create</code><code class="hl opt">(</code><code class="hl num">25</code><code class="hl opt">,</code> dispatcher<code class="hl opt">);</code>
 
-//Scala
-val system = ActorSystem()
-implicit valec = system.dispatcher
-val account = Agent(25)</pre>
+<code class="hl slc">// Scala</code>
+<code class="hl kwa">val</code> system <code class="hl opt">=</code> <code class="hl kwd">ActorSystem</code><code class="hl opt">()</code>
+<code class="hl kwa">implicit</code> val ec <code class="hl opt">=</code> system<code class="hl opt">.</code>dispatcher
+<code class="hl kwa">val</code> account <code class="hl opt">=</code> <code class="hl kwd">Agent</code><code class="hl opt">(</code><code class="hl num">25</code><code class="hl opt">)</code></pre>
           </div>
           <p>You can get the value with <code class="literal">Agent.get()</code> or <code class="literal">Agent.apply</code>:</p>
           <div class="informalexample">
-            <pre class="programlisting">Integer currentValue<a id="GBS.0261.04"></a> = account.get();
-valcurrentValue = account()</pre>
+            <pre class="programlisting">Integer currentValue <code class="hl opt">=</code> account<code class="hl opt">.</code><code class="hl kwd">get</code><code class="hl opt">();</code>
+<code class="hl kwa">val</code> currentValue <code class="hl opt">=</code> <code class="hl kwd">account</code><code class="hl opt">()</code></pre>
           </div>
           <div title="Note" style="" class="note">
             <div class="inner">
@@ -276,38 +280,36 @@ valcurrentValue = account()</pre>
           </div>
           <p>To update the value with the check-and-set operation, we can provide a function (int =&gt;int) describing the operation using send. For Java, you need to provide a Mapper function:</p>
           <div class="informalexample">
-            <pre class="programlisting">//Java
-final Integer ammountToWithdraw = 20;
-account.send(new akka.dispatch.Mapper&lt;Integ<a id="GBS.0261.05"></a>er, Integer&gt;() {
-            public Integer apply(Integer i) {
-                if(ammountToWithdraw&lt;= i)
-                    return i - ammountToWithdraw;
-                else
-                    return i;
-            }
-        });
+            <pre class="programlisting"><code class="hl slc">// Java</code>
+<code class="hl kwa">final</code> Integer ammountToWithdraw <code class="hl opt">=</code> <code class="hl num">20</code><code class="hl opt">;</code>
+account<code class="hl opt">.</code><code class="hl kwd">send</code><code class="hl opt">(</code><code class="hl kwa">new</code> akka<code class="hl opt">.</code>dispatch<code class="hl opt">.</code>Mapper<code class="hl opt">&lt;</code>Integer<code class="hl opt">,</code> Integer<code class="hl opt">&gt;() {</code>
+  <code class="hl kwa">public</code> Integer <code class="hl kwd">apply</code><code class="hl opt">(</code>Integer i<code class="hl opt">) {</code>
+    <code class="hl kwa">if</code> <code class="hl opt">(</code>ammountToWithdraw <code class="hl opt">&lt;=</code> i<code class="hl opt">)</code>
+      <code class="hl kwa">return</code> i <code class="hl opt">-</code> ammountToWithdraw<code class="hl opt">;</code>
+    <code class="hl kwa">else</code>
+      <code class="hl kwa">return</code> i<code class="hl opt">;</code>
+  <code class="hl opt">}</code>
+<code class="hl opt">});</code>
 
-//Scala
-valammountToWithdraw = 20
-account.send { i =&gt;
-  if(i&gt;= 20) {
-i - 20
-  } else i
-}</pre>
+<code class="hl slc">// Scala</code>
+val ammountToWithdraw <code class="hl opt">=</code> <code class="hl num">20</code>
+account<code class="hl opt">.</code>send <code class="hl opt">{</code>
+  i <code class="hl opt">=&gt;</code> <code class="hl kwa">if</code> <code class="hl opt">(</code>i <code class="hl opt">&gt;=</code> <code class="hl num">20</code><code class="hl opt">) {</code> i <code class="hl opt">-</code> <code class="hl num">20</code> <code class="hl opt">}</code> <code class="hl kwa">else</code> i
+<code class="hl opt">}</code></pre>
           </div>
           <p>These operations are fire-and-forget, and they run in the other thread pool,<a id="GBS.0262.01"></a> so you would need to complete a future if you want to get the result of the operation back from the agent. The <code class="literal">alter</code> method is identical, except it returns the result of the operation in future.</p>
           <p>Scala offers us <a id="id598" class="indexterm"></a>some extra flexibility to be able to complete this operation. In <a id="id599" class="indexterm"></a>Scala, you can use a transaction block to allow multiple agents to participate in one atomic operation, and return the result<a id="GBS.0262.02"></a> of that block. If we want to move money from one account to another, for example, then the transaction block can be used to have multiple agents interact, as shown in the following code:</p>
           <div class="informalexample">
-            <pre class="programlisting">import scala.concurrent.stm._
-val wifeAccount = Agent(25)
-val husbandAccount = Agent(0)
-val wasSuccess = atomic { txn =&gt;
-  if(wifeAccount() &gt;= 20) {
-wifeAccount.send(_ - 20)
-husbandAccount.send(_ + 20)
-    true<a id="GBS.0262.03"></a>
-  } else false
-}</pre>
+            <pre class="programlisting"><code class="hl kwa">import</code> scala<code class="hl opt">.</code>concurrent<code class="hl opt">.</code>stm<code class="hl opt">.</code>_
+<code class="hl kwa">val</code> wifeAccount <code class="hl opt">=</code> <code class="hl kwd">Agent</code><code class="hl opt">(</code><code class="hl num">25</code><code class="hl opt">)</code>
+<code class="hl kwa">val</code> husbandAccount <code class="hl opt">=</code> <code class="hl kwd">Agent</code><code class="hl opt">(</code><code class="hl num">0</code><code class="hl opt">)</code>
+<code class="hl kwa">val</code> wasSuccess <code class="hl opt">=</code> atomic <code class="hl opt">{</code>
+  txn <code class="hl opt">=&gt;</code> <code class="hl kwa">if</code> <code class="hl opt">(</code><code class="hl kwd">wifeAccount</code><code class="hl opt">() &gt;=</code> <code class="hl num">20</code><code class="hl opt">) {</code>
+    wifeAccount<code class="hl opt">.</code><code class="hl kwd">send</code><code class="hl opt">(</code>_ <code class="hl opt">-</code> <code class="hl num">20</code><code class="hl opt">)</code>
+    husbandAccount<code class="hl opt">.</code><code class="hl kwd">send</code><code class="hl opt">(</code>_ <code class="hl opt">+</code> <code class="hl num">20</code><code class="hl opt">)</code>
+    <code class="hl kwb">true</code>
+  <code class="hl opt">}</code> <code class="hl kwa">else</code> <code class="hl kwb">false</code>
+<code class="hl opt">}</code></pre>
           </div>
           <p>Agents can be a useful little abstraction to have in your tool belt. Again, think of places you could use <code class="literal">AtomicInteger</code>. Now, you have an <code class="literal">AtomicAnything</code> object and it's called an Agent.</p>
           <p>Documentation for<a id="id600" class="indexterm"></a> Agents can be found here:</p>
