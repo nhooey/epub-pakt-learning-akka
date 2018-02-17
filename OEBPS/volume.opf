@@ -4,10 +4,16 @@
     <dc:title>Learning Akka</dc:title>
     <dc:publisher>Packt Publishing</dc:publisher>
     <dc:identifier id="bookid">9781784393007</dc:identifier>
+    <dc:creator opf:role="aut">Jason Goodwin</dc:creator>
+    <dc:rights>Copyright 2015 Pakt Publishing.</dc:rights>
+    <dc:subject>Scala</dc:subject>
+    <dc:date opf:event="original-publication">2015-12-30</dc:date>
     <dc:language>en</dc:language>
+
     <meta name="cover" content="cover-image" />
     <meta name="GBSProcVer" content="1" />
     <meta name="GBSEpubSource" content="GoogleEbooks" />
+    <meta property="ibooks:specified-fonts">true</meta>
   </metadata>
   <manifest>
     <item id="ncxtoc" href="toc.ncx" media-type="application/x-dtbncx+xml" />
