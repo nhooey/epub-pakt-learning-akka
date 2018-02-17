@@ -85,6 +85,7 @@ div.informaltable {
   border-right: 0;
   border-style: solid;
   border-color: #000;
+  font-size: smaller;
 }
 div.informaltable table {
   width: 100%;
@@ -129,9 +130,8 @@ pre, pre.programlisting {
   clear: both;
   margin: .5em 2em;
   overflow: auto;
-  padding: .5em 2em;
   white-space: pre-wrap;
-  word-wrap: break-word;
+  font-size: smaller;
 }
 div.informalexample {
   word-wrap: break-word;
@@ -141,6 +141,10 @@ pre.programlisting span.bold {
 }
 code.literal {
   color: blue;
+  overflow-wrap: break-word;
+  hyphens: none;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
 }
 div.mediaobject img {
   margin-left: auto;
