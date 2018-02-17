@@ -1,3 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Approaching application design</title><link rel="stylesheet" href="epub.css" type="text/css"></link><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"></meta></head><body id="page"><div style="display:none;"><a id="GBS.0235.01"></a></div><div title="Approaching application design" class="section"><div class="titlepage"><div><div><h1 class="title"><a id="ch08lvl1sec54"></a>Approaching application design</h1></div></div></div><p>There are arguably a<a id="id529" class="indexterm"></a> couple of approaches that can be taken when writing code&#8212;the more traditional waterfall approaches where design and analysis are done upfront, and then code is built, or the Agile, especially Extreme Programming, camps, where you might keep upfront analysis to a minimum, and instead iteratively build and refactor your code to good design as<a id="GBS.0235.02"></a> you go.</p><p>Realistically, it&#39;s never one case or the other as you&#39;ll always do some analysis upfront, and you&#39;ll always make discoveries as you build that will force you to rethink and redesign your solution until completion. However, looking at some projects a few years after inception I can say that when you&#39;re starting a new project, you want to get the application foundation designed correctly<a id="GBS.0235.03"></a> or you&#39;ll be building on a rickety tower for years to come.</p><p>As we&#39;re starting a new piece of work here, I think it&#39;s prudent to look at the design before we begin. We&#39;ll work from the top down to see how we can slice the application into separate components to be able to build and test each one in isolation. By separating pieces of the domain into distinct modules, we can ensure we build simpler<a id="GBS.0235.04"></a> pieces. You can assign a developer to work on one piece, and he/she will be able to pick it up and understand it in a few days without needing to understand the entire system from front to back.</p><p>To begin designing our chat application, we can look at how we might create a domain model to represent what we&#39;re trying to build in a way that is simple and clear. Using object-oriented approaches, we<a id="GBS.0235.05"></a> aim to build classes that blend behavior and data while not knowing too much about the pieces it interacts with. Creating classes that have these qualities allows our application to change and grow over time with minimal cost.</p><p>Looking at the brief <a id="id530" class="indexterm"></a>description of requirements, it&#39;s easy to identify a few major entities of the domain:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Chatroom</strong></span>: A <a id="id531" class="indexterm"></a>chatroom has a topic or name that uniquely identifies<a id="GBS.0236.01"></a> it.</li><li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>User</strong></span>: When a<a id="id532" class="indexterm"></a> user registers, they acquire a username.</li><li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Lobby</strong></span>: A lobby<a id="id533" class="indexterm"></a> contains a list of chatrooms. It may contain a list of active users as well. Likely one lobby exists but, as our application scales, it&#39;s possible that we may network together multiple offices or create different lobbies for different teams.</li></ul></div><p>I also find it very helpful to talk about where state may exist in the problem upfront.<a id="GBS.0236.02"></a> Because we have an asynchronous environment where several users are interacting with server state at the same time, it will help us decide how to best use Akka to build the application. The following areas could have state:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Lobby</strong></span>: It will contain a list of all chatrooms</li><li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Chatroom</strong></span>: It will contain a history of messages and a list of all current users who need to receive updates to the chat</li></ul></div><p>We know<a id="GBS.0236.03"></a> that Akka is a very good choice for encapsulating state in concurrent systems, so likely these areas are good targets to implement with actors.</p><div title="High-Level design" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch08lvl2sec87"></a>High-Level design</h2></div></div></div><p>Our chatroom will have <a id="id534" class="indexterm"></a>a client/server model. We now know that it has a client that is accessed by a user, and then on the server side we have a lobby and a chatroom as distinct elements of the domain. By creating a clear context boundary<a id="GBS.0236.04"></a> around those three elements, we can look at any one of them in isolation.</p><div class="mediaobject"><img src="graphics/B04006_08_01.jpg" alt="High-Level design"></img><a id="GBS.0237.01"></a></div><p>We can look at the <a id="id535" class="indexterm"></a>interactions of the components of the domain in the following way:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Client gets a list of chatrooms from the lobby</li><li style="list-style-type: disc;" class="listitem">When new chatrooms come online, they announce that they are available so that clients can see them</li><li style="list-style-type: disc;" class="listitem">Clients can join the chatrooms</li><li style="list-style-type: disc;" class="listitem">Clients can post messages to the chat chatrooms</li><li style="list-style-type: disc;" class="listitem">Clients will receive updates from the chat chatrooms</li></ul></div><p>We&#39;ll look at turning this into specifications<a id="GBS.0237.02"></a> shortly, but by listing out basic interactions we can identify the components of the problem. Listing the components, we can draw context boundaries that separate them, allowing us to work on each of these components in isolation from the other elements. We also gain the ability to easily test these components if we don&#39;t couple them together.</p><p>As one final benefit, with <a id="id536" class="indexterm"></a>what we know about Akka&#39;s<a id="GBS.0237.03"></a> location transparency, if we keep the chatroom separate from the lobby we could likely run chatrooms on different servers. One lobby could let everyone know what rooms are available, and then we could scale the chatrooms out as needed. Now that we have a picture of the higher-level components, we can pick one of the components and focus on designing it.</p></div></div><div style="display:none;"><a id="GBS.0237.04"></a></div></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Approaching application design</title>
+    <link rel="stylesheet" href="epub.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.75.2" />
+  </head>
+  <body id="page">
+    <div style="display:none;">
+      <a id="GBS.0235.01"></a>
+    </div>
+    <div title="Approaching application design" class="section">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h1 class="title"><a id="ch08lvl1sec54"></a>Approaching application design</h1>
+          </div>
+        </div>
+      </div>
+      <p>There are arguably a<a id="id529" class="indexterm"></a> couple of approaches that can be taken when writing code—the more traditional waterfall approaches where design and analysis are done upfront, and then code is built, or the Agile, especially Extreme Programming, camps, where you might keep upfront analysis to a minimum, and instead iteratively build and refactor your code to good design as<a id="GBS.0235.02"></a> you go.</p>
+      <p>Realistically, it's never one case or the other as you'll always do some analysis upfront, and you'll always make discoveries as you build that will force you to rethink and redesign your solution until completion. However, looking at some projects a few years after inception I can say that when you're starting a new project, you want to get the application foundation designed correctly<a id="GBS.0235.03"></a> or you'll be building on a rickety tower for years to come.</p>
+      <p>As we're starting a new piece of work here, I think it's prudent to look at the design before we begin. We'll work from the top down to see how we can slice the application into separate components to be able to build and test each one in isolation. By separating pieces of the domain into distinct modules, we can ensure we build simpler<a id="GBS.0235.04"></a> pieces. You can assign a developer to work on one piece, and he/she will be able to pick it up and understand it in a few days without needing to understand the entire system from front to back.</p>
+      <p>To begin designing our chat application, we can look at how we might create a domain model to represent what we're trying to build in a way that is simple and clear. Using object-oriented approaches, we<a id="GBS.0235.05"></a> aim to build classes that blend behavior and data while not knowing too much about the pieces it interacts with. Creating classes that have these qualities allows our application to change and grow over time with minimal cost.</p>
+      <p>Looking at the brief <a id="id530" class="indexterm"></a>description of requirements, it's easy to identify a few major entities of the domain:</p>
+      <div class="itemizedlist">
+        <ul class="itemizedlist">
+          <li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Chatroom</strong></span>: A <a id="id531" class="indexterm"></a>chatroom has a topic or name that uniquely identifies<a id="GBS.0236.01"></a> it.</li>
+          <li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>User</strong></span>: When a<a id="id532" class="indexterm"></a> user registers, they acquire a username.</li>
+          <li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Lobby</strong></span>: A lobby<a id="id533" class="indexterm"></a> contains a list of chatrooms. It may contain a list of active users as well. Likely one lobby exists but, as our application scales, it's possible that we may network together multiple offices or create different lobbies for different teams.</li>
+        </ul>
+      </div>
+      <p>I also find it very helpful to talk about where state may exist in the problem upfront.<a id="GBS.0236.02"></a> Because we have an asynchronous environment where several users are interacting with server state at the same time, it will help us decide how to best use Akka to build the application. The following areas could have state:</p>
+      <div class="itemizedlist">
+        <ul class="itemizedlist">
+          <li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Lobby</strong></span>: It will contain a list of all chatrooms</li>
+          <li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Chatroom</strong></span>: It will contain a history of messages and a list of all current users who need to receive updates to the chat</li>
+        </ul>
+      </div>
+      <p>We know<a id="GBS.0236.03"></a> that Akka is a very good choice for encapsulating state in concurrent systems, so likely these areas are good targets to implement with actors.</p>
+      <div title="High-Level design" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch08lvl2sec87"></a>High-Level design</h2>
+            </div>
+          </div>
+        </div>
+        <p>Our chatroom will have <a id="id534" class="indexterm"></a>a client/server model. We now know that it has a client that is accessed by a user, and then on the server side we have a lobby and a chatroom as distinct elements of the domain. By creating a clear context boundary<a id="GBS.0236.04"></a> around those three elements, we can look at any one of them in isolation.</p>
+        <div class="mediaobject">
+          <img src="graphics/B04006_08_01.jpg" alt="High-Level design" />
+          <a id="GBS.0237.01"></a>
+        </div>
+        <p>We can look at the <a id="id535" class="indexterm"></a>interactions of the components of the domain in the following way:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist">
+            <li style="list-style-type: disc;" class="listitem">Client gets a list of chatrooms from the lobby</li>
+            <li style="list-style-type: disc;" class="listitem">When new chatrooms come online, they announce that they are available so that clients can see them</li>
+            <li style="list-style-type: disc;" class="listitem">Clients can join the chatrooms</li>
+            <li style="list-style-type: disc;" class="listitem">Clients can post messages to the chat chatrooms</li>
+            <li style="list-style-type: disc;" class="listitem">Clients will receive updates from the chat chatrooms</li>
+          </ul>
+        </div>
+        <p>We'll look at turning this into specifications<a id="GBS.0237.02"></a> shortly, but by listing out basic interactions we can identify the components of the problem. Listing the components, we can draw context boundaries that separate them, allowing us to work on each of these components in isolation from the other elements. We also gain the ability to easily test these components if we don't couple them together.</p>
+        <p>As one final benefit, with <a id="id536" class="indexterm"></a>what we know about Akka's<a id="GBS.0237.03"></a> location transparency, if we keep the chatroom separate from the lobby we could likely run chatrooms on different servers. One lobby could let everyone know what rooms are available, and then we could scale the chatrooms out as needed. Now that we have a picture of the higher-level components, we can pick one of the components and focus on designing it.</p>
+      </div>
+    </div>
+    <div style="display:none;">
+      <a id="GBS.0237.04"></a>
+    </div>
+  </body>
+</html>

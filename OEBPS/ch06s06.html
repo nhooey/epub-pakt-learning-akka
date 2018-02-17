@@ -1,3 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Combining Sharding and Replication</title><link rel="stylesheet" href="epub.css" type="text/css"></link><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"></meta></head><body id="page"><div style="display:none;"><a id="GBS.0209.01"></a></div><div title="Combining Sharding and Replication" class="section"><div class="titlepage"><div><div><h1 class="title"><a id="ch06lvl1sec44"></a>Combining Sharding and Replication</h1></div></div></div><p>Once we have <a id="id487" class="indexterm"></a>approaches in place for sharding and replication, we will be able to combine the two together by first sharding data into a ring and then replicating the data to the neighboring nodes. Let&#39;s say we have five partition keys, and we want to replicate the data across three nodes; with five nodes, we end up with a topology that looks like the following,<a id="GBS.0209.02"></a> with the numbers representing the hash of the partition key as demonstrated:</p><div class="mediaobject"><img src="graphics/B04006_06_09.jpg" alt="Combining Sharding and Replication"></img><a id="GBS.0209.03"></a></div><p>The request goes to a <a id="id488" class="indexterm"></a>random node that becomes the coordinating node. That node would then calculate key partition key and go to the three nodes that have the data set. The retrieval and handing of the data at that point is no different than what we have looked at.</p><div class="mediaobject"><img src="graphics/B04006_06_10.jpg" alt="Combining Sharding and Replication"></img><a id="GBS.0210.01"></a></div><div title="Pre-Sharding And Redistributing Keys to New Nodes" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch06lvl2sec81"></a>Pre-Sharding And Redistributing Keys to New Nodes</h2></div></div></div><p>What happens if<a id="id489" class="indexterm"></a> you want to be able to add new nodes? For example, what if <a id="id490" class="indexterm"></a>you want to keep your replication factor of <code class="literal">3</code> and add <a id="id491" class="indexterm"></a>two new nodes? If our partition key is only <code class="literal">0</code>–<code class="literal">4</code>, then we can&#39;t move the data across new nodes.</p><p>The trick to this problem is to not use five partition keys but to use a much larger number. Cassandra has a concept of<a id="GBS.0210.02"></a> a vnode&#8212;a virtual node&#8212;whereby a cluster has a larger number of shards than nodes out of the gate. If you start by sharding your database into 64 or 128, then you can add new nodes and move a portion of the partition keys to new nodes as they come into the cluster.</p><div class="mediaobject"><img src="graphics/B04006_06_11.jpg" alt="Pre-Sharding And Redistributing Keys to New Nodes"></img><a id="GBS.0210.03"></a></div><p>Then the coordinating<a id="id492" class="indexterm"></a> node can talk to the new node, understanding it <a id="id493" class="indexterm"></a>has been assigned a new set of partition keys. Note that moving data around to a new node is a one-time operation and likely requires you to stop all operations on all nodes until the re-distribution of partition keys is complete. If your partition is under heavy write through the operation, it might be difficult to ensure no<a id="GBS.0210.04"></a> data loss through the operation otherwise.</p><p>It will be simpler to assign a fixed size to the cluster until you can eventually get to these features. Akka Cluster has mechanisms to only start a cluster once it reaches a certain size. If you want to try building your own distributed key-value store, you should assume it has a fixed size and a known number of partition keys, and add pre-sharding and<a id="GBS.0211.01"></a> re-distributing keys as features later because they are non-trivial problems to solve.</p></div></div><div style="display:none;"><a id="GBS.0211.02"></a></div></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Combining Sharding and Replication</title>
+    <link rel="stylesheet" href="epub.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.75.2" />
+  </head>
+  <body id="page">
+    <div style="display:none;">
+      <a id="GBS.0209.01"></a>
+    </div>
+    <div title="Combining Sharding and Replication" class="section">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h1 class="title"><a id="ch06lvl1sec44"></a>Combining Sharding and Replication</h1>
+          </div>
+        </div>
+      </div>
+      <p>Once we have <a id="id487" class="indexterm"></a>approaches in place for sharding and replication, we will be able to combine the two together by first sharding data into a ring and then replicating the data to the neighboring nodes. Let's say we have five partition keys, and we want to replicate the data across three nodes; with five nodes, we end up with a topology that looks like the following,<a id="GBS.0209.02"></a> with the numbers representing the hash of the partition key as demonstrated:</p>
+      <div class="mediaobject">
+        <img src="graphics/B04006_06_09.jpg" alt="Combining Sharding and Replication" />
+        <a id="GBS.0209.03"></a>
+      </div>
+      <p>The request goes to a <a id="id488" class="indexterm"></a>random node that becomes the coordinating node. That node would then calculate key partition key and go to the three nodes that have the data set. The retrieval and handing of the data at that point is no different than what we have looked at.</p>
+      <div class="mediaobject">
+        <img src="graphics/B04006_06_10.jpg" alt="Combining Sharding and Replication" />
+        <a id="GBS.0210.01"></a>
+      </div>
+      <div title="Pre-Sharding And Redistributing Keys to New Nodes" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch06lvl2sec81"></a>Pre-Sharding And Redistributing Keys to New Nodes</h2>
+            </div>
+          </div>
+        </div>
+        <p>What happens if<a id="id489" class="indexterm"></a> you want to be able to add new nodes? For example, what if <a id="id490" class="indexterm"></a>you want to keep your replication factor of <code class="literal">3</code> and add <a id="id491" class="indexterm"></a>two new nodes? If our partition key is only <code class="literal">0</code>–<code class="literal">4</code>, then we can't move the data across new nodes.</p>
+        <p>The trick to this problem is to not use five partition keys but to use a much larger number. Cassandra has a concept of<a id="GBS.0210.02"></a> a vnode—a virtual node—whereby a cluster has a larger number of shards than nodes out of the gate. If you start by sharding your database into 64 or 128, then you can add new nodes and move a portion of the partition keys to new nodes as they come into the cluster.</p>
+        <div class="mediaobject">
+          <img src="graphics/B04006_06_11.jpg" alt="Pre-Sharding And Redistributing Keys to New Nodes" />
+          <a id="GBS.0210.03"></a>
+        </div>
+        <p>Then the coordinating<a id="id492" class="indexterm"></a> node can talk to the new node, understanding it <a id="id493" class="indexterm"></a>has been assigned a new set of partition keys. Note that moving data around to a new node is a one-time operation and likely requires you to stop all operations on all nodes until the re-distribution of partition keys is complete. If your partition is under heavy write through the operation, it might be difficult to ensure no<a id="GBS.0210.04"></a> data loss through the operation otherwise.</p>
+        <p>It will be simpler to assign a fixed size to the cluster until you can eventually get to these features. Akka Cluster has mechanisms to only start a cluster once it reaches a certain size. If you want to try building your own distributed key-value store, you should assume it has a fixed size and a known number of partition keys, and add pre-sharding and<a id="GBS.0211.01"></a> re-distributing keys as features later because they are non-trivial problems to solve.</p>
+      </div>
+    </div>
+    <div style="display:none;">
+      <a id="GBS.0211.02"></a>
+    </div>
+  </body>
+</html>

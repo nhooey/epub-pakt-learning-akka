@@ -1,31 +1,368 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Setting up your environment</title><link rel="stylesheet" href="epub.css" type="text/css"></link><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"></meta></head><body id="page"><div style="display:none;"><a id="GBS.0039.01"></a></div><div title="Setting up your environment" class="section"><div class="titlepage"><div><div><h1 class="title"><a id="ch01lvl1sec12"></a>Setting up your environment</h1></div></div></div><p>Before we really dig into Akka, we&#39;re<a id="id31" class="indexterm"></a> going to cover setting up your environment and scaffolding a project. You can refer back to this section in later chapters of the book as we will create a few projects along the way.</p><div title="Choosing a language" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch01lvl2sec14"></a>Choosing a language</h2></div></div></div><p>The Scala and Java APIs<a id="id32" class="indexterm"></a> are more or less 1 to 1 for Scala and Java so use whichever language you are comfortable with. If you<a id="GBS.0039.02"></a> know both languages, Scala certainly has a more idiomatic API but both are very serviceable choices. An Actor built in Java is accessible from Scala through the Scala actor API and visa versa so there is no need to decide which to build on immediately; do whatever will get you to where you are going faster. Right now your focus is on learning Akka, not a language. You&#39;ll be able to pick up the other<a id="GBS.0039.03"></a> <a id="id33" class="indexterm"></a>API later without much effort once you know Akka.</p></div><div title="Installing Java – Oracle JDK8" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch01lvl2sec15"></a>Installing Java – Oracle JDK8</h2></div></div></div><p>This book will forego all older<a id="id34" class="indexterm"></a> versions of Java and focus only on Java8. If you are a Java developer but not familiar with Java8 features, you should take some time to familiarize yourself with lambdas and the stream API as covered in this <a id="id35" class="indexterm"></a>tutorial: <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html" class="ulink">http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html</a><a id="GBS.0039.04"></a>
-</p><p>You&#39;ll see lambdas are used heavily in this book. you will benefit from taking the time to get acquainted.</p><div title="Installing on Windows" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch01lvl3sec03"></a>Installing on Windows</h3></div></div></div><p>Download <a id="id36" class="indexterm"></a>and <a id="id37" class="indexterm"></a>install the <a id="id38" class="indexterm"></a>Windows<a id="id39" class="indexterm"></a> JDK8 installer (dmg) from Oracle: <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" class="ulink">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a>.</p><p>Follow the instructions.</p></div><div title="Installing on OS X" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch01lvl3sec04"></a>Installing on OS X</h3></div></div></div><p>Download <a id="id40" class="indexterm"></a>and <a id="id41" class="indexterm"></a>install the <a id="id42" class="indexterm"></a>OS X <a id="id43" class="indexterm"></a>JDK8 installer (dmg) from Oracle:  <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" class="ulink">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a><a id="GBS.0039.05"></a>.</p><p>Follow the instructions.</p></div><div title="Installing on Linux or Unix (Universal instructions)" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch01lvl3sec05"></a>Installing on Linux or Unix (Universal instructions)</h3></div></div></div><p>There are a couple<a id="id44" class="indexterm"></a> approaches that can be used for Nix installations. You can <a id="id45" class="indexterm"></a>use the Universal installer, or try to use a package manager like Yum for <span class="strong"><strong>Red Hat Enterprise Linux</strong></span> (<span class="strong"><strong>RHEL</strong></span>)<a id="id46" class="indexterm"></a> based<a id="id47" class="indexterm"></a> distributions or Apt-Get for Debian-based <a id="id48" class="indexterm"></a>distribution. Instructions <a id="id49" class="indexterm"></a>for the package manager<a id="id50" class="indexterm"></a> can vary from distribution to distribution<a id="GBS.0040.01"></a> but instructions can be found via Google if desired.</p><p>The Universal installer<a id="id51" class="indexterm"></a> will work on all systems so will be covered here. This is<a id="id52" class="indexterm"></a> the most basic installation you can get away with. It will<a id="id53" class="indexterm"></a> install the JDK and enable it for your current user but will not<a id="id54" class="indexterm"></a> change your system. If you want to change your system&#39;s JDK/JRE you can follow the install instructions for your particular distribution.<a id="GBS.0040.02"></a> This <a id="id55" class="indexterm"></a>would be suitable for servers or desktop environments. If <a id="id56" class="indexterm"></a>you&#39;re working on a desktop environment, you can see if there are instructions for your particular distribution if you want it available for other users as the default JDK/JRE.</p><p>Download the Linux <code class="literal">tar.gz</code> JDK distribution<a id="id57" class="indexterm"></a> from Oracle: <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" class="ulink">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a>.</p><p>It will likely be in a file named<a id="GBS.0040.03"></a> something like <code class="literal">jdk-8u31-linux-x64.tar.gz</code> Decompress the <code class="literal">tar.gz</code> file in an appropriate location such as <code class="literal">/opt</code>:</p><p>
-<code class="literal">sudo cp jdk-8u31-linux-x64.tar.gz /opt cd /opt sudo tar -xvf jdk-8u31-linux-x64.tar.gz</code>
-</p><p>You&#39;ll want to set your user&#39;s Java home to the Java8 folder:</p><p>
-<code class="literal">echo &#39;export JAVA_HOME=/opt/jdk1.8.031&#39; &gt;&gt; ~/.profile</code>
-</p><p>Also ensure that Java bin is on the path:</p><p>
-<code class="literal">echo &#39;export PATH=$PATH:/opt/jdk1.8.031&#39;<a id="GBS.0040.04"></a> &gt;&gt; ~/.profile</code>
-</p><p>Now your IDE and Sbt/Activator can use the JDK to build and run apps we build.</p></div></div><div title="Ensuring Java is configured in your environment" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch01lvl2sec16"></a>Ensuring Java is configured in your environment</h2></div></div></div><p>Regardless of the OS <a id="id58" class="indexterm"></a>you&#39;re on, you&#39;ll want to ensure that <code class="literal">JAVA_HOME</code> is set and also that the Java binary is on the path. You shouldn&#39;t need to do this unless you use the universal installer but you should validate in a new terminal that <code class="literal">JAVA_HOME</code> is<a id="GBS.0040.05"></a> set in the environment, and that the JDK bin folder is on the path. </p></div><div title="Installing Scala" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch01lvl2sec17"></a>Installing Scala</h2></div></div></div><p>If you&#39;re using <a id="id59" class="indexterm"></a>Scala, then <a id="id60" class="indexterm"></a>you&#39;ll want to have Scala and the REPL installed on your system. At the time of writing, the current Scala version (2.11) compiles to Java 1.6 byte-code so we can assume you do not need to install JDK8. There is talk of future versions of Scala requiring JDK8 so this may change.</p><p><a id="GBS.0041.01"></a>Scala does not need to be installed on its own. Typesafe Activator contains Scala and all of the tools we will need to work with it; we will install next.</p></div><div title="Installing Typesafe Activator" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch01lvl2sec18"></a>Installing Typesafe Activator</h2></div></div></div><p>Typesafe Activator<a id="id61" class="indexterm"></a> installation is a bundle that contains Scala, Akka, Play, <span class="strong"><strong>Simple Build Tool</strong></span> (<span class="strong"><strong>SBT</strong></span>) <a id="id62" class="indexterm"></a>and some extra<a id="id63" class="indexterm"></a> features such as project scaffolding and templates.</p><div title="Windows" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch01lvl3sec06"></a>Windows</h3></div></div></div><p>Download <a id="id64" class="indexterm"></a>Typesafe Activator<a id="id65" class="indexterm"></a> from <a id="id66" class="indexterm"></a><a id="GBS.0041.02"></a>Typesafe&#8212;<a href="http://www.typesafe.com/%E2%80%A8get-started" class="ulink">http://www.typesafe.com/get-started</a>.</p><p>Run the installer<a id="id67" class="indexterm"></a> and follow the onscreen instructions.</p></div><div title="Linux/Unix/OS X" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch01lvl3sec07"></a>Linux/Unix/OS X</h3></div></div></div><p>Download<a id="id68" class="indexterm"></a> Typesafe<a id="id69" class="indexterm"></a> Activator from Typesafe:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem"><a href="http://www.typesafe.com/activator/download" class="ulink">http://www.typesafe.com/activator/download</a></li><li style="list-style-type: disc;" class="listitem"><a href="http://www.typesafe.com/get-started" class="ulink">http://www.typesafe.com/get-started</a></li></ul></div><p>Unzip the file in an appropriate<a id="id70" class="indexterm"></a> location such as <code class="literal">/opt cd /opt sudo unzip typesafe-activator-1.2.12.zip.</code>
-</p><p>Make the Activator <a id="id71" class="indexterm"></a>executable: <code class="literal">sudo chmod 755 /opt/activator-1.2.12/<a id="GBS.0041.03"></a>activator</code>
-</p><p>Add the Activator to your <a id="id72" class="indexterm"></a>path: <code class="literal">echo &#39;export PATH=$PATH:/opt/activator-1.2.12&#39;</code>
-</p><p>Log out and back<a id="id73" class="indexterm"></a> in. Ensure you can run the following on the command line: </p><div class="informalexample"><pre class="programlisting">
-<span class="strong"><strong>activator --version</strong></span>
-</pre></div><p>That should display text similar to this: sbt launcher version 0.13.5</p></div><div title="OS X" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch01lvl3sec08"></a>OS X</h3></div></div></div><p>Activator can either be <a id="id74" class="indexterm"></a>installed with Linux <a id="id75" class="indexterm"></a>or using <code class="literal">brew</code>. This section will cover the <a id="id76" class="indexterm"></a>brew installation:</p><p>Open a terminal.</p><p>Place<a id="GBS.0041.04"></a> the following in your terminal (copied from <a href="http://brew.sh" class="ulink">http://brew.sh</a>). This will install the Homebrew OS X Package manager.</p><div class="informalexample"><pre class="programlisting">ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</pre></div><p>Finally, place the following<a id="id77" class="indexterm"></a> in your terminal and <a id="id78" class="indexterm"></a>press <span class="emphasis"><em>Enter</em></span>:</p><div class="informalexample"><pre class="programlisting">
-<span class="strong"><strong>brew install typesafe-activator</strong></span>
-</pre></div><p>Check that the Activator is<a id="id79" class="indexterm"></a> available on the command line:</p><div class="informalexample"><pre class="programlisting">
-<span class="strong"><strong>activator --version</strong></span>
-</pre></div></div></div><div title="Creating a new project" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch01lvl2sec19"></a>Creating a new<a id="GBS.0041.05"></a> project</h2></div></div></div><p>We will use the Activator to quickly<a id="id80" class="indexterm"></a> scaffold projects in this book. We can generate a project from any number of templates. We will only use the basic Java and Scala templates in this book. Feel free to explore other options. Typesafe has many user-submitted Activator templates that will demonstrate various technologies and approaches used together.</p><p>To create a new Activator template,<a id="GBS.0042.01"></a> in a terminal/command prompt, type:</p><div class="informalexample"><pre class="programlisting">
-<span class="strong"><strong>activator new</strong></span>
-</pre></div><p>You will see the following.</p><p>Choose from these featured templates or enter a template name:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">minimal-akka-java-seed</li><li style="list-style-type: disc;" class="listitem">minimal-akka-scala-seed</li><li style="list-style-type: disc;" class="listitem">minimal-java</li><li style="list-style-type: disc;" class="listitem">minimal-scala</li><li style="list-style-type: disc;" class="listitem">play-java</li><li style="list-style-type: disc;" class="listitem">play-scala</li></ul></div><div title="Note" style="" class="note"><div class="inner"><h3 class="title"><a id="tip02"></a>Tip</h3><p>You can hit <span class="emphasis"><em>Tab</em></span> to view a list of all templates.</p></div></div><p>Select the minimal-scala or minimal-java project depending on your language preference. You will be prompted<a id="GBS.0042.02"></a> to name your application next, call it <code class="literal">akkademy-db</code>.</p><p>Enter a name for your application (just press <span class="emphasis"><em>Enter</em></span> for minimal-scala) &gt; <code class="literal">akkademy-db</code>.
-</p><p>To confirm that the project and your environment are set up correctly, change into the folder and run <code class="literal">activator test</code>.
-</p><div class="informalexample"><pre class="programlisting">
-<span class="strong"><strong>cd akkademy-db activator test</strong></span>
-</pre></div><p>You will see output indicating that the project compiled and the test ran. If there are any problems, you<a id="GBS.0042.03"></a> may have to head to stack-overflow and sort out your environment before proceeding.</p><p>You will see the <a id="id81" class="indexterm"></a>following success message if all went well:</p><div class="informalexample"><pre class="programlisting">
-<span class="strong"><strong>[info] Passed: Total 1, Failed 0, Errors 0, Passed 1 [success] Total time: 3 s, completed 22-Jan-2015 9:44:21 PM</strong></span>
-</pre></div></div><div title="Installing an IDE" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch01lvl2sec20"></a>Installing an IDE</h2></div></div></div><p>We have our environment set up and<a id="id82" class="indexterm"></a> running now and we can actually start to work on the code. If you want to use a<a id="GBS.0042.04"></a> simple text editor, feel free to skip this section. Emacs or Sublime are good choices for text editors and have syntax highlighting and integrations that can provide autocomplete. If you want to get an IDE up and running, we&#39;ll cover setting up Eclipse, and IntelliJ here.</p><div title="Install IntelliJ CE" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch01lvl3sec09"></a>Install IntelliJ CE</h3></div></div></div><p>If you choose to use an<a id="id83" class="indexterm"></a> IDE, IntelliJ is the recommended IDE. If you&#39;re using another IDE, I <a id="id84" class="indexterm"></a>still strongly<a id="GBS.0042.05"></a> recommend you attempt to use IntelliJ. While writing this book, I&#39;ve worked with many Java developers who transitioned to working with SBT projects and almost all of them switched to IntelliJ and never looked back.</p><p>IntelliJ now has built-in SBT support, which makes it a fast IDE to use for your Akka projects; setting up and configuring of the IDE is virtually non-existent&#8212;it will just work with<a id="GBS.0043.01"></a> the technology we will use in this book.</p><p>Steps for getting the project up and running:</p><div class="orderedlist"><ol class="orderedlist arabic"><li class="listitem">Download and install IntelliJ CE (free).</li><li class="listitem">After installing choose to open a project. Select the <code class="literal">akkademy-db</code> folder.</li><li class="listitem">Select Java 1.8 if you&#39;re using Java (or if Scala 2.12 requires it). You can use Java 6 or 7 if using Scala 2.11. Turn on the Auto Import feature. Hit okay.</li></ol></div></div><div title="Eclipse" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch01lvl3sec10"></a>Eclipse</h3></div></div></div><p>If using Eclipse, it is recommended<a id="GBS.0043.02"></a> that you <a id="id85" class="indexterm"></a>download Scala-Ide, which contains all of the required plugins to work with our sbt/Akka projects in either Java or Scala. Even if you&#39;re only using Java, you may find you want to inspect some Scala along the way.</p><div title="Installing Eclipse (Scala-Ide)" class="section"><div class="titlepage"><div><div><h4 class="title"><a id="ch01lvl4sec01"></a>Installing Eclipse (Scala-Ide)</h4></div></div></div><p>Download Scala-Ide<a id="id86" class="indexterm"></a> from <a href="http://scala-ide.org" class="ulink">http://scala-ide.org</a> which is a packaged <a id="id87" class="indexterm"></a>version of Eclipse with sbt and Scala plugins integrated.</p><p>Unzip the file that<a id="GBS.0043.03"></a> is<a id="id88" class="indexterm"></a> downloaded. You can move the unzipped folder to another location if desired such as <code class="literal">/opt (linux)</code> or <code class="literal">~/Applications (OSX)</code>.</p><p>Run the Eclipse binary. Choose a workspace folder or select the default.</p><p>Check that the Java JDK is correctly selected in <code class="literal">Preferences: Java | Compiler</code>.</p></div><div title="Preparing the project for Eclipse" class="section"><div class="titlepage"><div><div><h4 class="title"><a id="ch01lvl4sec02"></a>Preparing the project for Eclipse</h4></div></div></div><p>In order to open the project in <a id="id89" class="indexterm"></a>eclipse, we must first generate an Eclipse project.</p><p><a id="GBS.0043.04"></a>First we must add the eclipse<a id="id90" class="indexterm"></a> sbt plugin to our environment. Open your global sbt plugins file (create it if it&#39;s not there), is located in <code class="literal">~/.sbt/{version}/plugins/plugins.sbt</code> where version is the sbt version. It is 0.13 at the time of writing, so <code class="literal">~/.sbt/0.13/plugins/plugins.sbt</code>
-</p><p>Include the following in the file, ensuring there is a blank line between each line in the file if there are multiple<a id="GBS.0043.05"></a> lines.</p><div class="informalexample"><pre class="programlisting">addSbtPlugin(&quot;com.typesafe.sbteclipse&quot; % &quot;sbteclipse-plugin&quot; % &quot;3.0.0&quot;)</pre></div><p>You may want to ensure this is current by checking the<a id="id91" class="indexterm"></a> sbteclipse GitHub project: <a href="https://github.com/typesafehub/sbteclipse/" class="ulink">https://github.com/typesafehub/sbteclipse/</a>
-</p><p>Once you have the plugin installed, you need to generate the eclipse project: <a href="https://github.com/typesafehub/sbteclipse/" class="ulink">https://github.com/typesafehub/sbteclipse/</a> </p><p>In the terminal, navigate <a id="id92" class="indexterm"></a>to the project we created earlier (<code class="literal">akkademy-db</code><a id="GBS.0044.01"></a>). In the root of the project, run Activator eclipsify to generate the eclipse project structure.</p><p>You will see the following success message if all went well:</p><div class="informalexample"><pre class="programlisting">
-<span class="strong"><strong>[info] Successfully created Eclipse project files for project(s): [info] akkademy-db</strong></span>
-</pre></div></div><div title="Importing the project into Eclipse" class="section"><div class="titlepage"><div><div><h4 class="title"><a id="ch01lvl4sec03"></a>Importing the project into Eclipse</h4></div></div></div><p>In <a id="id93" class="indexterm"></a>Eclipse, select<a id="id94" class="indexterm"></a> <span class="strong"><strong>File | Import</strong></span>.</p><p>Choose<span class="strong"><strong> General | Existing Projects into Workspace</strong></span>.</p><div class="mediaobject"><img src="graphics/B04006_01_06.jpg" alt="Importing the project into Eclipse"></img><a id="GBS.0044.02"></a></div><p>Select the<a id="id95" class="indexterm"></a> folder<a id="id96" class="indexterm"></a> and click <span class="strong"><strong>Next</strong></span>.</p><div class="mediaobject"><img src="graphics/B04006_01_07.jpg" alt="Importing the project into Eclipse"></img><a id="GBS.0045.01"></a></div><div title="Note" style="" class="note"><div class="inner"><h3 class="title"><a id="tip03"></a>Tip</h3><p>Note if you<a id="id97" class="indexterm"></a> change <code class="literal">build.sbt</code> you will need to re-generate the<a id="id98" class="indexterm"></a> project and may need to re-import it.</p></div></div></div></div></div></div><div style="display:none;"><a id="GBS.0045.02"></a></div></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Setting up your environment</title>
+    <link rel="stylesheet" href="epub.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.75.2" />
+  </head>
+  <body id="page">
+    <div style="display:none;">
+      <a id="GBS.0039.01"></a>
+    </div>
+    <div title="Setting up your environment" class="section">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h1 class="title"><a id="ch01lvl1sec12"></a>Setting up your environment</h1>
+          </div>
+        </div>
+      </div>
+      <p>Before we really dig into Akka, we're<a id="id31" class="indexterm"></a> going to cover setting up your environment and scaffolding a project. You can refer back to this section in later chapters of the book as we will create a few projects along the way.</p>
+      <div title="Choosing a language" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch01lvl2sec14"></a>Choosing a language</h2>
+            </div>
+          </div>
+        </div>
+        <p>The Scala and Java APIs<a id="id32" class="indexterm"></a> are more or less 1 to 1 for Scala and Java so use whichever language you are comfortable with. If you<a id="GBS.0039.02"></a> know both languages, Scala certainly has a more idiomatic API but both are very serviceable choices. An Actor built in Java is accessible from Scala through the Scala actor API and visa versa so there is no need to decide which to build on immediately; do whatever will get you to where you are going faster. Right now your focus is on learning Akka, not a language. You'll be able to pick up the other<a id="GBS.0039.03"></a> <a id="id33" class="indexterm"></a>API later without much effort once you know Akka.</p>
+      </div>
+      <div title="Installing Java – Oracle JDK8" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch01lvl2sec15"></a>Installing Java – Oracle JDK8</h2>
+            </div>
+          </div>
+        </div>
+        <p>This book will forego all older<a id="id34" class="indexterm"></a> versions of Java and focus only on Java8. If you are a Java developer but not familiar with Java8 features, you should take some time to familiarize yourself with lambdas and the stream API as covered in this <a id="id35" class="indexterm"></a>tutorial: <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html" class="ulink">http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html</a><a id="GBS.0039.04"></a>
+</p>
+        <p>You'll see lambdas are used heavily in this book. you will benefit from taking the time to get acquainted.</p>
+        <div title="Installing on Windows" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch01lvl3sec03"></a>Installing on Windows</h3>
+              </div>
+            </div>
+          </div>
+          <p>Download <a id="id36" class="indexterm"></a>and <a id="id37" class="indexterm"></a>install the <a id="id38" class="indexterm"></a>Windows<a id="id39" class="indexterm"></a> JDK8 installer (dmg) from Oracle: <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" class="ulink">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a>.</p>
+          <p>Follow the instructions.</p>
+        </div>
+        <div title="Installing on OS X" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch01lvl3sec04"></a>Installing on OS X</h3>
+              </div>
+            </div>
+          </div>
+          <p>Download <a id="id40" class="indexterm"></a>and <a id="id41" class="indexterm"></a>install the <a id="id42" class="indexterm"></a>OS X <a id="id43" class="indexterm"></a>JDK8 installer (dmg) from Oracle:  <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" class="ulink">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a><a id="GBS.0039.05"></a>.</p>
+          <p>Follow the instructions.</p>
+        </div>
+        <div title="Installing on Linux or Unix (Universal instructions)" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch01lvl3sec05"></a>Installing on Linux or Unix (Universal instructions)</h3>
+              </div>
+            </div>
+          </div>
+          <p>There are a couple<a id="id44" class="indexterm"></a> approaches that can be used for Nix installations. You can <a id="id45" class="indexterm"></a>use the Universal installer, or try to use a package manager like Yum for <span class="strong"><strong>Red Hat Enterprise Linux</strong></span> (<span class="strong"><strong>RHEL</strong></span>)<a id="id46" class="indexterm"></a> based<a id="id47" class="indexterm"></a> distributions or Apt-Get for Debian-based <a id="id48" class="indexterm"></a>distribution. Instructions <a id="id49" class="indexterm"></a>for the package manager<a id="id50" class="indexterm"></a> can vary from distribution to distribution<a id="GBS.0040.01"></a> but instructions can be found via Google if desired.</p>
+          <p>The Universal installer<a id="id51" class="indexterm"></a> will work on all systems so will be covered here. This is<a id="id52" class="indexterm"></a> the most basic installation you can get away with. It will<a id="id53" class="indexterm"></a> install the JDK and enable it for your current user but will not<a id="id54" class="indexterm"></a> change your system. If you want to change your system's JDK/JRE you can follow the install instructions for your particular distribution.<a id="GBS.0040.02"></a> This <a id="id55" class="indexterm"></a>would be suitable for servers or desktop environments. If <a id="id56" class="indexterm"></a>you're working on a desktop environment, you can see if there are instructions for your particular distribution if you want it available for other users as the default JDK/JRE.</p>
+          <p>Download the Linux <code class="literal">tar.gz</code> JDK distribution<a id="id57" class="indexterm"></a> from Oracle: <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" class="ulink">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a>.</p>
+          <p>It will likely be in a file named<a id="GBS.0040.03"></a> something like <code class="literal">jdk-8u31-linux-x64.tar.gz</code> Decompress the <code class="literal">tar.gz</code> file in an appropriate location such as <code class="literal">/opt</code>:</p>
+          <p>
+            <code class="literal">sudo cp jdk-8u31-linux-x64.tar.gz /opt cd /opt sudo tar -xvf jdk-8u31-linux-x64.tar.gz</code>
+          </p>
+          <p>You'll want to set your user's Java home to the Java8 folder:</p>
+          <p>
+            <code class="literal">echo 'export JAVA_HOME=/opt/jdk1.8.031' &gt;&gt; ~/.profile</code>
+          </p>
+          <p>Also ensure that Java bin is on the path:</p>
+          <p>
+            <code class="literal">echo 'export PATH=$PATH:/opt/jdk1.8.031'<a id="GBS.0040.04"></a> &gt;&gt; ~/.profile</code>
+          </p>
+          <p>Now your IDE and Sbt/Activator can use the JDK to build and run apps we build.</p>
+        </div>
+      </div>
+      <div title="Ensuring Java is configured in your environment" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch01lvl2sec16"></a>Ensuring Java is configured in your environment</h2>
+            </div>
+          </div>
+        </div>
+        <p>Regardless of the OS <a id="id58" class="indexterm"></a>you're on, you'll want to ensure that <code class="literal">JAVA_HOME</code> is set and also that the Java binary is on the path. You shouldn't need to do this unless you use the universal installer but you should validate in a new terminal that <code class="literal">JAVA_HOME</code> is<a id="GBS.0040.05"></a> set in the environment, and that the JDK bin folder is on the path. </p>
+      </div>
+      <div title="Installing Scala" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch01lvl2sec17"></a>Installing Scala</h2>
+            </div>
+          </div>
+        </div>
+        <p>If you're using <a id="id59" class="indexterm"></a>Scala, then <a id="id60" class="indexterm"></a>you'll want to have Scala and the REPL installed on your system. At the time of writing, the current Scala version (2.11) compiles to Java 1.6 byte-code so we can assume you do not need to install JDK8. There is talk of future versions of Scala requiring JDK8 so this may change.</p>
+        <p><a id="GBS.0041.01"></a>Scala does not need to be installed on its own. Typesafe Activator contains Scala and all of the tools we will need to work with it; we will install next.</p>
+      </div>
+      <div title="Installing Typesafe Activator" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch01lvl2sec18"></a>Installing Typesafe Activator</h2>
+            </div>
+          </div>
+        </div>
+        <p>Typesafe Activator<a id="id61" class="indexterm"></a> installation is a bundle that contains Scala, Akka, Play, <span class="strong"><strong>Simple Build Tool</strong></span> (<span class="strong"><strong>SBT</strong></span>) <a id="id62" class="indexterm"></a>and some extra<a id="id63" class="indexterm"></a> features such as project scaffolding and templates.</p>
+        <div title="Windows" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch01lvl3sec06"></a>Windows</h3>
+              </div>
+            </div>
+          </div>
+          <p>Download <a id="id64" class="indexterm"></a>Typesafe Activator<a id="id65" class="indexterm"></a> from <a id="id66" class="indexterm"></a><a id="GBS.0041.02"></a>Typesafe—<a href="http://www.typesafe.com/%E2%80%A8get-started" class="ulink">http://www.typesafe.com/get-started</a>.</p>
+          <p>Run the installer<a id="id67" class="indexterm"></a> and follow the onscreen instructions.</p>
+        </div>
+        <div title="Linux/Unix/OS X" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch01lvl3sec07"></a>Linux/Unix/OS X</h3>
+              </div>
+            </div>
+          </div>
+          <p>Download<a id="id68" class="indexterm"></a> Typesafe<a id="id69" class="indexterm"></a> Activator from Typesafe:</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist">
+              <li style="list-style-type: disc;" class="listitem">
+                <a href="http://www.typesafe.com/activator/download" class="ulink">http://www.typesafe.com/activator/download</a>
+              </li>
+              <li style="list-style-type: disc;" class="listitem">
+                <a href="http://www.typesafe.com/get-started" class="ulink">http://www.typesafe.com/get-started</a>
+              </li>
+            </ul>
+          </div>
+          <p>Unzip the file in an appropriate<a id="id70" class="indexterm"></a> location such as <code class="literal">/opt cd /opt sudo unzip typesafe-activator-1.2.12.zip.</code>
+</p>
+          <p>Make the Activator <a id="id71" class="indexterm"></a>executable: <code class="literal">sudo chmod 755 /opt/activator-1.2.12/<a id="GBS.0041.03"></a>activator</code>
+</p>
+          <p>Add the Activator to your <a id="id72" class="indexterm"></a>path: <code class="literal">echo 'export PATH=$PATH:/opt/activator-1.2.12'</code>
+</p>
+          <p>Log out and back<a id="id73" class="indexterm"></a> in. Ensure you can run the following on the command line: </p>
+          <div class="informalexample">
+            <pre class="programlisting">
+              <span class="strong">
+                <strong>activator --version</strong>
+              </span>
+            </pre>
+          </div>
+          <p>That should display text similar to this: sbt launcher version 0.13.5</p>
+        </div>
+        <div title="OS X" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch01lvl3sec08"></a>OS X</h3>
+              </div>
+            </div>
+          </div>
+          <p>Activator can either be <a id="id74" class="indexterm"></a>installed with Linux <a id="id75" class="indexterm"></a>or using <code class="literal">brew</code>. This section will cover the <a id="id76" class="indexterm"></a>brew installation:</p>
+          <p>Open a terminal.</p>
+          <p>Place<a id="GBS.0041.04"></a> the following in your terminal (copied from <a href="http://brew.sh" class="ulink">http://brew.sh</a>). This will install the Homebrew OS X Package manager.</p>
+          <div class="informalexample">
+            <pre class="programlisting">ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"</pre>
+          </div>
+          <p>Finally, place the following<a id="id77" class="indexterm"></a> in your terminal and <a id="id78" class="indexterm"></a>press <span class="emphasis"><em>Enter</em></span>:</p>
+          <div class="informalexample">
+            <pre class="programlisting">
+              <span class="strong">
+                <strong>brew install typesafe-activator</strong>
+              </span>
+            </pre>
+          </div>
+          <p>Check that the Activator is<a id="id79" class="indexterm"></a> available on the command line:</p>
+          <div class="informalexample">
+            <pre class="programlisting">
+              <span class="strong">
+                <strong>activator --version</strong>
+              </span>
+            </pre>
+          </div>
+        </div>
+      </div>
+      <div title="Creating a new project" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch01lvl2sec19"></a>Creating a new<a id="GBS.0041.05"></a> project</h2>
+            </div>
+          </div>
+        </div>
+        <p>We will use the Activator to quickly<a id="id80" class="indexterm"></a> scaffold projects in this book. We can generate a project from any number of templates. We will only use the basic Java and Scala templates in this book. Feel free to explore other options. Typesafe has many user-submitted Activator templates that will demonstrate various technologies and approaches used together.</p>
+        <p>To create a new Activator template,<a id="GBS.0042.01"></a> in a terminal/command prompt, type:</p>
+        <div class="informalexample">
+          <pre class="programlisting">
+            <span class="strong">
+              <strong>activator new</strong>
+            </span>
+          </pre>
+        </div>
+        <p>You will see the following.</p>
+        <p>Choose from these featured templates or enter a template name:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist">
+            <li style="list-style-type: disc;" class="listitem">minimal-akka-java-seed</li>
+            <li style="list-style-type: disc;" class="listitem">minimal-akka-scala-seed</li>
+            <li style="list-style-type: disc;" class="listitem">minimal-java</li>
+            <li style="list-style-type: disc;" class="listitem">minimal-scala</li>
+            <li style="list-style-type: disc;" class="listitem">play-java</li>
+            <li style="list-style-type: disc;" class="listitem">play-scala</li>
+          </ul>
+        </div>
+        <div title="Note" style="" class="note">
+          <div class="inner">
+            <h3 class="title"><a id="tip02"></a>Tip</h3>
+            <p>You can hit <span class="emphasis"><em>Tab</em></span> to view a list of all templates.</p>
+          </div>
+        </div>
+        <p>Select the minimal-scala or minimal-java project depending on your language preference. You will be prompted<a id="GBS.0042.02"></a> to name your application next, call it <code class="literal">akkademy-db</code>.</p>
+        <p>Enter a name for your application (just press <span class="emphasis"><em>Enter</em></span> for minimal-scala) &gt; <code class="literal">akkademy-db</code>.
+</p>
+        <p>To confirm that the project and your environment are set up correctly, change into the folder and run <code class="literal">activator test</code>.
+</p>
+        <div class="informalexample">
+          <pre class="programlisting">
+            <span class="strong">
+              <strong>cd akkademy-db activator test</strong>
+            </span>
+          </pre>
+        </div>
+        <p>You will see output indicating that the project compiled and the test ran. If there are any problems, you<a id="GBS.0042.03"></a> may have to head to stack-overflow and sort out your environment before proceeding.</p>
+        <p>You will see the <a id="id81" class="indexterm"></a>following success message if all went well:</p>
+        <div class="informalexample">
+          <pre class="programlisting">
+            <span class="strong">
+              <strong>[info] Passed: Total 1, Failed 0, Errors 0, Passed 1 [success] Total time: 3 s, completed 22-Jan-2015 9:44:21 PM</strong>
+            </span>
+          </pre>
+        </div>
+      </div>
+      <div title="Installing an IDE" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch01lvl2sec20"></a>Installing an IDE</h2>
+            </div>
+          </div>
+        </div>
+        <p>We have our environment set up and<a id="id82" class="indexterm"></a> running now and we can actually start to work on the code. If you want to use a<a id="GBS.0042.04"></a> simple text editor, feel free to skip this section. Emacs or Sublime are good choices for text editors and have syntax highlighting and integrations that can provide autocomplete. If you want to get an IDE up and running, we'll cover setting up Eclipse, and IntelliJ here.</p>
+        <div title="Install IntelliJ CE" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch01lvl3sec09"></a>Install IntelliJ CE</h3>
+              </div>
+            </div>
+          </div>
+          <p>If you choose to use an<a id="id83" class="indexterm"></a> IDE, IntelliJ is the recommended IDE. If you're using another IDE, I <a id="id84" class="indexterm"></a>still strongly<a id="GBS.0042.05"></a> recommend you attempt to use IntelliJ. While writing this book, I've worked with many Java developers who transitioned to working with SBT projects and almost all of them switched to IntelliJ and never looked back.</p>
+          <p>IntelliJ now has built-in SBT support, which makes it a fast IDE to use for your Akka projects; setting up and configuring of the IDE is virtually non-existent—it will just work with<a id="GBS.0043.01"></a> the technology we will use in this book.</p>
+          <p>Steps for getting the project up and running:</p>
+          <div class="orderedlist">
+            <ol class="orderedlist arabic">
+              <li class="listitem">Download and install IntelliJ CE (free).</li>
+              <li class="listitem">After installing choose to open a project. Select the <code class="literal">akkademy-db</code> folder.</li>
+              <li class="listitem">Select Java 1.8 if you're using Java (or if Scala 2.12 requires it). You can use Java 6 or 7 if using Scala 2.11. Turn on the Auto Import feature. Hit okay.</li>
+            </ol>
+          </div>
+        </div>
+        <div title="Eclipse" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch01lvl3sec10"></a>Eclipse</h3>
+              </div>
+            </div>
+          </div>
+          <p>If using Eclipse, it is recommended<a id="GBS.0043.02"></a> that you <a id="id85" class="indexterm"></a>download Scala-Ide, which contains all of the required plugins to work with our sbt/Akka projects in either Java or Scala. Even if you're only using Java, you may find you want to inspect some Scala along the way.</p>
+          <div title="Installing Eclipse (Scala-Ide)" class="section">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a id="ch01lvl4sec01"></a>Installing Eclipse (Scala-Ide)</h4>
+                </div>
+              </div>
+            </div>
+            <p>Download Scala-Ide<a id="id86" class="indexterm"></a> from <a href="http://scala-ide.org" class="ulink">http://scala-ide.org</a> which is a packaged <a id="id87" class="indexterm"></a>version of Eclipse with sbt and Scala plugins integrated.</p>
+            <p>Unzip the file that<a id="GBS.0043.03"></a> is<a id="id88" class="indexterm"></a> downloaded. You can move the unzipped folder to another location if desired such as <code class="literal">/opt (linux)</code> or <code class="literal">~/Applications (OSX)</code>.</p>
+            <p>Run the Eclipse binary. Choose a workspace folder or select the default.</p>
+            <p>Check that the Java JDK is correctly selected in <code class="literal">Preferences: Java | Compiler</code>.</p>
+          </div>
+          <div title="Preparing the project for Eclipse" class="section">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a id="ch01lvl4sec02"></a>Preparing the project for Eclipse</h4>
+                </div>
+              </div>
+            </div>
+            <p>In order to open the project in <a id="id89" class="indexterm"></a>eclipse, we must first generate an Eclipse project.</p>
+            <p><a id="GBS.0043.04"></a>First we must add the eclipse<a id="id90" class="indexterm"></a> sbt plugin to our environment. Open your global sbt plugins file (create it if it's not there), is located in <code class="literal">~/.sbt/{version}/plugins/plugins.sbt</code> where version is the sbt version. It is 0.13 at the time of writing, so <code class="literal">~/.sbt/0.13/plugins/plugins.sbt</code>
+</p>
+            <p>Include the following in the file, ensuring there is a blank line between each line in the file if there are multiple<a id="GBS.0043.05"></a> lines.</p>
+            <div class="informalexample">
+              <pre class="programlisting">addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "3.0.0")</pre>
+            </div>
+            <p>You may want to ensure this is current by checking the<a id="id91" class="indexterm"></a> sbteclipse GitHub project: <a href="https://github.com/typesafehub/sbteclipse/" class="ulink">https://github.com/typesafehub/sbteclipse/</a>
+</p>
+            <p>Once you have the plugin installed, you need to generate the eclipse project: <a href="https://github.com/typesafehub/sbteclipse/" class="ulink">https://github.com/typesafehub/sbteclipse/</a> </p>
+            <p>In the terminal, navigate <a id="id92" class="indexterm"></a>to the project we created earlier (<code class="literal">akkademy-db</code><a id="GBS.0044.01"></a>). In the root of the project, run Activator eclipsify to generate the eclipse project structure.</p>
+            <p>You will see the following success message if all went well:</p>
+            <div class="informalexample">
+              <pre class="programlisting">
+                <span class="strong">
+                  <strong>[info] Successfully created Eclipse project files for project(s): [info] akkademy-db</strong>
+                </span>
+              </pre>
+            </div>
+          </div>
+          <div title="Importing the project into Eclipse" class="section">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a id="ch01lvl4sec03"></a>Importing the project into Eclipse</h4>
+                </div>
+              </div>
+            </div>
+            <p>In <a id="id93" class="indexterm"></a>Eclipse, select<a id="id94" class="indexterm"></a> <span class="strong"><strong>File | Import</strong></span>.</p>
+            <p>Choose<span class="strong"><strong> General | Existing Projects into Workspace</strong></span>.</p>
+            <div class="mediaobject">
+              <img src="graphics/B04006_01_06.jpg" alt="Importing the project into Eclipse" />
+              <a id="GBS.0044.02"></a>
+            </div>
+            <p>Select the<a id="id95" class="indexterm"></a> folder<a id="id96" class="indexterm"></a> and click <span class="strong"><strong>Next</strong></span>.</p>
+            <div class="mediaobject">
+              <img src="graphics/B04006_01_07.jpg" alt="Importing the project into Eclipse" />
+              <a id="GBS.0045.01"></a>
+            </div>
+            <div title="Note" style="" class="note">
+              <div class="inner">
+                <h3 class="title"><a id="tip03"></a>Tip</h3>
+                <p>Note if you<a id="id97" class="indexterm"></a> change <code class="literal">build.sbt</code> you will need to re-generate the<a id="id98" class="indexterm"></a> project and may need to re-import it.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:none;">
+      <a id="GBS.0045.02"></a>
+    </div>
+  </body>
+</html>

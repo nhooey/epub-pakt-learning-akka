@@ -1,71 +1,596 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Building Systems with Akka Cluster</title><link rel="stylesheet" href="epub.css" type="text/css"></link><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"></meta></head><body id="page"><div style="display:none;"><a id="GBS.0187.01"></a></div><div title="Building Systems with Akka Cluster" class="section"><div class="titlepage"><div><div><h1 class="title"><a id="ch06lvl1sec43"></a>Building Systems with Akka Cluster</h1></div></div></div><p>We will revisit<a id="id443" class="indexterm"></a> two problems in this chapter—Article <a id="id444" class="indexterm"></a>Parsing and the key-value store. However, in this chapter, we&#39;re going to look at how to distribute them across multiple servers using Akka Cluster. Assuming we have built an application that needs to scale beyond a single node, and that needs higher availability, we will see how we can scale our systems up<a id="GBS.0187.02"></a> by adding more nodes.</p><p>We might not be able to build Cassandra in a day, but believe it or not, we will be able to produce a horizontally scalable distributed service in this chapter, and we will also demonstrate some of the common techniques that are used in distributed solutions while we&#39;re at it.</p><div title="Creating the Cluster" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch06lvl2sec75"></a>Creating the Cluster</h2></div></div></div><p>In this section, we&#39;re going to <a id="id445" class="indexterm"></a>look at how to create a cluster with Akka&#39;s<a id="GBS.0187.03"></a> Cluster module. We looked at remoting earlier in this book very briefly, but we will look at cluster in much greater detail now. Akka Cluster is built on remoting, but is powerfully useful. If you use Remoting, you&#39;ll need to concern yourself with issues such as high availability in your infrastructure or code. Cluster takes care of many of these concerns for you, thus making it a great choice<a id="GBS.0187.04"></a> for building your distributed Actor systems.</p><div title="Configuring the Project" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec66"></a>Configuring the Project</h3></div></div></div><p>First, we need to configure<a id="id446" class="indexterm"></a> Akka to be able to create a cluster. We have to do a few things to the project—first, add <code class="literal">Cluster</code> to the project and, then, add the appropriate entries in <code class="literal">application.conf</code>. You can start a new project using <code class="literal">activator new</code> as we&#39;ll go over all of the configuration needed in the project. Completed projects<a id="GBS.0187.05"></a> are available on GitHub at <a href="https://github.com/jasongoodwin/learning-akka/tree/master/ch6" class="ulink">https://github.com/jasongoodwin/learning-akka/tree/master/ch6</a> in both Scala and Java.</p><p>In our <code class="literal">build.sbt</code> file, we first have to add the Akka Cluster dependency:</p><div class="informalexample"><pre class="programlisting">&quot;com.typesafe.akka&quot; %% &quot;akka-cluster&quot; % &quot;2.3.6&quot;</pre></div><p>We&#39;ll also add the <code class="literal">contrib</code> package. This is a module of contributions from outside the Akka team—there is an Akka Cluster client in the <code class="literal">contrib</code> package that is a<a id="GBS.0188.01"></a> bit simpler to build on. We&#39;ll look at the client features a bit later:</p><div class="informalexample"><pre class="programlisting">&quot;com.typesafe.akka&quot; %% &quot;akka-contrib&quot; % &quot;2.3.6&quot;,</pre></div><p>Now that Akka Cluster<a id="id447" class="indexterm"></a> is in the project, we need to add cluster configuration in <code class="literal">src/main/resources/application.conf</code>:</p><div class="informalexample"><pre class="programlisting">akka {  actor { provider = &quot;akka.cluster.ClusterActorRefProvider&quot; }
-  remote { netty.tcp { hostname = &quot;127.0.0.1&quot; port = 2552
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Building Systems with Akka Cluster</title>
+    <link rel="stylesheet" href="epub.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.75.2" />
+  </head>
+  <body id="page">
+    <div style="display:none;">
+      <a id="GBS.0187.01"></a>
+    </div>
+    <div title="Building Systems with Akka Cluster" class="section">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h1 class="title"><a id="ch06lvl1sec43"></a>Building Systems with Akka Cluster</h1>
+          </div>
+        </div>
+      </div>
+      <p>We will revisit<a id="id443" class="indexterm"></a> two problems in this chapter—Article <a id="id444" class="indexterm"></a>Parsing and the key-value store. However, in this chapter, we're going to look at how to distribute them across multiple servers using Akka Cluster. Assuming we have built an application that needs to scale beyond a single node, and that needs higher availability, we will see how we can scale our systems up<a id="GBS.0187.02"></a> by adding more nodes.</p>
+      <p>We might not be able to build Cassandra in a day, but believe it or not, we will be able to produce a horizontally scalable distributed service in this chapter, and we will also demonstrate some of the common techniques that are used in distributed solutions while we're at it.</p>
+      <div title="Creating the Cluster" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch06lvl2sec75"></a>Creating the Cluster</h2>
+            </div>
+          </div>
+        </div>
+        <p>In this section, we're going to <a id="id445" class="indexterm"></a>look at how to create a cluster with Akka's<a id="GBS.0187.03"></a> Cluster module. We looked at remoting earlier in this book very briefly, but we will look at cluster in much greater detail now. Akka Cluster is built on remoting, but is powerfully useful. If you use Remoting, you'll need to concern yourself with issues such as high availability in your infrastructure or code. Cluster takes care of many of these concerns for you, thus making it a great choice<a id="GBS.0187.04"></a> for building your distributed Actor systems.</p>
+        <div title="Configuring the Project" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec66"></a>Configuring the Project</h3>
+              </div>
+            </div>
+          </div>
+          <p>First, we need to configure<a id="id446" class="indexterm"></a> Akka to be able to create a cluster. We have to do a few things to the project—first, add <code class="literal">Cluster</code> to the project and, then, add the appropriate entries in <code class="literal">application.conf</code>. You can start a new project using <code class="literal">activator new</code> as we'll go over all of the configuration needed in the project. Completed projects<a id="GBS.0187.05"></a> are available on GitHub at <a href="https://github.com/jasongoodwin/learning-akka/tree/master/ch6" class="ulink">https://github.com/jasongoodwin/learning-akka/tree/master/ch6</a> in both Scala and Java.</p>
+          <p>In our <code class="literal">build.sbt</code> file, we first have to add the Akka Cluster dependency:</p>
+          <div class="informalexample">
+            <pre class="programlisting">"com.typesafe.akka" %% "akka-cluster" % "2.3.6"</pre>
+          </div>
+          <p>We'll also add the <code class="literal">contrib</code> package. This is a module of contributions from outside the Akka team—there is an Akka Cluster client in the <code class="literal">contrib</code> package that is a<a id="GBS.0188.01"></a> bit simpler to build on. We'll look at the client features a bit later:</p>
+          <div class="informalexample">
+            <pre class="programlisting">"com.typesafe.akka" %% "akka-contrib" % "2.3.6",</pre>
+          </div>
+          <p>Now that Akka Cluster<a id="id447" class="indexterm"></a> is in the project, we need to add cluster configuration in <code class="literal">src/main/resources/application.conf</code>:</p>
+          <div class="informalexample">
+            <pre class="programlisting">akka {  actor { provider = "akka.cluster.ClusterActorRefProvider" }
+  remote { netty.tcp { hostname = "127.0.0.1" port = 2552
     }
   }
-  cluster { seed-nodes<a id="GBS.0188.02"></a> = [ &quot;akka.tcp://Akkademy@127.0.0.1:2552&quot;, &quot;akka.tcp://Akkademy@127.0.0.1:2551&quot;] }
-  extensions = [&quot;akka.contrib.pattern.ClusterReceptionistExtension&quot;]
-}</pre></div><p>There are a few pieces that are significant.</p><p>First, configuration for Cluster is very similar to remoting but we change the provider to <code class="literal">ClusterActorRefProvider</code>.</p><p>We specify the host and port. We&#39;re using the Akka default of 2552 and specifying<a id="GBS.0188.03"></a> the local host IP for testing purposes. To test a cluster on a single machine, you&#39;ll need to start instances on different ports, which can be done by passing in arguments to <code class="literal">sbt</code> on the command line. If you need to pass in any parameters, you can achieve this using the following:</p><div class="informalexample"><pre class="programlisting">activator run -Dakka.remote.netty.tcp.port=0</pre></div><p>Passing <code class="literal">port=0</code> will have Akka assign a random port.</p><p>We specify seed nodes.<a id="GBS.0188.04"></a> We&#39;ll look at what exactly seed nodes are in a moment, but please note that the host, port, and <code class="literal">ActorSystem</code> are described in the configuration lines for the seed-nodes. It&#39;s important to ensure that the <code class="literal">ActorSystem</code> is accurately for the cluster you are trying to join. Multiple <code class="literal">ActorSystems</code> can run in an instance, so host and port are not enough to connect successfully.</p><p>The last line&#8212;the extensions<a id="GBS.0188.05"></a> line&#8212;is to add support for the <code class="literal">contrib</code> package&#39;s cluster client, which we&#39;ll look at a bit later.</p></div><div title="Seed Nodes" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec67"></a>Seed Nodes</h3></div></div></div><p>You may be wondering what <a id="id448" class="indexterm"></a>the <code class="literal">akka.cluster.seed-nodes</code> configuration is for. Because a cluster can be of any size, you may not know where all the nodes will be located. This is especially true if you&#39;re deploying in the cloud, where you can have rapidly changing deployment topology and<a id="GBS.0189.01"></a> IPs.</p><p>Thanks to the gossip protocol, we can get away with only knowing a couple of nodes. Most technologies such as Cassandra and Akka refer to these nodes as seed nodes. There is nothing special about them apart from the fact that we know where they are accessible.</p><p>To understand how this is possible, we&#39;ll have a look at how nodes join the cluster. When a new node joins the cluster, it tries to<a id="GBS.0189.02"></a> contact the first seed node. If it successfully contacts the node, it will announce its location (port and IP). The seed node will then gossip the new node&#39;s location, eventually propagating the change through the cluster. If contact to the first seed node fails, then the node will try the next seed node. As long as one seed node is available, then other nodes can join and leave without requiring<a id="GBS.0189.03"></a> any configuration changes:</p><div class="mediaobject"><img src="graphics/B04006_06_05.jpg" alt="Seed Nodes"></img><a id="GBS.0189.04"></a></div><p>When you deploy to<a id="id449" class="indexterm"></a> production, you should define at least two seed nodes that will have a constant IP and ensure that at least one of the seed nodes is available all the time. When a node attempts to join the cluster, it will try to sequentially contact each seed node. If no seed nodes are available, then the node will not be able to join the cluster.</p><div title="Note" style="" class="note"><div class="inner"><h3 class="title"><a id="tip14"></a>Tip</h3><p>When starting the cluster&#39;s seed nodes,<a id="GBS.0190.01"></a> the seed nodes can be started in any order, but the first seed node listed must be started to initialize the cluster.</p></div></div></div><div title="Subscribing to Cluster Events" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec68"></a>Subscribing to Cluster Events</h3></div></div></div><p>We have enough<a id="id450" class="indexterm"></a> configuration now to create a cluster at runtime, thus, we can start building. We&#39;ll subscribe to cluster events and log any changes to the cluster ring. After writing the code, we&#39;ll test it out and then continue on to look at<a id="GBS.0190.02"></a> how we can design a distributed service and a data-store using this base.</p><p>We&#39;ll produce an actor first, calling it <code class="literal">ClusterController</code>, and use this as the basis for our other examples. Later, we&#39;ll adapt the code to take action on the events. We&#39;ll start by creating the actor, and instantiating a logger, and then the cluster object.</p><p>In Java, the actor looks like the following:</p><div class="informalexample"><pre class="programlisting">importstatic.akka.cluster.ClusterEve<a id="GBS.0190.03"></a>nt.*;
+  cluster { seed-nodes<a id="GBS.0188.02"></a> = [ "akka.tcp://Akkademy@127.0.0.1:2552", "akka.tcp://Akkademy@127.0.0.1:2551"] }
+  extensions = ["akka.contrib.pattern.ClusterReceptionistExtension"]
+}</pre>
+          </div>
+          <p>There are a few pieces that are significant.</p>
+          <p>First, configuration for Cluster is very similar to remoting but we change the provider to <code class="literal">ClusterActorRefProvider</code>.</p>
+          <p>We specify the host and port. We're using the Akka default of 2552 and specifying<a id="GBS.0188.03"></a> the local host IP for testing purposes. To test a cluster on a single machine, you'll need to start instances on different ports, which can be done by passing in arguments to <code class="literal">sbt</code> on the command line. If you need to pass in any parameters, you can achieve this using the following:</p>
+          <div class="informalexample">
+            <pre class="programlisting">activator run -Dakka.remote.netty.tcp.port=0</pre>
+          </div>
+          <p>Passing <code class="literal">port=0</code> will have Akka assign a random port.</p>
+          <p>We specify seed nodes.<a id="GBS.0188.04"></a> We'll look at what exactly seed nodes are in a moment, but please note that the host, port, and <code class="literal">ActorSystem</code> are described in the configuration lines for the seed-nodes. It's important to ensure that the <code class="literal">ActorSystem</code> is accurately for the cluster you are trying to join. Multiple <code class="literal">ActorSystems</code> can run in an instance, so host and port are not enough to connect successfully.</p>
+          <p>The last line—the extensions<a id="GBS.0188.05"></a> line—is to add support for the <code class="literal">contrib</code> package's cluster client, which we'll look at a bit later.</p>
+        </div>
+        <div title="Seed Nodes" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec67"></a>Seed Nodes</h3>
+              </div>
+            </div>
+          </div>
+          <p>You may be wondering what <a id="id448" class="indexterm"></a>the <code class="literal">akka.cluster.seed-nodes</code> configuration is for. Because a cluster can be of any size, you may not know where all the nodes will be located. This is especially true if you're deploying in the cloud, where you can have rapidly changing deployment topology and<a id="GBS.0189.01"></a> IPs.</p>
+          <p>Thanks to the gossip protocol, we can get away with only knowing a couple of nodes. Most technologies such as Cassandra and Akka refer to these nodes as seed nodes. There is nothing special about them apart from the fact that we know where they are accessible.</p>
+          <p>To understand how this is possible, we'll have a look at how nodes join the cluster. When a new node joins the cluster, it tries to<a id="GBS.0189.02"></a> contact the first seed node. If it successfully contacts the node, it will announce its location (port and IP). The seed node will then gossip the new node's location, eventually propagating the change through the cluster. If contact to the first seed node fails, then the node will try the next seed node. As long as one seed node is available, then other nodes can join and leave without requiring<a id="GBS.0189.03"></a> any configuration changes:</p>
+          <div class="mediaobject">
+            <img src="graphics/B04006_06_05.jpg" alt="Seed Nodes" />
+            <a id="GBS.0189.04"></a>
+          </div>
+          <p>When you deploy to<a id="id449" class="indexterm"></a> production, you should define at least two seed nodes that will have a constant IP and ensure that at least one of the seed nodes is available all the time. When a node attempts to join the cluster, it will try to sequentially contact each seed node. If no seed nodes are available, then the node will not be able to join the cluster.</p>
+          <div title="Note" style="" class="note">
+            <div class="inner">
+              <h3 class="title"><a id="tip14"></a>Tip</h3>
+              <p>When starting the cluster's seed nodes,<a id="GBS.0190.01"></a> the seed nodes can be started in any order, but the first seed node listed must be started to initialize the cluster.</p>
+            </div>
+          </div>
+        </div>
+        <div title="Subscribing to Cluster Events" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec68"></a>Subscribing to Cluster Events</h3>
+              </div>
+            </div>
+          </div>
+          <p>We have enough<a id="id450" class="indexterm"></a> configuration now to create a cluster at runtime, thus, we can start building. We'll subscribe to cluster events and log any changes to the cluster ring. After writing the code, we'll test it out and then continue on to look at<a id="GBS.0190.02"></a> how we can design a distributed service and a data-store using this base.</p>
+          <p>We'll produce an actor first, calling it <code class="literal">ClusterController</code>, and use this as the basis for our other examples. Later, we'll adapt the code to take action on the events. We'll start by creating the actor, and instantiating a logger, and then the cluster object.</p>
+          <p>In Java, the actor looks like the following:</p>
+          <div class="informalexample">
+            <pre class="programlisting">importstatic.akka.cluster.ClusterEve<a id="GBS.0190.03"></a>nt.*;
 public class ClusterController extends AbstractActor { protected final LoggingAdapter log = Logging.getLogger(context().system(), this);
     Cluster cluster = Cluster.get(getContext().system());
     @Override
     public void preStart() { cluster.subscribe(self(), initialStateAsEvents(), MemberEvent.class, UnreachableMember.class); }
     @Override public void postStop() { cluster.unsubscribe(<a id="GBS.0190.04"></a>self()); }
-    private ClusterController(){ receive(ReceiveBuilder. match(MemberEvent.class, message -&gt; { log.info(&quot;MemberEvent: {}&quot;, message); }). match(UnreachableMember.class, message -&gt; { log.info(&quot;UnreachableMember: {}&quot;, message);
+    private ClusterController(){ receive(ReceiveBuilder. match(MemberEvent.class, message -&gt; { log.info("MemberEvent: {}", message); }). match(UnreachableMember.class, message -&gt; { log.info("UnreachableMember: {}", message);
                         }).build()
         );
     }
-}</pre></div><p>In Scala, the actor<a id="id451" class="indexterm"></a> looks the following:</p><div class="informalexample"><pre class="programlisting">class ClusterController extends Actor { val log = Logging(context.system,<a id="GBS.0190.05"></a> this) val cluster = Cluster(context.system)
+}</pre>
+          </div>
+          <p>In Scala, the actor<a id="id451" class="indexterm"></a> looks the following:</p>
+          <div class="informalexample">
+            <pre class="programlisting">class ClusterController extends Actor { val log = Logging(context.system,<a id="GBS.0190.05"></a> this) val cluster = Cluster(context.system)
   override def preStart() { cluster.subscribe(self, classOf[MemberEvent], classOf[UnreachableMember]) }
   override def postStop() { cluster.unsubscribe(self)
   }
-  override def receive = { case x: MemberEvent =&gt; log.info(&quot;MemberEvent: {}&quot;, x) case x: UnreachableMember =&gt; log.info(&quot;UnreachableMember {}: &quot;, x)
+  override def receive = { case x: MemberEvent =&gt; log.info("MemberEvent: {}", x) case x: UnreachableMember =&gt; log.info("UnreachableMember {}: ", x)
   }
-}</pre></div><p>First, we define the logger. Then, we<a id="GBS.0191.01"></a> get a reference to the Cluster object. We&#39;ll look at the Cluster object and methods available on it throughout this chapter.</p><p>We use the Actor <code class="literal">preStart</code> and <code class="literal">postStop</code> hooks to subscribe to events that we&#39;re interested in. The unsubscribe in the <code class="literal">postStop</code> hook is necessary to prevent a leak. We&#39;re going to have our actor subscribe to the following two events:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>MemberEvent</strong></span>: This tells us when there is<a id="GBS.0191.02"></a> a change to the cluster state</li><li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>UnreachableMember</strong></span>: This tells us when there is a node marked unreachable</li></ul></div><p>Then, we describe the<a id="id452" class="indexterm"></a> actor&#39;s behavior when it receives those events: to simply log them (for now). We&#39;ll examine the different events that occur in the cluster shortly.</p></div><div title="Starting the Cluster" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec69"></a>Starting the Cluster</h3></div></div></div><p>As a checkpoint to ensure<a id="id453" class="indexterm"></a> that everything is accurate and configured correctly, we&#39;ll try to start up<a id="GBS.0191.03"></a> a few nodes now. First, we need to make a <code class="literal">main</code> where we programmatically start the actor system and create the <code class="literal">ClusterController</code> actor.</p><p>In Java:</p><div class="informalexample"><pre class="programlisting">public class Main { public static void main(String... args) { ActorSystem system = ActorSystem.create(&quot;Akkademy&quot;); ActorRefclusterController = system.actorOf(Props.create(ClusterController.class), &quot;clusterController&quot;);
+}</pre>
+          </div>
+          <p>First, we define the logger. Then, we<a id="GBS.0191.01"></a> get a reference to the Cluster object. We'll look at the Cluster object and methods available on it throughout this chapter.</p>
+          <p>We use the Actor <code class="literal">preStart</code> and <code class="literal">postStop</code> hooks to subscribe to events that we're interested in. The unsubscribe in the <code class="literal">postStop</code> hook is necessary to prevent a leak. We're going to have our actor subscribe to the following two events:</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist">
+              <li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>MemberEvent</strong></span>: This tells us when there is<a id="GBS.0191.02"></a> a change to the cluster state</li>
+              <li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>UnreachableMember</strong></span>: This tells us when there is a node marked unreachable</li>
+            </ul>
+          </div>
+          <p>Then, we describe the<a id="id452" class="indexterm"></a> actor's behavior when it receives those events: to simply log them (for now). We'll examine the different events that occur in the cluster shortly.</p>
+        </div>
+        <div title="Starting the Cluster" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec69"></a>Starting the Cluster</h3>
+              </div>
+            </div>
+          </div>
+          <p>As a checkpoint to ensure<a id="id453" class="indexterm"></a> that everything is accurate and configured correctly, we'll try to start up<a id="GBS.0191.03"></a> a few nodes now. First, we need to make a <code class="literal">main</code> where we programmatically start the actor system and create the <code class="literal">ClusterController</code> actor.</p>
+          <p>In Java:</p>
+          <div class="informalexample">
+            <pre class="programlisting">public class Main { public static void main(String... args) { ActorSystem system = ActorSystem.create("Akkademy"); ActorRefclusterController = system.actorOf(Props.create(ClusterController.class), "clusterController");
     }
-}</pre></div><p>In Scala:</p><div class="informalexample"><pre class="programlisting">object Main extends<a id="GBS.0191.04"></a> App { val system = ActorSystem(&quot;Akkademy&quot;)
-val clusterController = system.actorOf(Props[ClusterController], &quot;clusterController&quot;)
-}</pre></div><p>Our seed node can be started simply with:</p><div class="informalexample"><pre class="programlisting">activator run</pre></div><p>However, we&#39;re going to enable <code class="literal">jmx</code> remote management of the nodes so that we can have them leave the cluster gracefully. Thus, we&#39;re going to tack on a few extra parameters —we&#39;ll specify the <code class="literal">jmx</code> port for the<a id="GBS.0191.05"></a> nodes and turn off <code class="literal">jmx</code> security features for use in test. We&#39;ll see why we want to enable JMX remote management shortly. With the <code class="literal">jmx</code> configuration, we will start the node like the following:</p><div class="informalexample"><pre class="programlisting">activator run \
+}</pre>
+          </div>
+          <p>In Scala:</p>
+          <div class="informalexample">
+            <pre class="programlisting">object Main extends<a id="GBS.0191.04"></a> App { val system = ActorSystem("Akkademy")
+val clusterController = system.actorOf(Props[ClusterController], "clusterController")
+}</pre>
+          </div>
+          <p>Our seed node can be started simply with:</p>
+          <div class="informalexample">
+            <pre class="programlisting">activator run</pre>
+          </div>
+          <p>However, we're going to enable <code class="literal">jmx</code> remote management of the nodes so that we can have them leave the cluster gracefully. Thus, we're going to tack on a few extra parameters —we'll specify the <code class="literal">jmx</code> port for the<a id="GBS.0191.05"></a> nodes and turn off <code class="literal">jmx</code> security features for use in test. We'll see why we want to enable JMX remote management shortly. With the <code class="literal">jmx</code> configuration, we will start the node like the following:</p>
+          <div class="informalexample">
+            <pre class="programlisting">activator run \
 -Dcom.sun.management.jmxremote.port=9552 \
 -Dcom.sun.management.jmxremote.authenticate=false \
--Dcom.sun.management.jmxremote.ssl=false</pre></div><p>It will start a node on the configured port of <code class="literal">2552</code><a id="GBS.0192.01"></a>. You&#39;ll see some logging events indicating that the first seed node is up and probably a few dead letters messages as the node attempts to connect to the other configured seed node configured. Eventually, you&#39;ll see our log statement for the <code class="literal">MemberEvent</code>:</p><div class="informalexample"><pre class="programlisting">[INFO] [06/14/2015 12:22:46.756] [Akkademy-akka.actor.default-dispatcher-3] [akka://Akkademy/user/clusterController] MemberEvent: MemberUp(Member(address<a id="GBS.0192.02"></a> = akka.tcp://Akkademy@127.0.0.1:2552, status = Up))</pre></div><p>In another terminal <a id="id454" class="indexterm"></a>window, we&#39;ll start up the second seed node on port <code class="literal">2551</code> by specifying the port as a Java argument:</p><div class="informalexample"><pre class="programlisting">activator run \
+-Dcom.sun.management.jmxremote.ssl=false</pre>
+          </div>
+          <p>It will start a node on the configured port of <code class="literal">2552</code><a id="GBS.0192.01"></a>. You'll see some logging events indicating that the first seed node is up and probably a few dead letters messages as the node attempts to connect to the other configured seed node configured. Eventually, you'll see our log statement for the <code class="literal">MemberEvent</code>:</p>
+          <div class="informalexample">
+            <pre class="programlisting">[INFO] [06/14/2015 12:22:46.756] [Akkademy-akka.actor.default-dispatcher-3] [akka://Akkademy/user/clusterController] MemberEvent: MemberUp(Member(address<a id="GBS.0192.02"></a> = akka.tcp://Akkademy@127.0.0.1:2552, status = Up))</pre>
+          </div>
+          <p>In another terminal <a id="id454" class="indexterm"></a>window, we'll start up the second seed node on port <code class="literal">2551</code> by specifying the port as a Java argument:</p>
+          <div class="informalexample">
+            <pre class="programlisting">activator run \
 -Dakka.remote.netty.tcp.port=2551 \
 -Dcom.sun.management.jmxremote.port=9551 \
 -Dcom.sun.management.jmxremote.authenticate=false \
--Dcom.sun.management.jmxremote.ssl=false</pre></div><p>The first node running on <code class="literal">2552</code> should<a id="GBS.0192.03"></a> log the status change when the second seed node connects:</p><div class="informalexample"><pre class="programlisting">[INFO] [06/14/2015 12:24:40.745] [Akkademy-akka.actor.default-dispatcher-18] [akka://Akkademy/user/clusterController] MemberEvent: MemberUp(Member(address = akka.tcp://Akkademy@127.0.0.1:2551, status = Up))</pre></div><p>We&#39;ll add one more node now to demonstrate how we might configure nodes beyond the seed node. Because the seed nodes have defined ports,<a id="GBS.0192.04"></a> we can have Akka assign a random port by configuring it as <code class="literal">0</code>:</p><div class="informalexample"><pre class="programlisting">activator run -Dakka.remote.netty.tcp.port=0 \ -Dcom.sun.management.jmxremote.port=9553 \ -Dcom.sun.management.jmxremote.authenticate=false \ -Dcom.sun.management.jmxremote.ssl=false</pre></div><p>After a moment, you&#39;ll see the third node connect to the cluster. This is quite exciting&#8212;we now have the basis for building a distributed actor system.<a id="GBS.0192.05"></a> Akka takes care of numerous things for us that would be quite hard to get right ourselves!</p><div title="Note" style="" class="note"><div class="inner"><h3 class="title"><a id="tip15"></a>Tip</h3><p>Again, remember that you need to start the first node in the seed node list for the cluster to initialize.</p></div></div></div><div title="Leaving the Cluster Gracefully" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec70"></a>Leaving the Cluster Gracefully</h3></div></div></div><p>If you try shutting<a id="id455" class="indexterm"></a> down one of the nodes by killing the process, you&#39;ll notice that Akka marks it unreachable and writes several error messages. In this case,<a id="GBS.0193.01"></a> shutting down the node causes it to become unreachable and Akka will eventually mark it down. This is because we did not leave the cluster gracefully. Before removing a node from the cluster, we should announce to the cluster that the node is leaving.</p><p>We can do it programmatically by calling <code class="literal">cluster.leave</code> with the address of the node we want to remove:</p><div class="informalexample"><pre class="programlisting">cluster.leave(self().path().address());</pre></div><p><a id="GBS.0193.02"></a>However, we don&#39;t have any API that we can use to expose this functionality currently. So, instead, we&#39;ll use <code class="literal">jmx</code> and command line tools to remove the node gracefully. We&#39;re going to use a tool <a id="id456" class="indexterm"></a>that comes with the Akka distribution: <code class="literal">akka-cluster</code>.</p><p>You may need to download the Akka distribution first to get the<a id="id457" class="indexterm"></a> akka-cluster tool. It should be available at <a href="http://akka.io/downloads/" class="ulink">http://akka.io/downloads/</a>. Unzip the file,<a id="GBS.0193.03"></a> and into the <code class="literal">bin</code> folder.</p><p>Now, we can issue commands to the cluster using the tool. Our principle use is to have the node leave the cluster gracefully. We can shut down the seed node on port <code class="literal">2552</code> that has JMX exposed on <code class="literal">9552</code> in the following manner:</p><div class="informalexample"><pre class="programlisting">./akka-cluster localhost 9552 leave akka.tcp://Akkademy@127.0.0.1:2552</pre></div><p>After gracefully removing the node, you&#39;ll see it change states from up to exiting<a id="GBS.0193.04"></a> and then to removed.</p><div class="informalexample"><pre class="programlisting">[INFO] [06/15/2015 20:05:21.501] [Akkademy-akka.actor.default-dispatcher-3] [akka://Akkademy/user/clusterController] MemberEvent: MemberExited(Member(address = akka.tcp://Akkademy@127.0.0.1:2552, status = Exiting)) [INFO] [06/15/2015 20:05:26.470] [Akkademy-akka.actor.default-dispatcher-17] [akka://Akkademy/user/clusterController] MemberEvent: MemberRemoved(Member(address<a id="GBS.0193.05"></a> = akka.tcp://Akkademy@127.0.0.1:2552, status = Removed),Exiting)</pre></div></div></div><div title="Cluster Member States" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch06lvl2sec76"></a>Cluster Member States</h2></div></div></div><p>Nodes that join the<a id="id458" class="indexterm"></a> cluster can be in one of a few different states. Under the hood, there is a logical leader node that coordinates some of the state changes. The cluster will logically order nodes and everyone will come to a conclusion about that order. The first node in the ordered list of nodes is the<a id="GBS.0194.01"></a> leader.</p><p>The leader responds to requests to join and leave the cluster by changing a member&#39;s state.</p><p>When joining the cluster, a joining member announces its state as &quot;Joining.&quot; The leader responds by announcing that the member is Up. Similarly, if a node announces that it is &quot;Leaving,&quot; then the Leader responds by changing that node&#39;s state to &quot;Exiting&quot; and then to &quot;Removed.&quot; All these state changes<a id="GBS.0194.02"></a> are sent through the cluster as <code class="literal">MemberEvents</code>, which we subscribed to and logged.</p><div title="Failure Detection" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec71"></a>Failure Detection</h3></div></div></div><p>There is one more path <a id="id459" class="indexterm"></a>out of the cluster that actors can take&#8212;nodes can be detected as unreachable by other members of the cluster that are performing failure detection. When a node is determined to be unreachable for any reason&#8212; for example, crashing or temporary network failure&#8212;then the state<a id="GBS.0194.03"></a> of the node does not change, but it instead is marked with a <code class="literal">MemberUnreachabl</code>e flag. We subscribed to this event in our <code class="literal">ClusterController</code> so that we can become aware of this flag. If the member becomes reachable again within a reasonable period of time, then it will resume. If it stays unreachable for a configurable duration, then the leader will mark the node &quot;Down&quot; and it cannot rejoin the cluster.</p><p><a id="GBS.0194.04"></a>From a functional perspective, you can simply watch for the changes in member state, but the implementation of failure detection is actually based on the probability of being unreachable (<code class="literal">phi</code>) based on data collected from the cluster. If you want to learn more, the Cluster Specification document has a link to information on how <a id="id460" class="indexterm"></a>failure detection is implemented (<a href="http://doc.akka.io/docs/akka/snapshot/common/cluster.html#failure-detector" class="ulink">http://doc.akka.io/docs/akka/snapshot/common/cluster.html#failure-detector</a><a id="GBS.0194.05"></a>).</p><p>We&#39;re going to leave the values as their default, but in your deployments, you should be sure to read the documentation and adjust depending on your network reliability. <span class="strong"><strong>Amazon EC2 instances</strong></span> (<span class="strong"><strong>AWS</strong></span>)<a id="id461" class="indexterm"></a> is notoriously less reliable than a small network sitting on a rack, so you might want to be more reactive to temporary partitions in AWS than you would on your own virtualization infrastructure and<a id="GBS.0195.01"></a> network appliances. After working in large deployments in cloud environments, I&#39;ve found that encountering service interruptions due to temporary network failure are more the norm than the exception in day-to-day operations.</p><p>It&#39;s worth noting that if a node is marked unreachable, then Akka cluster will not change states&#8212;no new members can join until nodes are either marked down after being unable<a id="GBS.0195.02"></a> to recover from unavailability or are restored.</p><p>If nodes becomes unavailable and are marked down, they can&#39;t rejoin the cluster after that point. Two separate clusters can result (forming what is referred to as a &quot;split brain&quot; scenario). Akka does not currently resolve this phenomenon; thus, once a node is downed, it needs to shut down and restart to get a new unique ID and rejoin the cluster.</p><p><a id="GBS.0195.03"></a>This wraps up the basics of Akka cluster. We&#39;ll look at building out some examples on our cluster now.</p></div></div><div title="Routing Messages to the Cluster" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch06lvl2sec77"></a>Routing Messages to the Cluster</h2></div></div></div><p>We looked at how<a id="id462" class="indexterm"></a> to create a cluster. Now we&#39;ll look at how to send<a id="id463" class="indexterm"></a> messages to the cluster. We&#39;re going to re-introduce our article parsing problem here and allocate a cluster of nodes to do the work.</p></div><div title="Producing a Distributed Article Parse Service" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch06lvl2sec78"></a>Producing a Distributed Article Parse Service</h2></div></div></div><p>For our<a id="GBS.0195.04"></a> first example&#8212;a <a id="id464" class="indexterm"></a>distributed, horizontally scalable service—we&#39;re going to produce a cluster of article parsing services and then have a client route messages to random members of the cluster.</p><p>We&#39;ve looked at producing a pool of actors that will parse an article from a web page for us in <a href="ch05.html" title="Chapter 5. Scaling Up" class="link">Chapter 5</a>, <span class="emphasis"><em>Scaling Up</em></span>.</p><p>&#8212;we&#39;re going to re-use all the code and run it on our cluster example. The receive block<a id="GBS.0195.05"></a> of the actor that we want to cluster looks like the following:</p><div class="informalexample"><pre class="programlisting">//Java
+-Dcom.sun.management.jmxremote.ssl=false</pre>
+          </div>
+          <p>The first node running on <code class="literal">2552</code> should<a id="GBS.0192.03"></a> log the status change when the second seed node connects:</p>
+          <div class="informalexample">
+            <pre class="programlisting">[INFO] [06/14/2015 12:24:40.745] [Akkademy-akka.actor.default-dispatcher-18] [akka://Akkademy/user/clusterController] MemberEvent: MemberUp(Member(address = akka.tcp://Akkademy@127.0.0.1:2551, status = Up))</pre>
+          </div>
+          <p>We'll add one more node now to demonstrate how we might configure nodes beyond the seed node. Because the seed nodes have defined ports,<a id="GBS.0192.04"></a> we can have Akka assign a random port by configuring it as <code class="literal">0</code>:</p>
+          <div class="informalexample">
+            <pre class="programlisting">activator run -Dakka.remote.netty.tcp.port=0 \ -Dcom.sun.management.jmxremote.port=9553 \ -Dcom.sun.management.jmxremote.authenticate=false \ -Dcom.sun.management.jmxremote.ssl=false</pre>
+          </div>
+          <p>After a moment, you'll see the third node connect to the cluster. This is quite exciting—we now have the basis for building a distributed actor system.<a id="GBS.0192.05"></a> Akka takes care of numerous things for us that would be quite hard to get right ourselves!</p>
+          <div title="Note" style="" class="note">
+            <div class="inner">
+              <h3 class="title"><a id="tip15"></a>Tip</h3>
+              <p>Again, remember that you need to start the first node in the seed node list for the cluster to initialize.</p>
+            </div>
+          </div>
+        </div>
+        <div title="Leaving the Cluster Gracefully" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec70"></a>Leaving the Cluster Gracefully</h3>
+              </div>
+            </div>
+          </div>
+          <p>If you try shutting<a id="id455" class="indexterm"></a> down one of the nodes by killing the process, you'll notice that Akka marks it unreachable and writes several error messages. In this case,<a id="GBS.0193.01"></a> shutting down the node causes it to become unreachable and Akka will eventually mark it down. This is because we did not leave the cluster gracefully. Before removing a node from the cluster, we should announce to the cluster that the node is leaving.</p>
+          <p>We can do it programmatically by calling <code class="literal">cluster.leave</code> with the address of the node we want to remove:</p>
+          <div class="informalexample">
+            <pre class="programlisting">cluster.leave(self().path().address());</pre>
+          </div>
+          <p><a id="GBS.0193.02"></a>However, we don't have any API that we can use to expose this functionality currently. So, instead, we'll use <code class="literal">jmx</code> and command line tools to remove the node gracefully. We're going to use a tool <a id="id456" class="indexterm"></a>that comes with the Akka distribution: <code class="literal">akka-cluster</code>.</p>
+          <p>You may need to download the Akka distribution first to get the<a id="id457" class="indexterm"></a> akka-cluster tool. It should be available at <a href="http://akka.io/downloads/" class="ulink">http://akka.io/downloads/</a>. Unzip the file,<a id="GBS.0193.03"></a> and into the <code class="literal">bin</code> folder.</p>
+          <p>Now, we can issue commands to the cluster using the tool. Our principle use is to have the node leave the cluster gracefully. We can shut down the seed node on port <code class="literal">2552</code> that has JMX exposed on <code class="literal">9552</code> in the following manner:</p>
+          <div class="informalexample">
+            <pre class="programlisting">./akka-cluster localhost 9552 leave akka.tcp://Akkademy@127.0.0.1:2552</pre>
+          </div>
+          <p>After gracefully removing the node, you'll see it change states from up to exiting<a id="GBS.0193.04"></a> and then to removed.</p>
+          <div class="informalexample">
+            <pre class="programlisting">[INFO] [06/15/2015 20:05:21.501] [Akkademy-akka.actor.default-dispatcher-3] [akka://Akkademy/user/clusterController] MemberEvent: MemberExited(Member(address = akka.tcp://Akkademy@127.0.0.1:2552, status = Exiting)) [INFO] [06/15/2015 20:05:26.470] [Akkademy-akka.actor.default-dispatcher-17] [akka://Akkademy/user/clusterController] MemberEvent: MemberRemoved(Member(address<a id="GBS.0193.05"></a> = akka.tcp://Akkademy@127.0.0.1:2552, status = Removed),Exiting)</pre>
+          </div>
+        </div>
+      </div>
+      <div title="Cluster Member States" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch06lvl2sec76"></a>Cluster Member States</h2>
+            </div>
+          </div>
+        </div>
+        <p>Nodes that join the<a id="id458" class="indexterm"></a> cluster can be in one of a few different states. Under the hood, there is a logical leader node that coordinates some of the state changes. The cluster will logically order nodes and everyone will come to a conclusion about that order. The first node in the ordered list of nodes is the<a id="GBS.0194.01"></a> leader.</p>
+        <p>The leader responds to requests to join and leave the cluster by changing a member's state.</p>
+        <p>When joining the cluster, a joining member announces its state as "Joining." The leader responds by announcing that the member is Up. Similarly, if a node announces that it is "Leaving," then the Leader responds by changing that node's state to "Exiting" and then to "Removed." All these state changes<a id="GBS.0194.02"></a> are sent through the cluster as <code class="literal">MemberEvents</code>, which we subscribed to and logged.</p>
+        <div title="Failure Detection" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec71"></a>Failure Detection</h3>
+              </div>
+            </div>
+          </div>
+          <p>There is one more path <a id="id459" class="indexterm"></a>out of the cluster that actors can take—nodes can be detected as unreachable by other members of the cluster that are performing failure detection. When a node is determined to be unreachable for any reason— for example, crashing or temporary network failure—then the state<a id="GBS.0194.03"></a> of the node does not change, but it instead is marked with a <code class="literal">MemberUnreachabl</code>e flag. We subscribed to this event in our <code class="literal">ClusterController</code> so that we can become aware of this flag. If the member becomes reachable again within a reasonable period of time, then it will resume. If it stays unreachable for a configurable duration, then the leader will mark the node "Down" and it cannot rejoin the cluster.</p>
+          <p><a id="GBS.0194.04"></a>From a functional perspective, you can simply watch for the changes in member state, but the implementation of failure detection is actually based on the probability of being unreachable (<code class="literal">phi</code>) based on data collected from the cluster. If you want to learn more, the Cluster Specification document has a link to information on how <a id="id460" class="indexterm"></a>failure detection is implemented (<a href="http://doc.akka.io/docs/akka/snapshot/common/cluster.html#failure-detector" class="ulink">http://doc.akka.io/docs/akka/snapshot/common/cluster.html#failure-detector</a><a id="GBS.0194.05"></a>).</p>
+          <p>We're going to leave the values as their default, but in your deployments, you should be sure to read the documentation and adjust depending on your network reliability. <span class="strong"><strong>Amazon EC2 instances</strong></span> (<span class="strong"><strong>AWS</strong></span>)<a id="id461" class="indexterm"></a> is notoriously less reliable than a small network sitting on a rack, so you might want to be more reactive to temporary partitions in AWS than you would on your own virtualization infrastructure and<a id="GBS.0195.01"></a> network appliances. After working in large deployments in cloud environments, I've found that encountering service interruptions due to temporary network failure are more the norm than the exception in day-to-day operations.</p>
+          <p>It's worth noting that if a node is marked unreachable, then Akka cluster will not change states—no new members can join until nodes are either marked down after being unable<a id="GBS.0195.02"></a> to recover from unavailability or are restored.</p>
+          <p>If nodes becomes unavailable and are marked down, they can't rejoin the cluster after that point. Two separate clusters can result (forming what is referred to as a "split brain" scenario). Akka does not currently resolve this phenomenon; thus, once a node is downed, it needs to shut down and restart to get a new unique ID and rejoin the cluster.</p>
+          <p><a id="GBS.0195.03"></a>This wraps up the basics of Akka cluster. We'll look at building out some examples on our cluster now.</p>
+        </div>
+      </div>
+      <div title="Routing Messages to the Cluster" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch06lvl2sec77"></a>Routing Messages to the Cluster</h2>
+            </div>
+          </div>
+        </div>
+        <p>We looked at how<a id="id462" class="indexterm"></a> to create a cluster. Now we'll look at how to send<a id="id463" class="indexterm"></a> messages to the cluster. We're going to re-introduce our article parsing problem here and allocate a cluster of nodes to do the work.</p>
+      </div>
+      <div title="Producing a Distributed Article Parse Service" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch06lvl2sec78"></a>Producing a Distributed Article Parse Service</h2>
+            </div>
+          </div>
+        </div>
+        <p>For our<a id="GBS.0195.04"></a> first example—a <a id="id464" class="indexterm"></a>distributed, horizontally scalable service—we're going to produce a cluster of article parsing services and then have a client route messages to random members of the cluster.</p>
+        <p>We've looked at producing a pool of actors that will parse an article from a web page for us in <a href="ch05.html" title="Chapter 5. Scaling Up" class="link">Chapter 5</a>, <span class="emphasis"><em>Scaling Up</em></span>.</p>
+        <p>—we're going to re-use all the code and run it on our cluster example. The receive block<a id="GBS.0195.05"></a> of the actor that we want to cluster looks like the following:</p>
+        <div class="informalexample">
+          <pre class="programlisting">//Java
 match(ParseArticle.class, x -&gt;{ ArticleParser.apply(x.htmlBody). onSuccess(body -&gt; sender().tell(body, self())). onFailure(t -&gt; sender().tell(new Status.Failure(t), self()));
                 }
         )
 //Scala override def receive: Receive = { case ParseArticle(htmlString) =&gt; val body: String = ArticleParser(htmlString) sender()<a id="GBS.0196.01"></a> ! body
-  }</pre></div><p>You can refer to <a href="ch05.html" title="Chapter 5. Scaling Up" class="link">Chapter 5</a>, <span class="emphasis"><em>Scaling Up</em></span> examples on GitHub for the full example. We&#39;re going to put the pool of article parsers in our cluster and start the cluster up. Once that&#39;s complete, we&#39;ll demonstrate how to talk to the cluster of services from another actor system. All that we need to do to make a cluster of services is add any dependencies missing to our cluster project, and<a id="GBS.0196.02"></a> then put the <code class="literal">ArcicleParser</code>, <code class="literal">ArticleParseActo</code>
-<code class="literal">r</code>, and the <code class="literal">ParseArticle</code> messages into the application.</p><p>Once you&#39;ve done that, then we can simply start the actor (or pool of actors) as has been demonstrated in the section on starting the cluster. Then, our main could possibly appear as follows:</p><div class="informalexample"><pre class="programlisting">public class Main { public static void main(String... args) { ActorSystem system = ActorSystem.create(&quot;Akkademy&quot;);<a id="GBS.0196.03"></a> ActorRefclusterController = system.actorOf(Props.create(ClusterController.class), &quot;clusterController&quot;);
-ActorRefworkerPool = system.actorOf(new BalancingPool(5).props(Props.create(ArticleParseActor.class)), &quot;workers&quot;);
+  }</pre>
+        </div>
+        <p>You can refer to <a href="ch05.html" title="Chapter 5. Scaling Up" class="link">Chapter 5</a>, <span class="emphasis"><em>Scaling Up</em></span> examples on GitHub for the full example. We're going to put the pool of article parsers in our cluster and start the cluster up. Once that's complete, we'll demonstrate how to talk to the cluster of services from another actor system. All that we need to do to make a cluster of services is add any dependencies missing to our cluster project, and<a id="GBS.0196.02"></a> then put the <code class="literal">ArcicleParser</code>, <code class="literal">ArticleParseActo</code>
+<code class="literal">r</code>, and the <code class="literal">ParseArticle</code> messages into the application.</p>
+        <p>Once you've done that, then we can simply start the actor (or pool of actors) as has been demonstrated in the section on starting the cluster. Then, our main could possibly appear as follows:</p>
+        <div class="informalexample">
+          <pre class="programlisting">public class Main { public static void main(String... args) { ActorSystem system = ActorSystem.create("Akkademy");<a id="GBS.0196.03"></a> ActorRefclusterController = system.actorOf(Props.create(ClusterController.class), "clusterController");
+ActorRefworkerPool = system.actorOf(new BalancingPool(5).props(Props.create(ArticleParseActor.class)), "workers");
     }
-}</pre></div><p>We can start up a few nodes now as covered previously in the section on starting the cluster. For brevity, we&#39;ll do so without enabling remote management. If you&#39;re using<a id="GBS.0196.04"></a> Linux, you can do it in one go by backgrounding the tasks:</p><div class="informalexample"><pre class="programlisting">activator run &amp; activator run -Dakka.remote.netty.tcp.port=2551 &amp; activator run -Dakka.remote.netty.tcp.port=0 &amp;</pre></div><p>Now, we have a <a id="id465" class="indexterm"></a>three-node cluster running. We&#39;ll move onto the client.</p></div><div title="Cluster Client for Clustered Services" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch06lvl2sec79"></a>Cluster Client for Clustered Services</h2></div></div></div><p>Building a client <a id="id466" class="indexterm"></a>to talk to stateless clustered services is fairly straightforward. Akka Cluster gives some advantages<a id="GBS.0196.05"></a> compared with traditional web services with a load-balancer in front&#8212;the cluster can be dynamically scaled up and down without changing load-balancer configuration. The client itself can route the messages to random members of the cluster, so the infrastructure requirements are simpler. Because the client is aware of the cluster, it can rebuild the list of services available to send messages<a id="GBS.0197.01"></a> to as the cluster increases or decreases in size. The client will internally load-balance requests against all the nodes in the cluster in the following manner:</p><div class="mediaobject"><img src="graphics/B04006_06_06.jpg" alt="Cluster Client for Clustered Services"></img><a id="GBS.0197.02"></a></div><p>We have a three-node cluster running; thus, we can look at what we need to do to get a client to talk to it:</p><div class="orderedlist"><ol class="orderedlist arabic"><li class="listitem">Enable cluster<a id="id467" class="indexterm"></a> client in the server project.</li><li class="listitem">The client must have the message that you want to send to the service.</li><li class="listitem">The client must know about the cluster topology without being a member of the cluster itself. For this, we will use the Akka Cluster Client in the <code class="literal">Contrib</code> library.</li><li class="listitem">The client<a id="GBS.0197.03"></a> must then know how to find the actors or routers it wants to send to and respond to cluster events.</li></ol></div><div title="Setting up the Server Project" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec72"></a>Setting up the Server Project</h3></div></div></div><p>In the server project, we <a id="id468" class="indexterm"></a>added the dependencies necessary to use the cluster client. The Cluster client is in the <code class="literal">contrib</code> package, which are contributions from outside of the Akka team. We added the following dependency:</p><div class="informalexample"><pre class="programlisting">&quot;com.typesafe.akka&quot; %% &quot;akka-contrib&quot; % &quot;2.3.6&quot;</pre></div><p><a id="GBS.0198.01"></a>Then, in the configuration (<code class="literal">application.conf</code>), we added an akka extension for the client:</p><div class="informalexample"><pre class="programlisting">akka.extensions = [&quot;akka.contrib.pattern.ClusterReceptionistExtension&quot;]</pre></div><p>This will start the <code class="literal">ClusterReceptionist</code> on the server, which will handle all the details for our client to be able to talk to the cluster. The cluster receptionist actor is created on the root path in the server<code class="literal">—/user/receptionist.</code> We&#39;ll<a id="GBS.0198.02"></a> see how this is used shortly.</p><p>After doing that, our main need is to be updated to register the worker with the <code class="literal">ClusterReceptionist</code>. We&#39;ll use the balancing pool introduced in <a href="ch05.html" title="Chapter 5. Scaling Up" class="link">Chapter 5</a>, <span class="emphasis"><em>Scaling Up</em></span> to create a pool of actors on each server.</p><p>First, we&#39;ll look at the Java code:</p><div class="informalexample"><pre class="programlisting">public class Main { public static void main(String... args) { ActorSystem system = ActorSystem.create(&quot;Akkademy&quot;); ActorRefclusterControlle<a id="GBS.0198.03"></a>r = system.actorOf(Props.create(ClusterController.class), &quot;clusterController&quot;);
+}</pre>
+        </div>
+        <p>We can start up a few nodes now as covered previously in the section on starting the cluster. For brevity, we'll do so without enabling remote management. If you're using<a id="GBS.0196.04"></a> Linux, you can do it in one go by backgrounding the tasks:</p>
+        <div class="informalexample">
+          <pre class="programlisting">activator run &amp; activator run -Dakka.remote.netty.tcp.port=2551 &amp; activator run -Dakka.remote.netty.tcp.port=0 &amp;</pre>
+        </div>
+        <p>Now, we have a <a id="id465" class="indexterm"></a>three-node cluster running. We'll move onto the client.</p>
+      </div>
+      <div title="Cluster Client for Clustered Services" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch06lvl2sec79"></a>Cluster Client for Clustered Services</h2>
+            </div>
+          </div>
+        </div>
+        <p>Building a client <a id="id466" class="indexterm"></a>to talk to stateless clustered services is fairly straightforward. Akka Cluster gives some advantages<a id="GBS.0196.05"></a> compared with traditional web services with a load-balancer in front—the cluster can be dynamically scaled up and down without changing load-balancer configuration. The client itself can route the messages to random members of the cluster, so the infrastructure requirements are simpler. Because the client is aware of the cluster, it can rebuild the list of services available to send messages<a id="GBS.0197.01"></a> to as the cluster increases or decreases in size. The client will internally load-balance requests against all the nodes in the cluster in the following manner:</p>
+        <div class="mediaobject">
+          <img src="graphics/B04006_06_06.jpg" alt="Cluster Client for Clustered Services" />
+          <a id="GBS.0197.02"></a>
+        </div>
+        <p>We have a three-node cluster running; thus, we can look at what we need to do to get a client to talk to it:</p>
+        <div class="orderedlist">
+          <ol class="orderedlist arabic">
+            <li class="listitem">Enable cluster<a id="id467" class="indexterm"></a> client in the server project.</li>
+            <li class="listitem">The client must have the message that you want to send to the service.</li>
+            <li class="listitem">The client must know about the cluster topology without being a member of the cluster itself. For this, we will use the Akka Cluster Client in the <code class="literal">Contrib</code> library.</li>
+            <li class="listitem">The client<a id="GBS.0197.03"></a> must then know how to find the actors or routers it wants to send to and respond to cluster events.</li>
+          </ol>
+        </div>
+        <div title="Setting up the Server Project" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec72"></a>Setting up the Server Project</h3>
+              </div>
+            </div>
+          </div>
+          <p>In the server project, we <a id="id468" class="indexterm"></a>added the dependencies necessary to use the cluster client. The Cluster client is in the <code class="literal">contrib</code> package, which are contributions from outside of the Akka team. We added the following dependency:</p>
+          <div class="informalexample">
+            <pre class="programlisting">"com.typesafe.akka" %% "akka-contrib" % "2.3.6"</pre>
+          </div>
+          <p><a id="GBS.0198.01"></a>Then, in the configuration (<code class="literal">application.conf</code>), we added an akka extension for the client:</p>
+          <div class="informalexample">
+            <pre class="programlisting">akka.extensions = ["akka.contrib.pattern.ClusterReceptionistExtension"]</pre>
+          </div>
+          <p>This will start the <code class="literal">ClusterReceptionist</code> on the server, which will handle all the details for our client to be able to talk to the cluster. The cluster receptionist actor is created on the root path in the server<code class="literal">—/user/receptionist.</code> We'll<a id="GBS.0198.02"></a> see how this is used shortly.</p>
+          <p>After doing that, our main need is to be updated to register the worker with the <code class="literal">ClusterReceptionist</code>. We'll use the balancing pool introduced in <a href="ch05.html" title="Chapter 5. Scaling Up" class="link">Chapter 5</a>, <span class="emphasis"><em>Scaling Up</em></span> to create a pool of actors on each server.</p>
+          <p>First, we'll look at the Java code:</p>
+          <div class="informalexample">
+            <pre class="programlisting">public class Main { public static void main(String... args) { ActorSystem system = ActorSystem.create("Akkademy"); ActorRefclusterControlle<a id="GBS.0198.03"></a>r = system.actorOf(Props.create(ClusterController.class), "clusterController");
         // router at /user/workers
-ActorRef workers = system.actorOf(new BalancingPool(5).props(Props.create(ArticleParseActor.class)), &quot;workers&quot;);
+ActorRef workers = system.actorOf(new BalancingPool(5).props(Props.create(ArticleParseActor.class)), "workers");
         ((ClusterReceptionistExtension) akka.contrib.pattern.ClusterReceptionistExtension.apply(system)). registerService(workers); }
-}</pre></div><p>You&#39;ll see that we have to cast the<a id="GBS.0198.04"></a> <code class="literal">ClusterReceptionistExtension</code>—we&#39;re calling the Scala API&#39;s apply method. This works perfectly fine for registering the workers.</p><p>The Scala <a id="id469" class="indexterm"></a>example looks a little simpler:</p><div class="informalexample"><pre class="programlisting">object Main extends App { val system = ActorSystem(&quot;Akkademy&quot;) valclusterController = system.actorOf(Props[ClusterController], &quot;clusterController&quot;)
-  // router at /user/workers val workers = system.actorOf(BalancingPool(5).props(Props[ArticlePar<a id="GBS.0198.05"></a>seActor]), &quot;workers&quot;)
+}</pre>
+          </div>
+          <p>You'll see that we have to cast the<a id="GBS.0198.04"></a> <code class="literal">ClusterReceptionistExtension</code>—we're calling the Scala API's apply method. This works perfectly fine for registering the workers.</p>
+          <p>The Scala <a id="id469" class="indexterm"></a>example looks a little simpler:</p>
+          <div class="informalexample">
+            <pre class="programlisting">object Main extends App { val system = ActorSystem("Akkademy") valclusterController = system.actorOf(Props[ClusterController], "clusterController")
+  // router at /user/workers val workers = system.actorOf(BalancingPool(5).props(Props[ArticlePar<a id="GBS.0198.05"></a>seActor]), "workers")
 ClusterReceptionistExtension(system).registerService(workers)
-}</pre></div><p>That&#39;s it! If you have nodes running, you&#39;ll want to restart them after making the changes.</p></div><div title="Setting up the Client Project" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec73"></a>Setting up the Client Project</h3></div></div></div><p>We can create a <a id="id470" class="indexterm"></a>new project for the client. Run <code class="literal">activator new</code> and select the language template of your choice.</p><p>Edit the <code class="literal">build.sbt</code> file in the new project. You&#39;ll need to add the following<a id="GBS.0199.01"></a> dependencies:</p><div class="informalexample"><pre class="programlisting">libraryDependencies ++= Seq( &quot;com.typesafe.akka&quot; %% &quot;akka-actor&quot; % &quot;2.3.6&quot;, &quot;com.typesafe.akka&quot; %% &quot;akka-cluster&quot; % &quot;2.3.6&quot;, &quot;com.typesafe.akka&quot; %% &quot;akka-contrib&quot; % &quot;2.3.6&quot;
-)</pre></div><p>You can add any test dependencies you might like as well, such as <code class="literal">junit</code> or <code class="literal">scalatest.</code> There is nothing new in our dependency list here.</p><p>Next, we have to make/modify <code class="literal">application.conf</code> to ensure the provider is<a id="GBS.0199.02"></a> correct are correct and set up the mailbox for the Cluster client:</p><div class="informalexample"><pre class="programlisting">akka { actor { provider = &quot;akka.cluster.ClusterActorRefProvider&quot; }
-contrib.cluster.client { mailbox { mailbox-type = &quot;akka.dispatch.UnboundedDequeBasedMailbox&quot; stash-capacity = 1000 }
+}</pre>
+          </div>
+          <p>That's it! If you have nodes running, you'll want to restart them after making the changes.</p>
+        </div>
+        <div title="Setting up the Client Project" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec73"></a>Setting up the Client Project</h3>
+              </div>
+            </div>
+          </div>
+          <p>We can create a <a id="id470" class="indexterm"></a>new project for the client. Run <code class="literal">activator new</code> and select the language template of your choice.</p>
+          <p>Edit the <code class="literal">build.sbt</code> file in the new project. You'll need to add the following<a id="GBS.0199.01"></a> dependencies:</p>
+          <div class="informalexample">
+            <pre class="programlisting">libraryDependencies ++= Seq( "com.typesafe.akka" %% "akka-actor" % "2.3.6", "com.typesafe.akka" %% "akka-cluster" % "2.3.6", "com.typesafe.akka" %% "akka-contrib" % "2.3.6"
+)</pre>
+          </div>
+          <p>You can add any test dependencies you might like as well, such as <code class="literal">junit</code> or <code class="literal">scalatest.</code> There is nothing new in our dependency list here.</p>
+          <p>Next, we have to make/modify <code class="literal">application.conf</code> to ensure the provider is<a id="GBS.0199.02"></a> correct are correct and set up the mailbox for the Cluster client:</p>
+          <div class="informalexample">
+            <pre class="programlisting">akka { actor { provider = "akka.cluster.ClusterActorRefProvider" }
+contrib.cluster.client { mailbox { mailbox-type = "akka.dispatch.UnboundedDequeBasedMailbox" stash-capacity = 1000 }
   }
-}</pre></div><p>Be careful about providing too many messages before letting everything get connected! Messages will be stashed in the Cluster Client.</p></div><div title="Sharing the Message Class between Client and Server" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec74"></a>Sharing<a id="GBS.0199.03"></a> the Message Class between Client and Server</h3></div></div></div><p>There are a few<a id="id471" class="indexterm"></a> different ways in which you can share messages across client and server applications. You can build them both in the same project, you can include the server project in the client or vice versa, or you can have an extra project that contains the messages that both projects share. In <a href="ch02.html" title="Chapter 2. Actors and Concurrency" class="link">Chapter 2</a>, <span class="emphasis"><em>Actors and Concurrency</em></span> this was demonstrated<a id="GBS.0199.04"></a> by publishing a library to the local repository. Nexus or Artifactory can be installed to host the assets as a solution for teams on closed-source projects. Sonatype&#39;s OSS Repository and Maven Central can be used for open source projects.</p><p>If you&#39;re following along, take whichever approach you like&#8212;preferably putting the messages in their own project. For the sake of simplicity, in the example,<a id="GBS.0199.05"></a> we can change the <code class="literal">ArticleParseActor</code> to accept and return strings:</p><div class="informalexample"><pre class="programlisting">//Java
+}</pre>
+          </div>
+          <p>Be careful about providing too many messages before letting everything get connected! Messages will be stashed in the Cluster Client.</p>
+        </div>
+        <div title="Sharing the Message Class between Client and Server" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec74"></a>Sharing<a id="GBS.0199.03"></a> the Message Class between Client and Server</h3>
+              </div>
+            </div>
+          </div>
+          <p>There are a few<a id="id471" class="indexterm"></a> different ways in which you can share messages across client and server applications. You can build them both in the same project, you can include the server project in the client or vice versa, or you can have an extra project that contains the messages that both projects share. In <a href="ch02.html" title="Chapter 2. Actors and Concurrency" class="link">Chapter 2</a>, <span class="emphasis"><em>Actors and Concurrency</em></span> this was demonstrated<a id="GBS.0199.04"></a> by publishing a library to the local repository. Nexus or Artifactory can be installed to host the assets as a solution for teams on closed-source projects. Sonatype's OSS Repository and Maven Central can be used for open source projects.</p>
+          <p>If you're following along, take whichever approach you like—preferably putting the messages in their own project. For the sake of simplicity, in the example,<a id="GBS.0199.05"></a> we can change the <code class="literal">ArticleParseActor</code> to accept and return strings:</p>
+          <div class="informalexample">
+            <pre class="programlisting">//Java
 match(String.class, x -&gt; { ArticleParser.apply(x). onSuccess(body -&gt; sender().tell(body, self())). onFailure(t -&gt; sender().tell(new Status.Failure(t), self()));
 //Scala
     case htmlString: String =&gt; val body: String = ArticleParser(htmlString)
-      sender() ! body</pre></div><div title="Note" style="" class="note"><div class="inner"><h3 class="title"><a id="note04"></a>Note</h3><p>Changing messages over time can break your applications.<a id="GBS.0200.01"></a> Google&#39;s Protocol Buffers can be used in Akka for message serialization - you may want to learn how to utilize Protocol Buffers to managing changing messages over time.</p></div></div></div><div title="Sending Messages to the Cluster" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec75"></a>Sending Messages to the Cluster</h3></div></div></div><p>Now that we<a id="id472" class="indexterm"></a> have the cluster configured to talk to the <code class="literal">contrib</code> package&#39;s Cluster Client, we can send messages to the cluster.</p><p>We&#39;ll take a random article from the Internet, grab the HTML source,<a id="GBS.0200.02"></a> and create a String variable called <code class="literal">articleToParse</code>.</p><p>We&#39;ll send that to a random member of the cluster, and we should then get back the body of the article from the service. We&#39;ll print the result. If you send it a few times, you will see it go to all members of the cluster.</p><p>The following is the Java code for the client project:</p><div class="informalexample"><pre class="programlisting">public static void main(String[] args) throws Exception { Timeout<a id="GBS.0200.03"></a> timeout = new Timeout(Duration.create(5, &quot;seconds&quot;));
-ActorSystem system = ActorSystem.create(&quot;clientSystem&quot;);
+      sender() ! body</pre>
+          </div>
+          <div title="Note" style="" class="note">
+            <div class="inner">
+              <h3 class="title"><a id="note04"></a>Note</h3>
+              <p>Changing messages over time can break your applications.<a id="GBS.0200.01"></a> Google's Protocol Buffers can be used in Akka for message serialization - you may want to learn how to utilize Protocol Buffers to managing changing messages over time.</p>
+            </div>
+          </div>
+        </div>
+        <div title="Sending Messages to the Cluster" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec75"></a>Sending Messages to the Cluster</h3>
+              </div>
+            </div>
+          </div>
+          <p>Now that we<a id="id472" class="indexterm"></a> have the cluster configured to talk to the <code class="literal">contrib</code> package's Cluster Client, we can send messages to the cluster.</p>
+          <p>We'll take a random article from the Internet, grab the HTML source,<a id="GBS.0200.02"></a> and create a String variable called <code class="literal">articleToParse</code>.</p>
+          <p>We'll send that to a random member of the cluster, and we should then get back the body of the article from the service. We'll print the result. If you send it a few times, you will see it go to all members of the cluster.</p>
+          <p>The following is the Java code for the client project:</p>
+          <div class="informalexample">
+            <pre class="programlisting">public static void main(String[] args) throws Exception { Timeout<a id="GBS.0200.03"></a> timeout = new Timeout(Duration.create(5, "seconds"));
+ActorSystem system = ActorSystem.create("clientSystem");
         Set&lt;ActorSelection&gt;initialContacts = new HashSet&lt;ActorSelection&gt;();
-        initialContacts.add(system.actorSelection(&quot;akka.tcp://Akkademy@127.0.0.1:2552/user/receptionist&quot;));
-initialContacts.add(system.actorSelection(&quot;akka.tcp://Akkademy@127.0.0.1:2551/user/receptionist&quot;)); ActorRef<a id="GBS.0200.04"></a> receptionist = system.actorOf(ClusterClient.defaultProps(initialContacts)); ClusterClient.Sendmsg = new ClusterClient.Send(&quot;/user/workers&quot;, articleToParse, false); Future f = Patterns.ask(receptionist, msg, timeout); String result = (String) Await.result(f, timeout.duration()); System.out.println(&quot;result: &quot; + result);
-    }</pre></div><p>And the<a id="id473" class="indexterm"></a> following is the Scala code for the client project:</p><div class="informalexample"><pre class="programlisting">def main(args:<a id="GBS.0200.05"></a> Array[String]) { val timeout = new Timeout(Duration.create(5, &quot;seconds&quot;)) val system = ActorSystem.create(&quot;clientSystem&quot;)
-valinitialContacts: Set[ActorSelection] = Set( system.actorSelection(&quot;akka.tcp://Akkademy@127.0.0.1:2552/user/receptionist&quot;), system.actorSelection(&quot;akka.tcp://Akkademy@127.0.0.1:2551/user/receptionist&quot;) )
-    import collection.JavaConversions._ val receptionist = system.actorOf(ClusterClien<a id="GBS.0201.01"></a>t.defaultProps(initialContacts)) valmsg = ClusterClient.Send(&quot;/user/workers&quot;, articleToParse, false) val f = Patterns.ask(receptionist, msg, timeout) val result = Await.result(f, timeout.duration).asInstanceOf[String] println(&quot;result: &quot; + result)
-  }</pre></div><p>We&#39;ll look at what is happening in the code step by step.</p><p>First, we define a <code class="literal">timeout</code> variable to use in our test here as we will ask and wait for<a id="GBS.0201.02"></a> the result. In real situations, you will likely be using an actual actor to send and receive&#8212;this is just for the sake of example. We create the actor system for the client.</p><p>Now, we need to produce the client that talks to the receptionist in the cluster. We create the contact list for the receptionists of the seed nodes for our client to talk to. After getting the set of seed node addresses,<a id="GBS.0201.03"></a> we can then create the <code class="literal">ClusterClient</code> actor:</p><div class="informalexample"><pre class="programlisting">system.actorOf(ClusterClient.defaultProps(initialContacts))</pre></div><p>At this point, our<a id="id474" class="indexterm"></a> application is able to connect to the cluster and get information about any changes to the cluster topology. The receptionist in the remote actor system will accept a few different messages:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem"><code class="literal">ClusterClient.Send</code>: This sends a message to a random node.</li><li style="list-style-type: disc;" class="listitem"><code class="literal">ClusterClient.SendToAll</code><a id="GBS.0201.04"></a>: This sends a message to all actors in the cluster.</li><li style="list-style-type: disc;" class="listitem"><code class="literal">ClusterClient.Publish</code>: This sends a message to all actors subscribed to a topic.</li></ul></div><p>We only need to send the message to a random worker; so, <code class="literal">Send</code> is fine for our case. We make the Send object, describing which actor the message is destined for (the &quot;workers&quot; router running on each node of the cluster) and wrapping our message in it:</p><div class="informalexample"><pre class="programlisting">newClusterClient.Send(&quot;/user/wor<a id="GBS.0201.05"></a>kers&quot;, articleToParse, false)</pre></div><p>Finally, we use ask to send the message to the receptionist <code class="literal">ActorRef</code> to deliver, and to get the result back (shown calling ask method, but in Scala we can also use the &#39;?&#39; operator):</p><div class="informalexample"><pre class="programlisting">Patterns.ask(receptionist, msg, timeout);</pre></div><p>We take the future that ask gives us and wait for the result&#8212;again, this is only for the sake of an example. You never want to block threads by<a id="GBS.0202.01"></a> waiting in your code.</p><div title="Note" style="" class="note"><div class="inner"><h3 class="title"><a id="note05"></a>Note</h3><p>If a node becomes unavailable when you try to send it a message, your request will time out and fail. It is your responsibility to handle timeout and retry semantics, or otherwise handle failure cases.</p></div></div><p>That&#39;s all that it takes to use Akka to build distributed workers. Now, there are a lot of things we would want to do to further improve this system. If there are potentially<a id="GBS.0202.02"></a> lots of messages, we would likely want to put the messages somewhere other than in the mailbox in memory. Likely, some sort of durable queue or database would be used instead of ephemeral memory. Though, for real-time processing, this isn&#39;t a bad start. For a client, we would likely want to build timeout and retry mechanics as well to ensure that we always get the work done that we need done.</p></div><div title="Building a Distributed Key Value Store" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec76"></a><a id="GBS.0202.03"></a>Building a Distributed Key Value Store</h3></div></div></div><p>We&#39;ve looked <a id="id475" class="indexterm"></a>at everything that it takes to build on top of Akka cluster and we looked at a small example of a stateless cluster of workers. If state is involved, the problem becomes incredibly difficult to get right.</p><p>In the next section, we&#39;ll look at the watchouts, tools, and techniques for handling distributed systems that contain state such as a key-value<a id="GBS.0202.04"></a> store.</p></div><div title="Disclaimer – Distributed Systems are Hard" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec77"></a>Disclaimer – Distributed Systems are Hard</h3></div></div></div><p>Before we go on to look at how to build a distributed key-value store, I want to give you a word of warning.</p><p>It&#39;s not terribly difficult to build distributed systems that appear to work perfectly fine. You might get confident and feel that it&#39;s not all that hard after all. You&#39;ll tout yourself soon as an expert Distributed Systems Person. But<a id="GBS.0202.05"></a> stay humble&#8212;in reality, things fail, networks partition, and services become unavailable&#8212;and gracefully handling those scenarios without data loss or corruption is an incredibly difficult problem. Perhaps, even an unsolvable one with our network technology today.</p><p>How applications respond in those error cases can be more important than their primary functionality because failure is common and,<a id="GBS.0203.01"></a> in fact, is inevitable as you scale up. </p><div title="Note" style="" class="note"><div class="inner"><h3 class="title"><a id="tip16"></a>Tip</h3><p>Remember that the network is not reliable. In a cluster of 1,000 nodes running in AWS, it&#39;s very likely that there will be some service interruption somewhere in your system at any given time.</p></div></div><p>So, how do all of these new-fangled <code class="literal">NoSql</code> data-stores actually stack up in their claims of availability and partition tolerance then? There is an interesting<a id="GBS.0203.02"></a> series of articles called <span class="emphasis"><em>Jepsen</em></span> or <span class="emphasis"><em>Call Me Maybe</em></span> on <a href="http://aphyr.com" class="ulink">aphyr.com</a> that tests several distributed system&#39;s documented claims about resiliency—you might be surprised by how your favorite technology fairs in some of the tests run in the articles.</p><p>This book will not be able to explain all of the techniques or examine all of the solutions to these problems, so all that I can do as the author is to warn<a id="GBS.0203.03"></a> you that it&#39;s a real can of worms and nobody has done a perfect job at solving the distribution problem yet.</p></div></div><div title="Designing the Cluster" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch06lvl2sec80"></a>Designing the Cluster</h2></div></div></div><p>We are going to build <a id="id476" class="indexterm"></a>a very simple three-node data-store to start demonstrating the techniques that can be used in distributed systems. We are going to look at a couple different designs so that you understand the techniques that are used and what the problems<a id="GBS.0203.04"></a> are that distributed systems try to solve.</p><p>First, let&#39;s begin talking about our cluster and how the client interacts with it. Ideally, we need our multi-node key-value store to offer a few features:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Mechanisms for replicating data to gracefully handle a node partition</li><li style="list-style-type: disc;" class="listitem">Mechanism for giving a consistent view of replicated data—to give the most recent update when a client requests it (consistency)</li><li style="list-style-type: disc;" class="listitem"><a id="GBS.0203.05"></a>Mechanism for linear scalability&#8212;20 nodes can handle twice as much throughput as 10 nodes</li></ul></div><p>In terms of design goals in meeting those objectives, we would like to have a database that is highly available, partition tolerant, and able to give a consistent view of the most recent data. Achieving all three perfectly is not likely possible with our technology today, but we can take measures to try. We&#39;re<a id="GBS.0204.01"></a> lucky that a lot of very smart people have been working on these problems; thus, we have access to their research and publications.</p><div title="Basic Key-Value Store Design" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec78"></a>Basic Key-Value Store Design</h3></div></div></div><p>We&#39;ve already looked at how a <a id="id477" class="indexterm"></a>single node can store an object in a map with a key associated with it. Using a <code class="literal">HashMap</code> gives approximate constant time lookups, so it&#39;s a very efficient choice for storing data in memory.</p><p>An actor will<a id="GBS.0204.02"></a> accept <code class="literal">Get</code> messages with a key, and Put messages with a key and a value—exactly as demonstrated in <a href="ch02.html" title="Chapter 2. Actors and Concurrency" class="link">Chapter 2</a>, <span class="emphasis"><em>Actors and Concurrency</em></span>. To recap, our node will have an actor that looks like the following:</p><div class="informalexample"><pre class="programlisting">//Java
-    private AkkademyDb(){ receive(ReceiveBuilder. match(SetRequest.class, message -&gt; { log.info(&quot;Received Set request: {}&quot;, message); map.put(message.key, message.value); sender().tell(new<a id="GBS.0204.03"></a> Status.Success(message.key), self()); }). match(GetRequest.class, message -&gt; { 
-                             log.info(&quot;Received Get request: {}&quot;, message); Object value = map.get(message.key); Object response = (value != null) ? value : new Status.Failure(new KeyNotFoundException(message.key)); sender().tell(response, self()); }). matchAny(o -&gt; sender().tell(new Status.Failure(new ClassNotFoundException()),<a id="GBS.0204.04"></a> self()) ).build() ); } //Scala override def receive = { case SetRequest(key, value) =&gt; log.info(&quot;received SetRequest - key: {} value: {}&quot;, key, value) map.put(key, value) sender() ! Status.Success case GetRequest(key) =&gt; log.info(&quot;received GetRequest - key: {}&quot;, key) val response: Option[Object] = map.get(key) response match{ case Some(x) =&gt; sender() ! x case None =&gt; sender() ! Status.Failure(new<a id="GBS.0204.05"></a> KeyNotFoundException(key)) } case o =&gt;Status.Failure(new ClassNotFoundException)
-  }</pre></div><p>I would recommend that you add other messages for common use cases if you&#39;re going to attempt to implement this. Semantics like <code class="literal">SetIfNotExist</code>, which sends back a failure if the node is already there, is useful for handling concurrency consistently—getting and then setting the value <a id="id478" class="indexterm"></a>if it does not exist is not<a id="GBS.0205.01"></a> at all consistent enough for a distributed workflow. Redis API docs are a good resource to look at if you want to see the types of messages and datatypes that are useful for a key-value store to handle with multiple clients&#8212;it&#39;s a simple and readable document that will go a long way to ramp you up in the problem space.</p></div><div title="Coordinating Node" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec79"></a>Coordinating Node</h3></div></div></div><p>Now that we have a picture<a id="id479" class="indexterm"></a> of how we&#39;ll store data in<a id="GBS.0205.02"></a> a node, we need to look a bit higher level at how we want messages to be handled between a client using the data-store and the cluster.</p><p>We have a client example that sends a message to a random node and that&#39;s actually quite a good start for most distributed stores because very often such systems will implement the concept of a coordinating node that can be any node in the cluster that will handle<a id="GBS.0205.03"></a> talking to other nodes in the cluster to handle the request.</p><p>It&#39;s probably unclear at this point exactly why we would do this, but let&#39;s imagine a coordinating node that needs to talk to three other nodes to get a definitive answer on what a value is.</p><div class="mediaobject"><img src="graphics/B04006_06_07.jpg" alt="Coordinating Node"></img><a id="GBS.0205.04"></a></div><p>If we implement this logic, a <a id="id480" class="indexterm"></a>client can send the request to any node in the cluster, and that node becomes the coordinator for the request. That node then goes to the other nodes and requests the data that it needs to make a decision on what the value is that is being retrieved. So, we can continue to use the random delivery mechanism if we implement the coordination logic on the server instead<a id="GBS.0206.01"></a> of the client. Because we&#39;re not sure where the client is located, it&#39;s safer to move this responsibility into the cluster itself&#8212;we can be more confident that the nodes we need to talk to have lesser leaps across the network in the majority of circumstances. This is how Cassandra handles requests for example.</p><p>We&#39;ll look at two models: one for storing a data set across multiple nodes and one for<a id="GBS.0206.02"></a> replicating data across multiple nodes.</p><div title="Sharding for Linear Scalability" class="section"><div class="titlepage"><div><div><h4 class="title"><a id="ch06lvl4sec26"></a>Sharding for Linear Scalability</h4></div></div></div><p>The first problem we will look <a id="id481" class="indexterm"></a>to solve is how to assign a piece of a problem domain to different nodes in a cluster. In the case of storing data in a key-value store, it&#39;s easy to see how you might take slices of data (determined by the key) and assign them to different nodes. In Cassandra, a key used to determine which<a id="GBS.0206.03"></a> node data goes to is called a partition key.</p><p>For our use case of a very simple key-value store, we can take a key and hash it, and then execute modulus on the hash to get an integer value. Let&#39;s assume we have three nodes that we want to store data on. A request goes to a node in the cluster to store a key-value pair—for example, <code class="literal">foo</code> as the key and <code class="literal">bar</code> as the value. The coordinating node will<a id="GBS.0206.04"></a> execute <code class="literal">hashCode()</code> on the key:</p><div class="informalexample"><pre class="programlisting">&quot;foo&quot;.hashCode() (101574)</pre></div><p>Then, it will call the modulus operator on the <code class="literal">hashcode</code>, giving a result of <code class="literal">0</code>, <code class="literal">1</code>, or <code class="literal">2</code>:</p><div class="informalexample"><pre class="programlisting">101574 % 3 (0)</pre></div><p>Now, if we have three nodes that we want to store data on, then we know if we want to set or get a value with the key <code class="literal">foo</code> that it goes on the first node. This approach of sharding data is used in many distributed data-stores today.</p></div></div><div title="Redundant Nodes" class="section"><div class="titlepage"><div><div><h3 class="title"><a id="ch06lvl3sec80"></a>Redundant<a id="GBS.0206.05"></a> Nodes</h3></div></div></div><p>To have high availability and partition<a id="id482" class="indexterm"></a> tolerance, we have to tolerate a node disappearing from the cluster for both reads and writes. If one node disappears, this should be a non-critical failure and the data-store should continue to operate to meet our goals.</p><p>To accomplish this, we can send all writes to three nodes and hope that the majority of them respond with an acknowledgment. If<a id="GBS.0207.01"></a> only two respond with an ok, we might be able to handle that on future reads. Now, all the intricacies of this mechanism&#8212;and specifically how to determine the ordering of events&#8212;cannot be covered here, but you can look at lamport clocks or vector clocks if you&#39;re motivated to get this right. We&#39;ll look at the mechanics at a high level here using simpler mechanics that are easier to comprehend.</p><p><a id="GBS.0207.02"></a>Let&#39;s say a client wants to write a value for key <code class="literal">foo</code> of value <code class="literal">bar</code>, we want to persist this to three nodes. We&#39;ll try to write the value to three nodes from the coordinating node.</p><p>We can reference the previous diagram&#8212;a client will make a request to write and it goes to three nodes in the cluster. To have a successful write, we might agree that at least two of the nodes need to acknowledge the<a id="GBS.0207.03"></a> write, or maybe all three do. Adjusting these values tune how it responds to partitions and node failures.</p><p>Now, if we want to retrieve the value, then we can request the data from any of the three nodes as a starting point, but what if one node goes down and misses some writes? In this case, we can request the data from all three nodes, and require the same value from at least two nodes.</p><div class="mediaobject"><img src="graphics/B04006_06_08.jpg" alt="Redundant Nodes"></img><a id="GBS.0208.01"></a></div><p>Now, we have some way of <a id="id483" class="indexterm"></a>determining what the majority of nodes think the value is—we say that two nodes must have the same value to determine which it should be.</p><p>But how do we know the order of values? Was <code class="literal">bar1</code> or <code class="literal">bar2</code> written first? Which is more recent? We actually don&#39;t have any way of determining the ordering of messages, which it turns out is quite a problem. What happens if one node gets<a id="GBS.0208.02"></a> writes in a different order than another node? Cassandra has another read request type called a read repair request, which compares the data stored for a key on all of the replica nodes and tries to propagate the most recent write to the replicas.</p><p>The actual ordering of events is an interesting problem. You could start by using a timestamp in the record to determine which records are most recent,<a id="GBS.0208.03"></a> but we can&#39;t guarantee that all machines have the same clock or that events are occurring infrequently enough to trust the timestamp.</p><p>There are a couple of papers<a id="id484" class="indexterm"></a> and algorithms you can look at that describe the problem and some solutions. Some of the items you may want to look at are Vector Clocks (Used by many distributed technologies such as Akka and Cassandra) and Dotted Version Vectors (used<a id="GBS.0208.04"></a> by Basho&#39;s Riak in recent versions).</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">The Dynamo paper from Amazon describes the use of <a id="id485" class="indexterm"></a>Vector Clocks in Amazon&#39;s Dynamo distributed key-value store—<a href="http://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf" class="ulink">http://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf</a></li><li style="list-style-type: disc;" class="listitem">Lamport wrote a paper on the problem of ordering in distributed systems<a id="id486" class="indexterm"></a> in 1978 that is worth a look as well—<a href="http://research.microsoft.com/en-us/um/people/lamport/pubs/time-clocks.pdf" class="ulink">http://research.microsoft.com/en-us/um/people/lamport/pubs/time-clocks.pdf</a></li></ul></div></div></div></div><div style="display:none;"><a id="GBS.0208.05"></a></div></body></html>
+        initialContacts.add(system.actorSelection("akka.tcp://Akkademy@127.0.0.1:2552/user/receptionist"));
+initialContacts.add(system.actorSelection("akka.tcp://Akkademy@127.0.0.1:2551/user/receptionist")); ActorRef<a id="GBS.0200.04"></a> receptionist = system.actorOf(ClusterClient.defaultProps(initialContacts)); ClusterClient.Sendmsg = new ClusterClient.Send("/user/workers", articleToParse, false); Future f = Patterns.ask(receptionist, msg, timeout); String result = (String) Await.result(f, timeout.duration()); System.out.println("result: " + result);
+    }</pre>
+          </div>
+          <p>And the<a id="id473" class="indexterm"></a> following is the Scala code for the client project:</p>
+          <div class="informalexample">
+            <pre class="programlisting">def main(args:<a id="GBS.0200.05"></a> Array[String]) { val timeout = new Timeout(Duration.create(5, "seconds")) val system = ActorSystem.create("clientSystem")
+valinitialContacts: Set[ActorSelection] = Set( system.actorSelection("akka.tcp://Akkademy@127.0.0.1:2552/user/receptionist"), system.actorSelection("akka.tcp://Akkademy@127.0.0.1:2551/user/receptionist") )
+    import collection.JavaConversions._ val receptionist = system.actorOf(ClusterClien<a id="GBS.0201.01"></a>t.defaultProps(initialContacts)) valmsg = ClusterClient.Send("/user/workers", articleToParse, false) val f = Patterns.ask(receptionist, msg, timeout) val result = Await.result(f, timeout.duration).asInstanceOf[String] println("result: " + result)
+  }</pre>
+          </div>
+          <p>We'll look at what is happening in the code step by step.</p>
+          <p>First, we define a <code class="literal">timeout</code> variable to use in our test here as we will ask and wait for<a id="GBS.0201.02"></a> the result. In real situations, you will likely be using an actual actor to send and receive—this is just for the sake of example. We create the actor system for the client.</p>
+          <p>Now, we need to produce the client that talks to the receptionist in the cluster. We create the contact list for the receptionists of the seed nodes for our client to talk to. After getting the set of seed node addresses,<a id="GBS.0201.03"></a> we can then create the <code class="literal">ClusterClient</code> actor:</p>
+          <div class="informalexample">
+            <pre class="programlisting">system.actorOf(ClusterClient.defaultProps(initialContacts))</pre>
+          </div>
+          <p>At this point, our<a id="id474" class="indexterm"></a> application is able to connect to the cluster and get information about any changes to the cluster topology. The receptionist in the remote actor system will accept a few different messages:</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist">
+              <li style="list-style-type: disc;" class="listitem"><code class="literal">ClusterClient.Send</code>: This sends a message to a random node.</li>
+              <li style="list-style-type: disc;" class="listitem"><code class="literal">ClusterClient.SendToAll</code><a id="GBS.0201.04"></a>: This sends a message to all actors in the cluster.</li>
+              <li style="list-style-type: disc;" class="listitem"><code class="literal">ClusterClient.Publish</code>: This sends a message to all actors subscribed to a topic.</li>
+            </ul>
+          </div>
+          <p>We only need to send the message to a random worker; so, <code class="literal">Send</code> is fine for our case. We make the Send object, describing which actor the message is destined for (the "workers" router running on each node of the cluster) and wrapping our message in it:</p>
+          <div class="informalexample">
+            <pre class="programlisting">newClusterClient.Send("/user/wor<a id="GBS.0201.05"></a>kers", articleToParse, false)</pre>
+          </div>
+          <p>Finally, we use ask to send the message to the receptionist <code class="literal">ActorRef</code> to deliver, and to get the result back (shown calling ask method, but in Scala we can also use the '?' operator):</p>
+          <div class="informalexample">
+            <pre class="programlisting">Patterns.ask(receptionist, msg, timeout);</pre>
+          </div>
+          <p>We take the future that ask gives us and wait for the result—again, this is only for the sake of an example. You never want to block threads by<a id="GBS.0202.01"></a> waiting in your code.</p>
+          <div title="Note" style="" class="note">
+            <div class="inner">
+              <h3 class="title"><a id="note05"></a>Note</h3>
+              <p>If a node becomes unavailable when you try to send it a message, your request will time out and fail. It is your responsibility to handle timeout and retry semantics, or otherwise handle failure cases.</p>
+            </div>
+          </div>
+          <p>That's all that it takes to use Akka to build distributed workers. Now, there are a lot of things we would want to do to further improve this system. If there are potentially<a id="GBS.0202.02"></a> lots of messages, we would likely want to put the messages somewhere other than in the mailbox in memory. Likely, some sort of durable queue or database would be used instead of ephemeral memory. Though, for real-time processing, this isn't a bad start. For a client, we would likely want to build timeout and retry mechanics as well to ensure that we always get the work done that we need done.</p>
+        </div>
+        <div title="Building a Distributed Key Value Store" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec76"></a><a id="GBS.0202.03"></a>Building a Distributed Key Value Store</h3>
+              </div>
+            </div>
+          </div>
+          <p>We've looked <a id="id475" class="indexterm"></a>at everything that it takes to build on top of Akka cluster and we looked at a small example of a stateless cluster of workers. If state is involved, the problem becomes incredibly difficult to get right.</p>
+          <p>In the next section, we'll look at the watchouts, tools, and techniques for handling distributed systems that contain state such as a key-value<a id="GBS.0202.04"></a> store.</p>
+        </div>
+        <div title="Disclaimer – Distributed Systems are Hard" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec77"></a>Disclaimer – Distributed Systems are Hard</h3>
+              </div>
+            </div>
+          </div>
+          <p>Before we go on to look at how to build a distributed key-value store, I want to give you a word of warning.</p>
+          <p>It's not terribly difficult to build distributed systems that appear to work perfectly fine. You might get confident and feel that it's not all that hard after all. You'll tout yourself soon as an expert Distributed Systems Person. But<a id="GBS.0202.05"></a> stay humble—in reality, things fail, networks partition, and services become unavailable—and gracefully handling those scenarios without data loss or corruption is an incredibly difficult problem. Perhaps, even an unsolvable one with our network technology today.</p>
+          <p>How applications respond in those error cases can be more important than their primary functionality because failure is common and,<a id="GBS.0203.01"></a> in fact, is inevitable as you scale up. </p>
+          <div title="Note" style="" class="note">
+            <div class="inner">
+              <h3 class="title"><a id="tip16"></a>Tip</h3>
+              <p>Remember that the network is not reliable. In a cluster of 1,000 nodes running in AWS, it's very likely that there will be some service interruption somewhere in your system at any given time.</p>
+            </div>
+          </div>
+          <p>So, how do all of these new-fangled <code class="literal">NoSql</code> data-stores actually stack up in their claims of availability and partition tolerance then? There is an interesting<a id="GBS.0203.02"></a> series of articles called <span class="emphasis"><em>Jepsen</em></span> or <span class="emphasis"><em>Call Me Maybe</em></span> on <a href="http://aphyr.com" class="ulink">aphyr.com</a> that tests several distributed system's documented claims about resiliency—you might be surprised by how your favorite technology fairs in some of the tests run in the articles.</p>
+          <p>This book will not be able to explain all of the techniques or examine all of the solutions to these problems, so all that I can do as the author is to warn<a id="GBS.0203.03"></a> you that it's a real can of worms and nobody has done a perfect job at solving the distribution problem yet.</p>
+        </div>
+      </div>
+      <div title="Designing the Cluster" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch06lvl2sec80"></a>Designing the Cluster</h2>
+            </div>
+          </div>
+        </div>
+        <p>We are going to build <a id="id476" class="indexterm"></a>a very simple three-node data-store to start demonstrating the techniques that can be used in distributed systems. We are going to look at a couple different designs so that you understand the techniques that are used and what the problems<a id="GBS.0203.04"></a> are that distributed systems try to solve.</p>
+        <p>First, let's begin talking about our cluster and how the client interacts with it. Ideally, we need our multi-node key-value store to offer a few features:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist">
+            <li style="list-style-type: disc;" class="listitem">Mechanisms for replicating data to gracefully handle a node partition</li>
+            <li style="list-style-type: disc;" class="listitem">Mechanism for giving a consistent view of replicated data—to give the most recent update when a client requests it (consistency)</li>
+            <li style="list-style-type: disc;" class="listitem"><a id="GBS.0203.05"></a>Mechanism for linear scalability—20 nodes can handle twice as much throughput as 10 nodes</li>
+          </ul>
+        </div>
+        <p>In terms of design goals in meeting those objectives, we would like to have a database that is highly available, partition tolerant, and able to give a consistent view of the most recent data. Achieving all three perfectly is not likely possible with our technology today, but we can take measures to try. We're<a id="GBS.0204.01"></a> lucky that a lot of very smart people have been working on these problems; thus, we have access to their research and publications.</p>
+        <div title="Basic Key-Value Store Design" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec78"></a>Basic Key-Value Store Design</h3>
+              </div>
+            </div>
+          </div>
+          <p>We've already looked at how a <a id="id477" class="indexterm"></a>single node can store an object in a map with a key associated with it. Using a <code class="literal">HashMap</code> gives approximate constant time lookups, so it's a very efficient choice for storing data in memory.</p>
+          <p>An actor will<a id="GBS.0204.02"></a> accept <code class="literal">Get</code> messages with a key, and Put messages with a key and a value—exactly as demonstrated in <a href="ch02.html" title="Chapter 2. Actors and Concurrency" class="link">Chapter 2</a>, <span class="emphasis"><em>Actors and Concurrency</em></span>. To recap, our node will have an actor that looks like the following:</p>
+          <div class="informalexample">
+            <pre class="programlisting">//Java
+    private AkkademyDb(){ receive(ReceiveBuilder. match(SetRequest.class, message -&gt; { log.info("Received Set request: {}", message); map.put(message.key, message.value); sender().tell(new<a id="GBS.0204.03"></a> Status.Success(message.key), self()); }). match(GetRequest.class, message -&gt; { 
+                             log.info("Received Get request: {}", message); Object value = map.get(message.key); Object response = (value != null) ? value : new Status.Failure(new KeyNotFoundException(message.key)); sender().tell(response, self()); }). matchAny(o -&gt; sender().tell(new Status.Failure(new ClassNotFoundException()),<a id="GBS.0204.04"></a> self()) ).build() ); } //Scala override def receive = { case SetRequest(key, value) =&gt; log.info("received SetRequest - key: {} value: {}", key, value) map.put(key, value) sender() ! Status.Success case GetRequest(key) =&gt; log.info("received GetRequest - key: {}", key) val response: Option[Object] = map.get(key) response match{ case Some(x) =&gt; sender() ! x case None =&gt; sender() ! Status.Failure(new<a id="GBS.0204.05"></a> KeyNotFoundException(key)) } case o =&gt;Status.Failure(new ClassNotFoundException)
+  }</pre>
+          </div>
+          <p>I would recommend that you add other messages for common use cases if you're going to attempt to implement this. Semantics like <code class="literal">SetIfNotExist</code>, which sends back a failure if the node is already there, is useful for handling concurrency consistently—getting and then setting the value <a id="id478" class="indexterm"></a>if it does not exist is not<a id="GBS.0205.01"></a> at all consistent enough for a distributed workflow. Redis API docs are a good resource to look at if you want to see the types of messages and datatypes that are useful for a key-value store to handle with multiple clients—it's a simple and readable document that will go a long way to ramp you up in the problem space.</p>
+        </div>
+        <div title="Coordinating Node" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec79"></a>Coordinating Node</h3>
+              </div>
+            </div>
+          </div>
+          <p>Now that we have a picture<a id="id479" class="indexterm"></a> of how we'll store data in<a id="GBS.0205.02"></a> a node, we need to look a bit higher level at how we want messages to be handled between a client using the data-store and the cluster.</p>
+          <p>We have a client example that sends a message to a random node and that's actually quite a good start for most distributed stores because very often such systems will implement the concept of a coordinating node that can be any node in the cluster that will handle<a id="GBS.0205.03"></a> talking to other nodes in the cluster to handle the request.</p>
+          <p>It's probably unclear at this point exactly why we would do this, but let's imagine a coordinating node that needs to talk to three other nodes to get a definitive answer on what a value is.</p>
+          <div class="mediaobject">
+            <img src="graphics/B04006_06_07.jpg" alt="Coordinating Node" />
+            <a id="GBS.0205.04"></a>
+          </div>
+          <p>If we implement this logic, a <a id="id480" class="indexterm"></a>client can send the request to any node in the cluster, and that node becomes the coordinator for the request. That node then goes to the other nodes and requests the data that it needs to make a decision on what the value is that is being retrieved. So, we can continue to use the random delivery mechanism if we implement the coordination logic on the server instead<a id="GBS.0206.01"></a> of the client. Because we're not sure where the client is located, it's safer to move this responsibility into the cluster itself—we can be more confident that the nodes we need to talk to have lesser leaps across the network in the majority of circumstances. This is how Cassandra handles requests for example.</p>
+          <p>We'll look at two models: one for storing a data set across multiple nodes and one for<a id="GBS.0206.02"></a> replicating data across multiple nodes.</p>
+          <div title="Sharding for Linear Scalability" class="section">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a id="ch06lvl4sec26"></a>Sharding for Linear Scalability</h4>
+                </div>
+              </div>
+            </div>
+            <p>The first problem we will look <a id="id481" class="indexterm"></a>to solve is how to assign a piece of a problem domain to different nodes in a cluster. In the case of storing data in a key-value store, it's easy to see how you might take slices of data (determined by the key) and assign them to different nodes. In Cassandra, a key used to determine which<a id="GBS.0206.03"></a> node data goes to is called a partition key.</p>
+            <p>For our use case of a very simple key-value store, we can take a key and hash it, and then execute modulus on the hash to get an integer value. Let's assume we have three nodes that we want to store data on. A request goes to a node in the cluster to store a key-value pair—for example, <code class="literal">foo</code> as the key and <code class="literal">bar</code> as the value. The coordinating node will<a id="GBS.0206.04"></a> execute <code class="literal">hashCode()</code> on the key:</p>
+            <div class="informalexample">
+              <pre class="programlisting">"foo".hashCode() (101574)</pre>
+            </div>
+            <p>Then, it will call the modulus operator on the <code class="literal">hashcode</code>, giving a result of <code class="literal">0</code>, <code class="literal">1</code>, or <code class="literal">2</code>:</p>
+            <div class="informalexample">
+              <pre class="programlisting">101574 % 3 (0)</pre>
+            </div>
+            <p>Now, if we have three nodes that we want to store data on, then we know if we want to set or get a value with the key <code class="literal">foo</code> that it goes on the first node. This approach of sharding data is used in many distributed data-stores today.</p>
+          </div>
+        </div>
+        <div title="Redundant Nodes" class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="ch06lvl3sec80"></a>Redundant<a id="GBS.0206.05"></a> Nodes</h3>
+              </div>
+            </div>
+          </div>
+          <p>To have high availability and partition<a id="id482" class="indexterm"></a> tolerance, we have to tolerate a node disappearing from the cluster for both reads and writes. If one node disappears, this should be a non-critical failure and the data-store should continue to operate to meet our goals.</p>
+          <p>To accomplish this, we can send all writes to three nodes and hope that the majority of them respond with an acknowledgment. If<a id="GBS.0207.01"></a> only two respond with an ok, we might be able to handle that on future reads. Now, all the intricacies of this mechanism—and specifically how to determine the ordering of events—cannot be covered here, but you can look at lamport clocks or vector clocks if you're motivated to get this right. We'll look at the mechanics at a high level here using simpler mechanics that are easier to comprehend.</p>
+          <p><a id="GBS.0207.02"></a>Let's say a client wants to write a value for key <code class="literal">foo</code> of value <code class="literal">bar</code>, we want to persist this to three nodes. We'll try to write the value to three nodes from the coordinating node.</p>
+          <p>We can reference the previous diagram—a client will make a request to write and it goes to three nodes in the cluster. To have a successful write, we might agree that at least two of the nodes need to acknowledge the<a id="GBS.0207.03"></a> write, or maybe all three do. Adjusting these values tune how it responds to partitions and node failures.</p>
+          <p>Now, if we want to retrieve the value, then we can request the data from any of the three nodes as a starting point, but what if one node goes down and misses some writes? In this case, we can request the data from all three nodes, and require the same value from at least two nodes.</p>
+          <div class="mediaobject">
+            <img src="graphics/B04006_06_08.jpg" alt="Redundant Nodes" />
+            <a id="GBS.0208.01"></a>
+          </div>
+          <p>Now, we have some way of <a id="id483" class="indexterm"></a>determining what the majority of nodes think the value is—we say that two nodes must have the same value to determine which it should be.</p>
+          <p>But how do we know the order of values? Was <code class="literal">bar1</code> or <code class="literal">bar2</code> written first? Which is more recent? We actually don't have any way of determining the ordering of messages, which it turns out is quite a problem. What happens if one node gets<a id="GBS.0208.02"></a> writes in a different order than another node? Cassandra has another read request type called a read repair request, which compares the data stored for a key on all of the replica nodes and tries to propagate the most recent write to the replicas.</p>
+          <p>The actual ordering of events is an interesting problem. You could start by using a timestamp in the record to determine which records are most recent,<a id="GBS.0208.03"></a> but we can't guarantee that all machines have the same clock or that events are occurring infrequently enough to trust the timestamp.</p>
+          <p>There are a couple of papers<a id="id484" class="indexterm"></a> and algorithms you can look at that describe the problem and some solutions. Some of the items you may want to look at are Vector Clocks (Used by many distributed technologies such as Akka and Cassandra) and Dotted Version Vectors (used<a id="GBS.0208.04"></a> by Basho's Riak in recent versions).</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist">
+              <li style="list-style-type: disc;" class="listitem">The Dynamo paper from Amazon describes the use of <a id="id485" class="indexterm"></a>Vector Clocks in Amazon's Dynamo distributed key-value store—<a href="http://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf" class="ulink">http://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf</a></li>
+              <li style="list-style-type: disc;" class="listitem">Lamport wrote a paper on the problem of ordering in distributed systems<a id="id486" class="indexterm"></a> in 1978 that is worth a look as well—<a href="http://research.microsoft.com/en-us/um/people/lamport/pubs/time-clocks.pdf" class="ulink">http://research.microsoft.com/en-us/um/people/lamport/pubs/time-clocks.pdf</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:none;">
+      <a id="GBS.0208.05"></a>
+    </div>
+  </body>
+</html>

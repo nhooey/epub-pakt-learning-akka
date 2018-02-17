@@ -1,3 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Homework</title><link rel="stylesheet" href="epub.css" type="text/css"></link><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"></meta></head><body id="page"><div style="display:none;"><a id="GBS.0176.01"></a></div><div title="Homework" class="section"><div class="titlepage"><div><div><h1 class="title"><a id="ch05lvl1sec37"></a>Homework</h1></div></div></div><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Practice doing work in parallel with both Futures and Actors.</li><li style="list-style-type: disc;" class="listitem">Try moving the work into different dispatchers.</li><li style="list-style-type: disc;" class="listitem">Write down some assumptions you have about how things will perform with more and less threads.</li><li style="list-style-type: disc;" class="listitem">Measure the performance under high load. Measure multiple times for each test and average the results. How does raising and lowering the number of threads and actors impact performance?</li><li style="list-style-type: disc;" class="listitem"><a id="GBS.0176.02"></a>How did your expectations compare to your measurements?</li><li style="list-style-type: disc;" class="listitem">If you were to make general recommendations about optimal parallelism based on your observations, what would it be?<div title="Note" style="" class="note"><div class="inner"><h3 class="title"><a id="tip12"></a>Tip</h3><p>Note: it&#39;s easier to make generalizations if you have more cores. You&#39;ll probably find things behave differently than you expect.</p></div></div></li><li style="list-style-type: disc;" class="listitem">Can you determine how many context switches are occurring and how that impacts performance?<a id="GBS.0176.03"></a> On Linux systems, you&#39;ll find the info in <code class="literal">/proc/[pid]/status</code>. You may have to look around in <code class="literal">ps</code> to find the right Java <code class="literal">pid</code>.</li><li style="list-style-type: disc;" class="listitem">Consider a recent application you have worked on—how would you separate the work into different dispatchers?</li><li style="list-style-type: disc;" class="listitem">What size of threadpools would you use for the work?</li></ul></div></div><div style="display:none;"><a id="GBS.0176.04"></a></div></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Homework</title>
+    <link rel="stylesheet" href="epub.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.75.2" />
+  </head>
+  <body id="page">
+    <div style="display:none;">
+      <a id="GBS.0176.01"></a>
+    </div>
+    <div title="Homework" class="section">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h1 class="title"><a id="ch05lvl1sec37"></a>Homework</h1>
+          </div>
+        </div>
+      </div>
+      <div class="itemizedlist">
+        <ul class="itemizedlist">
+          <li style="list-style-type: disc;" class="listitem">Practice doing work in parallel with both Futures and Actors.</li>
+          <li style="list-style-type: disc;" class="listitem">Try moving the work into different dispatchers.</li>
+          <li style="list-style-type: disc;" class="listitem">Write down some assumptions you have about how things will perform with more and less threads.</li>
+          <li style="list-style-type: disc;" class="listitem">Measure the performance under high load. Measure multiple times for each test and average the results. How does raising and lowering the number of threads and actors impact performance?</li>
+          <li style="list-style-type: disc;" class="listitem"><a id="GBS.0176.02"></a>How did your expectations compare to your measurements?</li>
+          <li style="list-style-type: disc;" class="listitem">If you were to make general recommendations about optimal parallelism based on your observations, what would it be?<div title="Note" style="" class="note"><div class="inner"><h3 class="title"><a id="tip12"></a>Tip</h3><p>Note: it's easier to make generalizations if you have more cores. You'll probably find things behave differently than you expect.</p></div></div></li>
+          <li style="list-style-type: disc;" class="listitem">Can you determine how many context switches are occurring and how that impacts performance?<a id="GBS.0176.03"></a> On Linux systems, you'll find the info in <code class="literal">/proc/[pid]/status</code>. You may have to look around in <code class="literal">ps</code> to find the right Java <code class="literal">pid</code>.</li>
+          <li style="list-style-type: disc;" class="listitem">Consider a recent application you have worked on—how would you separate the work into different dispatchers?</li>
+          <li style="list-style-type: disc;" class="listitem">What size of threadpools would you use for the work?</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:none;">
+      <a id="GBS.0176.04"></a>
+    </div>
+  </body>
+</html>

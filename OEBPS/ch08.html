@@ -1,4 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Chapter 8. Testing and Design</title><link rel="stylesheet" href="epub.css" type="text/css"></link><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"></meta></head><body id="page"><div style="display:none;"><a id="GBS.0233.01"></a></div><div title="Chapter 8. Testing and Design" class="chapter"><div class="titlepage"><div><div><h1 class="title"><a id="ch08"></a>Chapter 8. Testing and Design</h1></div></div></div><p>While both testing and design-related items have been demonstrated throughout this book, they were presented as secondary to the specific details of the toolkit that were being introduced. Now that much of the Akka toolkit has been introduced, we&#39;re going to examine some general approaches to design and testing in somewhat greater detail.</p><p>Testing and design may seem<a id="GBS.0233.02"></a> like unrelated topics, but they have a tendency to affect one another. For code to be testable, it has to be reasonably designed. Also, if code is well designed, it will inherently be easy to make assertions about its behavior and to test them.</p><p>On the topic of testing, we will explore the basic concepts in <a id="id528" class="indexterm"></a>
-<span class="strong"><strong>Behavior Driven Development </strong></span>(<span class="strong"><strong>BDD</strong></span>)&#8212;and see how we can both document and test our Actors<a id="GBS.0233.03"></a> with those approaches. Good testing approaches are one of the most powerful tools for documenting and describing our code. Tests cannot go out of date or deviate from the application&#39;s behavior&#8212;generally, as soon as they have lost their validity, they will fail and, therefore, force the engineer to change them to reflect the application&#39;s behavior.</p><p>On the topic of design, we will cover a few basic<a id="GBS.0233.04"></a> strategies on the level of code in actors that can help ease the task of testing their behavior. However, we will also examine how we can keep our application flexible and easy to maintain as it grows by creating context boundaries around different pieces of our application. We&#39;ll examine how and where we may want to make those boundaries and will look at how it relates to scaling in Akka.</p><p>We<a id="GBS.0233.05"></a> will cover the following topics in this chapter:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Domain-driven design and modeling with Actors and Classes</li><li style="list-style-type: disc;" class="listitem">Behavior-driven testing and development</li></ul></div><div title="Example problem" class="section"><div class="titlepage"><div><div><h1 class="title"><a id="ch08lvl1sec53"></a>Example problem</h1></div></div></div><p>For this chapter, we&#39;re going to pick up a new problem from scratch so that we can go over the process of doing some analysis and design and use that work to test and build. For the example in this chapter, we&#39;ll look at how we might<a id="GBS.0234.01"></a> build pieces of a chatroom application. You work in an organization and have been asked to produce something for use within the office. As it&#39;s meant for use inside a private network, the client can talk to the server using <code class="literal">Akka remoting</code>.</p><p>Looking at the macro level, our supported feature set might look something like the following:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Application will have a lobby where different chatrooms are displayed</li><li style="list-style-type: disc;" class="listitem"><a id="GBS.0234.02"></a>From the lobby, users can join a chatroom or leave a chatroom</li><li style="list-style-type: disc;" class="listitem">When a user joins a chatroom, they will receive a recent history of the chat</li><li style="list-style-type: disc;" class="listitem">Obviously, whenever someone posts, everyone will receive the update that who is in the room</li></ul></div><p>The user client will be written by some other team, and then it will interact with our application. As it&#39;s a native application, or a swing application, we don&#39;t need<a id="GBS.0234.03"></a> an HTTP API and we can use actor remoting to interact with the actors.</p></div></div><div style="display:none;"><a id="GBS.0234.04"></a></div></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Chapter 8. Testing and Design</title>
+    <link rel="stylesheet" href="epub.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.75.2" />
+  </head>
+  <body id="page">
+    <div style="display:none;">
+      <a id="GBS.0233.01"></a>
+    </div>
+    <div title="Chapter 8. Testing and Design" class="chapter">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h1 class="title"><a id="ch08"></a>Chapter 8. Testing and Design</h1>
+          </div>
+        </div>
+      </div>
+      <p>While both testing and design-related items have been demonstrated throughout this book, they were presented as secondary to the specific details of the toolkit that were being introduced. Now that much of the Akka toolkit has been introduced, we're going to examine some general approaches to design and testing in somewhat greater detail.</p>
+      <p>Testing and design may seem<a id="GBS.0233.02"></a> like unrelated topics, but they have a tendency to affect one another. For code to be testable, it has to be reasonably designed. Also, if code is well designed, it will inherently be easy to make assertions about its behavior and to test them.</p>
+      <p>On the topic of testing, we will explore the basic concepts in <a id="id528" class="indexterm"></a>
+<span class="strong"><strong>Behavior Driven Development </strong></span>(<span class="strong"><strong>BDD</strong></span>)—and see how we can both document and test our Actors<a id="GBS.0233.03"></a> with those approaches. Good testing approaches are one of the most powerful tools for documenting and describing our code. Tests cannot go out of date or deviate from the application's behavior—generally, as soon as they have lost their validity, they will fail and, therefore, force the engineer to change them to reflect the application's behavior.</p>
+      <p>On the topic of design, we will cover a few basic<a id="GBS.0233.04"></a> strategies on the level of code in actors that can help ease the task of testing their behavior. However, we will also examine how we can keep our application flexible and easy to maintain as it grows by creating context boundaries around different pieces of our application. We'll examine how and where we may want to make those boundaries and will look at how it relates to scaling in Akka.</p>
+      <p>We<a id="GBS.0233.05"></a> will cover the following topics in this chapter:</p>
+      <div class="itemizedlist">
+        <ul class="itemizedlist">
+          <li style="list-style-type: disc;" class="listitem">Domain-driven design and modeling with Actors and Classes</li>
+          <li style="list-style-type: disc;" class="listitem">Behavior-driven testing and development</li>
+        </ul>
+      </div>
+      <div title="Example problem" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h1 class="title"><a id="ch08lvl1sec53"></a>Example problem</h1>
+            </div>
+          </div>
+        </div>
+        <p>For this chapter, we're going to pick up a new problem from scratch so that we can go over the process of doing some analysis and design and use that work to test and build. For the example in this chapter, we'll look at how we might<a id="GBS.0234.01"></a> build pieces of a chatroom application. You work in an organization and have been asked to produce something for use within the office. As it's meant for use inside a private network, the client can talk to the server using <code class="literal">Akka remoting</code>.</p>
+        <p>Looking at the macro level, our supported feature set might look something like the following:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist">
+            <li style="list-style-type: disc;" class="listitem">Application will have a lobby where different chatrooms are displayed</li>
+            <li style="list-style-type: disc;" class="listitem"><a id="GBS.0234.02"></a>From the lobby, users can join a chatroom or leave a chatroom</li>
+            <li style="list-style-type: disc;" class="listitem">When a user joins a chatroom, they will receive a recent history of the chat</li>
+            <li style="list-style-type: disc;" class="listitem">Obviously, whenever someone posts, everyone will receive the update that who is in the room</li>
+          </ul>
+        </div>
+        <p>The user client will be written by some other team, and then it will interact with our application. As it's a native application, or a swing application, we don't need<a id="GBS.0234.03"></a> an HTTP API and we can use actor remoting to interact with the actors.</p>
+      </div>
+    </div>
+    <div style="display:none;">
+      <a id="GBS.0234.04"></a>
+    </div>
+  </body>
+</html>

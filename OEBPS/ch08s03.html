@@ -1,12 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Designing, building, and testing the Domain model</title><link rel="stylesheet" href="epub.css" type="text/css"></link><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"></meta></head><body id="page"><div style="display:none;"><a id="GBS.0238.01"></a></div><div title="Designing, building, and testing the Domain model" class="section"><div class="titlepage"><div><div><h1 class="title"><a id="ch08lvl1sec55"></a>Designing, building, and testing the Domain model</h1></div></div></div><p>Designing, building, and testing <a id="id537" class="indexterm"></a>are very much intertwined pieces of the <a id="id538" class="indexterm"></a>development process. There are numerous approaches that <a id="id539" class="indexterm"></a>we could take. I&#39;m going to prescribe some upfront analysis describing the domain model and its behaviors, and then use that written analysis to extract the domain model and produce tests. In the following section, we&#39;ll<a id="GBS.0238.02"></a> look specifically at the chatroom and how users interact with it.</p><div title="Specifications" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch08lvl2sec88"></a>Specifications</h2></div></div></div><p>I&#39;m going to make the <a id="id540" class="indexterm"></a>assumption that you have used a chatroom of some sort before, such as Slack, Hipchat, Google Hangouts, or Campfire. If you haven&#39;t used any of those tools, you should evaluate introducing one into your development team&#8212;group chat can be a real boon for engineering teams. We&#39;ll focus on an individual<a id="GBS.0238.03"></a> chatroom design for the moment, and we can start by describing our expectations for the behavior of the chatroom. A few simple statements about the application&#39;s behavior in different contexts can easily be used as lightweight specifications that can drive our building and testing.</p><p>Behavioral specifications can be used for lightweight design documentation and tests. A useful format for writing<a id="GBS.0238.04"></a> specifications is the Given When Then format:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Given the world is in a particular state</li><li style="list-style-type: disc;" class="listitem">When some event occurs</li><li style="list-style-type: disc;" class="listitem">Then some observable outcome is expected</li></ul></div><p>In this format, we are describing the context or state of the application, the event that occurs in the application or to the application, and then the consequence or observable outcome of that action. You might be able to see how unit tests are often<a id="GBS.0238.05"></a> informally broken up into those three distinct concerns as well&#8212;setup, action, and assertion.</p><p>For a chatroom actor, we might define the behavior for a few simple scenarios in the following way.</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Scenario</strong></span>: User <a id="id541" class="indexterm"></a>Joins Chatroom:<div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Given a chatroom has no users, when it receives a request from a user to join the chatroom, then it should add the user to its list of joined users</li><li style="list-style-type: disc;" class="listitem">Given a chatroom has a chat<a id="GBS.0239.01"></a> history, when a user joins the chatroom, then it should receive the last 10 posts to the chatroom from the history</li></ul></div></li><li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Scenario</strong></span>: Post to chatroom:<div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Given a chatroom has a joined user, when the chatroom receives a request to post to the chatroom from a user in the room, then it should update the chat history</li><li style="list-style-type: disc;" class="listitem">Given a chatroom has a joined user, when the chatroom receives a request to post to the chatroom,<a id="GBS.0239.02"></a> then it should notify the joined users</li></ul></div></li></ul></div><p>These are basic and incomplete specifications, but there is enough here to demonstrate. We can add more specifications later and change the behavior of the application to accommodate those additions.</p></div><div title="Designing the Domain model" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch08lvl2sec89"></a>Designing the Domain model</h2></div></div></div><p>Now that we have this <a id="id542" class="indexterm"></a>written down, we can actually use this to both design and test. The great thing about specifications and<a id="GBS.0239.03"></a> the language that we use when talking to each other about the problem domain is that it makes designing and naming quite simple. <span class="emphasis"><em>Eric Evans</em></span>, in his book <span class="emphasis"><em>Domain Driven Design</em></span>, describes the words that we and the users use when talking about the application and calls that the <a id="id543" class="indexterm"></a>
-<span class="strong"><strong>Ubiquitous Language</strong></span>. The great thing about the ubiquitous language that we are using is that it hints at both the structure<a id="GBS.0239.04"></a> and the names that we may want to use in our domain model.</p><p>If we revisit the specifications we just wrote for the chatroom, we can pull out all the pieces of the domain model described with our ubiquitous language and just make a list of those elements:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Chatroom</li><li style="list-style-type: disc;" class="listitem">User</li><li style="list-style-type: disc;" class="listitem">Join chatroom request</li><li style="list-style-type: disc;" class="listitem">Joined users</li><li style="list-style-type: disc;" class="listitem">Post to chatroom</li><li style="list-style-type: disc;" class="listitem">Chat history</li></ul></div><p>Quite incredibly, by writing down the specifications, we&#39;ve described<a id="GBS.0239.05"></a> most of the domain model! We can look at the specifications and pull out everything we can identify with the words that we use to describe the things. The only piece left is deciding how to arrange it all together. We know that, in object-oriented programming, we want to group behavior and data wherever possible, so we&#39;ll use that as a heuristic for placing related data and behavior in classes.<a id="GBS.0240.01"></a> And we know that Akka helps us deal with state, so we&#39;ll also use that heuristic to understand what would benefit from being an actor.</p><p>We can deduce <a id="id544" class="indexterm"></a>the following:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Chat room has a list of user references called <code class="literal">joinedUsers</code>, which can change (state)</li><li style="list-style-type: disc;" class="listitem">Chat room has a list of posts called <code class="literal">chatHistory</code>, which can change (state)</li><li style="list-style-type: disc;" class="listitem">Join request contains a user reference</li></ul></div><p>The chatroom itself will probably benefit<a id="GBS.0240.02"></a> from being an actor as it contains state. Nothing else needs to have any mutating state, so we can use immutable objects for the other elements we identified. We can get to building and testing now that we have an idea of what our domain model looks like and now that we have specifications describing its behavior.</p></div><div title="Testing and building the Domain model" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch08lvl2sec90"></a>Testing and building the Domain model</h2></div></div></div><p>Now that we have <a id="id545" class="indexterm"></a>identified the elements<a id="GBS.0240.03"></a> of the domain, we can proceed with <a id="id546" class="indexterm"></a>testing and building. Often developer unit testing and building the items to be tested benefit from being done together as one task. It&#39;s easier to capture all the small edge cases in tests if you write the tests while building the behavior, so you end up with a nice set of unit tests that describe the behavior you&#39;ve expressed when all is said and done. If you&#39;ve<a id="GBS.0240.04"></a> never used the Test Driven and Behavior Driven approaches, I would encourage experimenting with these approaches while you work as you are much more likely to end up with a useful set of tests than if you approach testing after you finish building.</p><p>The approach that I&#39;ll introduce is to take the specification, write a test that translates the specification, and then fill out the code to make that<a id="GBS.0240.05"></a> test/specification pass.</p><p>First, we know that users exist remotely, so a good place to start is by modeling that remote item. We&#39;ll have some sort of user entity representation somewhere else, but the chatroom doesn&#39;t need to be concerned with it necessarily. The chatroom only needs to know where to send updates to and information to get the entity information for display. We don&#39;t have the user<a id="GBS.0241.01"></a> entity modeled at this point, so we&#39;ll just use a simple <code class="literal">UserRef</code> in our case.</p><p>In Java:</p><div class="informalexample"><pre class="programlisting">public class UserRef { public final ActorRef actor;
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Designing, building, and testing the Domain model</title>
+    <link rel="stylesheet" href="epub.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.75.2" />
+  </head>
+  <body id="page">
+    <div style="display:none;">
+      <a id="GBS.0238.01"></a>
+    </div>
+    <div title="Designing, building, and testing the Domain model" class="section">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h1 class="title"><a id="ch08lvl1sec55"></a>Designing, building, and testing the Domain model</h1>
+          </div>
+        </div>
+      </div>
+      <p>Designing, building, and testing <a id="id537" class="indexterm"></a>are very much intertwined pieces of the <a id="id538" class="indexterm"></a>development process. There are numerous approaches that <a id="id539" class="indexterm"></a>we could take. I'm going to prescribe some upfront analysis describing the domain model and its behaviors, and then use that written analysis to extract the domain model and produce tests. In the following section, we'll<a id="GBS.0238.02"></a> look specifically at the chatroom and how users interact with it.</p>
+      <div title="Specifications" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch08lvl2sec88"></a>Specifications</h2>
+            </div>
+          </div>
+        </div>
+        <p>I'm going to make the <a id="id540" class="indexterm"></a>assumption that you have used a chatroom of some sort before, such as Slack, Hipchat, Google Hangouts, or Campfire. If you haven't used any of those tools, you should evaluate introducing one into your development team—group chat can be a real boon for engineering teams. We'll focus on an individual<a id="GBS.0238.03"></a> chatroom design for the moment, and we can start by describing our expectations for the behavior of the chatroom. A few simple statements about the application's behavior in different contexts can easily be used as lightweight specifications that can drive our building and testing.</p>
+        <p>Behavioral specifications can be used for lightweight design documentation and tests. A useful format for writing<a id="GBS.0238.04"></a> specifications is the Given When Then format:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist">
+            <li style="list-style-type: disc;" class="listitem">Given the world is in a particular state</li>
+            <li style="list-style-type: disc;" class="listitem">When some event occurs</li>
+            <li style="list-style-type: disc;" class="listitem">Then some observable outcome is expected</li>
+          </ul>
+        </div>
+        <p>In this format, we are describing the context or state of the application, the event that occurs in the application or to the application, and then the consequence or observable outcome of that action. You might be able to see how unit tests are often<a id="GBS.0238.05"></a> informally broken up into those three distinct concerns as well—setup, action, and assertion.</p>
+        <p>For a chatroom actor, we might define the behavior for a few simple scenarios in the following way.</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist">
+            <li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Scenario</strong></span>: User <a id="id541" class="indexterm"></a>Joins Chatroom:<div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Given a chatroom has no users, when it receives a request from a user to join the chatroom, then it should add the user to its list of joined users</li><li style="list-style-type: disc;" class="listitem">Given a chatroom has a chat<a id="GBS.0239.01"></a> history, when a user joins the chatroom, then it should receive the last 10 posts to the chatroom from the history</li></ul></div></li>
+            <li style="list-style-type: disc;" class="listitem"><span class="strong"><strong>Scenario</strong></span>: Post to chatroom:<div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Given a chatroom has a joined user, when the chatroom receives a request to post to the chatroom from a user in the room, then it should update the chat history</li><li style="list-style-type: disc;" class="listitem">Given a chatroom has a joined user, when the chatroom receives a request to post to the chatroom,<a id="GBS.0239.02"></a> then it should notify the joined users</li></ul></div></li>
+          </ul>
+        </div>
+        <p>These are basic and incomplete specifications, but there is enough here to demonstrate. We can add more specifications later and change the behavior of the application to accommodate those additions.</p>
+      </div>
+      <div title="Designing the Domain model" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch08lvl2sec89"></a>Designing the Domain model</h2>
+            </div>
+          </div>
+        </div>
+        <p>Now that we have this <a id="id542" class="indexterm"></a>written down, we can actually use this to both design and test. The great thing about specifications and<a id="GBS.0239.03"></a> the language that we use when talking to each other about the problem domain is that it makes designing and naming quite simple. <span class="emphasis"><em>Eric Evans</em></span>, in his book <span class="emphasis"><em>Domain Driven Design</em></span>, describes the words that we and the users use when talking about the application and calls that the <a id="id543" class="indexterm"></a>
+<span class="strong"><strong>Ubiquitous Language</strong></span>. The great thing about the ubiquitous language that we are using is that it hints at both the structure<a id="GBS.0239.04"></a> and the names that we may want to use in our domain model.</p>
+        <p>If we revisit the specifications we just wrote for the chatroom, we can pull out all the pieces of the domain model described with our ubiquitous language and just make a list of those elements:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist">
+            <li style="list-style-type: disc;" class="listitem">Chatroom</li>
+            <li style="list-style-type: disc;" class="listitem">User</li>
+            <li style="list-style-type: disc;" class="listitem">Join chatroom request</li>
+            <li style="list-style-type: disc;" class="listitem">Joined users</li>
+            <li style="list-style-type: disc;" class="listitem">Post to chatroom</li>
+            <li style="list-style-type: disc;" class="listitem">Chat history</li>
+          </ul>
+        </div>
+        <p>Quite incredibly, by writing down the specifications, we've described<a id="GBS.0239.05"></a> most of the domain model! We can look at the specifications and pull out everything we can identify with the words that we use to describe the things. The only piece left is deciding how to arrange it all together. We know that, in object-oriented programming, we want to group behavior and data wherever possible, so we'll use that as a heuristic for placing related data and behavior in classes.<a id="GBS.0240.01"></a> And we know that Akka helps us deal with state, so we'll also use that heuristic to understand what would benefit from being an actor.</p>
+        <p>We can deduce <a id="id544" class="indexterm"></a>the following:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist">
+            <li style="list-style-type: disc;" class="listitem">Chat room has a list of user references called <code class="literal">joinedUsers</code>, which can change (state)</li>
+            <li style="list-style-type: disc;" class="listitem">Chat room has a list of posts called <code class="literal">chatHistory</code>, which can change (state)</li>
+            <li style="list-style-type: disc;" class="listitem">Join request contains a user reference</li>
+          </ul>
+        </div>
+        <p>The chatroom itself will probably benefit<a id="GBS.0240.02"></a> from being an actor as it contains state. Nothing else needs to have any mutating state, so we can use immutable objects for the other elements we identified. We can get to building and testing now that we have an idea of what our domain model looks like and now that we have specifications describing its behavior.</p>
+      </div>
+      <div title="Testing and building the Domain model" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch08lvl2sec90"></a>Testing and building the Domain model</h2>
+            </div>
+          </div>
+        </div>
+        <p>Now that we have <a id="id545" class="indexterm"></a>identified the elements<a id="GBS.0240.03"></a> of the domain, we can proceed with <a id="id546" class="indexterm"></a>testing and building. Often developer unit testing and building the items to be tested benefit from being done together as one task. It's easier to capture all the small edge cases in tests if you write the tests while building the behavior, so you end up with a nice set of unit tests that describe the behavior you've expressed when all is said and done. If you've<a id="GBS.0240.04"></a> never used the Test Driven and Behavior Driven approaches, I would encourage experimenting with these approaches while you work as you are much more likely to end up with a useful set of tests than if you approach testing after you finish building.</p>
+        <p>The approach that I'll introduce is to take the specification, write a test that translates the specification, and then fill out the code to make that<a id="GBS.0240.05"></a> test/specification pass.</p>
+        <p>First, we know that users exist remotely, so a good place to start is by modeling that remote item. We'll have some sort of user entity representation somewhere else, but the chatroom doesn't need to be concerned with it necessarily. The chatroom only needs to know where to send updates to and information to get the entity information for display. We don't have the user<a id="GBS.0241.01"></a> entity modeled at this point, so we'll just use a simple <code class="literal">UserRef</code> in our case.</p>
+        <p>In Java:</p>
+        <div class="informalexample">
+          <pre class="programlisting">public class UserRef { public final ActorRef actor;
     public final String username;
     public UserRef(ActorRef actor, String username) { this.actor = actor;
 this.username = username;
     }
-}</pre></div><p>In Scala:</p><div class="informalexample"><pre class="programlisting">case class UserRef(actor: ActorRef, name: String)</pre></div><p>The <code class="literal">UserRef</code> will <a id="id547" class="indexterm"></a>have the name to display and then an actor<a id="GBS.0241.02"></a> ref that we can send updates to. This is all the user info that the chatroom itself will need at this point in time.</p><p>The chatroom has to keep two pieces of data: joined users and chat history. Because these items represent state, and multiple users will be trying to access and change the state, we can guess that the chatroom itself would benefit from being an actor. Because the chatroom will be<a id="GBS.0241.03"></a> an actor, we&#39;ll model the Post request and Join request as immutable messages. We&#39;ll call them<a id="id548" class="indexterm"></a> starting with a verb name (this may be a small deviation from Java naming conventions but is common with message names). This is expressive of the intent of the message. Then we will have the message include any data relevant to the request.</p><p>In Java:</p><div class="informalexample"><pre class="programlisting">public class Messages { static public class JoinChatroom<a id="GBS.0241.04"></a> { public final UserRefuserRef;
+}</pre>
+        </div>
+        <p>In Scala:</p>
+        <div class="informalexample">
+          <pre class="programlisting">case class UserRef(actor: ActorRef, name: String)</pre>
+        </div>
+        <p>The <code class="literal">UserRef</code> will <a id="id547" class="indexterm"></a>have the name to display and then an actor<a id="GBS.0241.02"></a> ref that we can send updates to. This is all the user info that the chatroom itself will need at this point in time.</p>
+        <p>The chatroom has to keep two pieces of data: joined users and chat history. Because these items represent state, and multiple users will be trying to access and change the state, we can guess that the chatroom itself would benefit from being an actor. Because the chatroom will be<a id="GBS.0241.03"></a> an actor, we'll model the Post request and Join request as immutable messages. We'll call them<a id="id548" class="indexterm"></a> starting with a verb name (this may be a small deviation from Java naming conventions but is common with message names). This is expressive of the intent of the message. Then we will have the message include any data relevant to the request.</p>
+        <p>In Java:</p>
+        <div class="informalexample">
+          <pre class="programlisting">public class Messages { static public class JoinChatroom<a id="GBS.0241.04"></a> { public final UserRefuserRef;
         public JoinChatroom(UserRefuserRef) { this.userRef = userRef;
         }
     }
@@ -15,26 +116,86 @@ this.username = username;
 this.username = username;
         }
     }
-}</pre></div><p>In Scala:</p><div class="informalexample"><pre class="programlisting">case class JoinChatroom(userRef: UserRef)
-case class PostToChatroom(line:<a id="GBS.0241.05"></a> String, username: String)</pre></div><p>Now that we have the messages, we can build the skeleton of the chatroom. We won&#39;t implement any logic yet—just create the actor. Because we also know the state, we can add those fields to the actor as well at this point:</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Chatroom has a list of user references called <code class="literal">joinedUsers</code>, which can change (state)</li><li style="list-style-type: disc;" class="listitem">Chatroom<a id="id549" class="indexterm"></a> has a list of posts called <code class="literal">chatHistory</code>, which <a id="id550" class="indexterm"></a>can change<a id="GBS.0242.01"></a> (state)</li></ul></div><p>In Java:</p><div class="informalexample"><pre class="programlisting">public class Chatroom extends AbstractActor{ List&lt;Messages.PostToChatroom&gt;chatHistory = new ArrayList&lt;Messages.PostToChatroom&gt;();
+}</pre>
+        </div>
+        <p>In Scala:</p>
+        <div class="informalexample">
+          <pre class="programlisting">case class JoinChatroom(userRef: UserRef)
+case class PostToChatroom(line:<a id="GBS.0241.05"></a> String, username: String)</pre>
+        </div>
+        <p>Now that we have the messages, we can build the skeleton of the chatroom. We won't implement any logic yet—just create the actor. Because we also know the state, we can add those fields to the actor as well at this point:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist">
+            <li style="list-style-type: disc;" class="listitem">Chatroom has a list of user references called <code class="literal">joinedUsers</code>, which can change (state)</li>
+            <li style="list-style-type: disc;" class="listitem">Chatroom<a id="id549" class="indexterm"></a> has a list of posts called <code class="literal">chatHistory</code>, which <a id="id550" class="indexterm"></a>can change<a id="GBS.0242.01"></a> (state)</li>
+          </ul>
+        </div>
+        <p>In Java:</p>
+        <div class="informalexample">
+          <pre class="programlisting">public class Chatroom extends AbstractActor{ List&lt;Messages.PostToChatroom&gt;chatHistory = new ArrayList&lt;Messages.PostToChatroom&gt;();
     List&lt;UserRef&gt;joinedUsers = new ArrayList&lt;UserRef&gt;();
-    @Override public PartialFunction&lt;Object, BoxedUnit&gt; receive() { return ReceiveBuilder. matchAny(o -&gt;System.out.println(&quot;received unknown message&quot;)).build();
+    @Override public PartialFunction&lt;Object, BoxedUnit&gt; receive() { return ReceiveBuilder. matchAny(o -&gt;System.out.println("received unknown message")).build();
     }
-}</pre></div><p>In Scala:</p><div class="informalexample"><pre class="programlisting">class Chatroom<a id="GBS.0242.02"></a> extends Actor {
+}</pre>
+        </div>
+        <p>In Scala:</p>
+        <div class="informalexample">
+          <pre class="programlisting">class Chatroom<a id="GBS.0242.02"></a> extends Actor {
 var joinedUsers: Seq[UserRef] = Seq.empty
 var chatHistory: Seq[PostToChatroom] = Seq.empty
 
 override def receive = {
 case _ =&gt;
-println(&quot;received unknown message &quot;)
+println("received unknown message ")
   }
-}</pre></div></div><div title="Building by specification" class="section"><div class="titlepage"><div><div><h2 class="title"><a id="ch08lvl2sec91"></a>Building by specification</h2></div></div></div><p>Revisiting the <a id="id551" class="indexterm"></a>specifications we wrote, we can start to build the class and the tests. We&#39;ll take one of the specifications here and show how we might build the test. Then, we&#39;ll implement<a id="GBS.0242.03"></a> the behavior. The class can be built by adding each specification one at a time. After completing one specification here, we&#39;ll take a look at different ways of testing Actors.</p><p>Scenario: User Joins Chatroom</p><div class="itemizedlist"><ul class="itemizedlist"><li style="list-style-type: disc;" class="listitem">Given a chatroom has no users, when it receives a request from a user to join the chatroom, then it should add the user to its list of joined users</li></ul></div><p>In Java, we&#39;ll continue to use Junit, but<a id="GBS.0242.04"></a> C supports <span class="emphasis"><em>Given, When, Then</em></span> style of specification testing <a id="id552" class="indexterm"></a>with appropriate annotations—it&#39;s worth taking a look if you&#39;re starting a new project:</p><div class="informalexample"><pre class="programlisting">public class ChatroomTest extends TestCase { static ActorSystem system = ActorSystem.apply(); @Test public void testShouldAddUserToJoinedUsersWhenJoiningTest() { //Given a Chatroom has no users Props props = Props.create(Chatroom.class); TestActorRef&lt;Chatroom&gt;<a id="GBS.0242.05"></a> ref = TestActorRef.create(system, props, &quot;testA&quot;); Chatroom chatroom = ref.underlyingActor(); assertEquals(chatroom.joinedUsers.size(), 0); //When it recieves a request from a user to join the chatroom UserRefuserRef = new UserRef(system.deadLetters(), &quot;user&quot;); Messages.JoinChatroom request = new Messages.JoinChatroom(userRef); ref.tell(request, system.deadLetters()); //It should add<a id="GBS.0243.01"></a> the UserRef to its list of joined users assertEquals(chatroom.joinedUsers.get(0), userRef); }
-}</pre></div><p>Note that we can start the test name with the word &quot;should&quot;&#8212;as Dan North writes, this helps us write descriptive test names that will print useful information when the tests run. The actual structure of the test reflects our given when the format is as shown in the comments. The comments themselves<a id="GBS.0243.02"></a> may not be necessary, but here this demonstrates how the specification relates to the code.</p><p>In Scala, we have better DSLs with the common testing tools, so we can more directly structure our test to reflect the specification:</p><div class="informalexample"><pre class="programlisting">class ChatroomSpec extends FunSpec with Matchers { val system = ActorSystem()
-  describe(&quot;Given a Chatroom has no users&quot;){ val props: Props = Props.create(classOf[Chatroom])<a id="GBS.0243.03"></a> val ref: TestActorRef[Chatroom] = TestActorRef.create(system, props, &quot;testA&quot;) val chatroom: Chatroom = ref.underlyingActor chatroom.joinedUsers.size should equal(0)
-    describe(&quot;when it receives a request from a user to join the chatroom&quot;){ val userRef: UserRef = new UserRef(system.deadLetters, &quot;user&quot;) val request: JoinChatroom = JoinChatroom(userRef)
+}</pre>
+        </div>
+      </div>
+      <div title="Building by specification" class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title"><a id="ch08lvl2sec91"></a>Building by specification</h2>
+            </div>
+          </div>
+        </div>
+        <p>Revisiting the <a id="id551" class="indexterm"></a>specifications we wrote, we can start to build the class and the tests. We'll take one of the specifications here and show how we might build the test. Then, we'll implement<a id="GBS.0242.03"></a> the behavior. The class can be built by adding each specification one at a time. After completing one specification here, we'll take a look at different ways of testing Actors.</p>
+        <p>Scenario: User Joins Chatroom</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist">
+            <li style="list-style-type: disc;" class="listitem">Given a chatroom has no users, when it receives a request from a user to join the chatroom, then it should add the user to its list of joined users</li>
+          </ul>
+        </div>
+        <p>In Java, we'll continue to use Junit, but<a id="GBS.0242.04"></a> C supports <span class="emphasis"><em>Given, When, Then</em></span> style of specification testing <a id="id552" class="indexterm"></a>with appropriate annotations—it's worth taking a look if you're starting a new project:</p>
+        <div class="informalexample">
+          <pre class="programlisting">public class ChatroomTest extends TestCase { static ActorSystem system = ActorSystem.apply(); @Test public void testShouldAddUserToJoinedUsersWhenJoiningTest() { //Given a Chatroom has no users Props props = Props.create(Chatroom.class); TestActorRef&lt;Chatroom&gt;<a id="GBS.0242.05"></a> ref = TestActorRef.create(system, props, "testA"); Chatroom chatroom = ref.underlyingActor(); assertEquals(chatroom.joinedUsers.size(), 0); //When it recieves a request from a user to join the chatroom UserRefuserRef = new UserRef(system.deadLetters(), "user"); Messages.JoinChatroom request = new Messages.JoinChatroom(userRef); ref.tell(request, system.deadLetters()); //It should add<a id="GBS.0243.01"></a> the UserRef to its list of joined users assertEquals(chatroom.joinedUsers.get(0), userRef); }
+}</pre>
+        </div>
+        <p>Note that we can start the test name with the word "should"—as Dan North writes, this helps us write descriptive test names that will print useful information when the tests run. The actual structure of the test reflects our given when the format is as shown in the comments. The comments themselves<a id="GBS.0243.02"></a> may not be necessary, but here this demonstrates how the specification relates to the code.</p>
+        <p>In Scala, we have better DSLs with the common testing tools, so we can more directly structure our test to reflect the specification:</p>
+        <div class="informalexample">
+          <pre class="programlisting">class ChatroomSpec extends FunSpec with Matchers { val system = ActorSystem()
+  describe("Given a Chatroom has no users"){ val props: Props = Props.create(classOf[Chatroom])<a id="GBS.0243.03"></a> val ref: TestActorRef[Chatroom] = TestActorRef.create(system, props, "testA") val chatroom: Chatroom = ref.underlyingActor chatroom.joinedUsers.size should equal(0)
+    describe("when it receives a request from a user to join the chatroom"){ val userRef: UserRef = new UserRef(system.deadLetters, "user") val request: JoinChatroom = JoinChatroom(userRef)
       ref ! userRef
-      it(&quot;should add<a id="GBS.0243.04"></a> the UserRef to the list of joined users&quot;){ chatroom.joinedUsers.head should equal(userRef) }
+      it("should add<a id="GBS.0243.04"></a> the UserRef to the list of joined users"){ chatroom.joinedUsers.head should equal(userRef) }
     }
   }
-}</pre></div><p>This maps more directly<a id="id553" class="indexterm"></a> to the <span class="emphasis"><em>Given When Then</em></span> format to show how you might use <code class="literal">FunSpec</code> to layer your tests. While this demonstrates the specification quite directly, in real scenarios I would avoid creating too much nesting and duplicate things instead so that your tests aren&#39;t bleeding&#8212;unlike<a id="GBS.0243.05"></a> your production code, duplication can be appropriate in tests. There are several ways in which you can structure tests using <code class="literal">ScalaTest</code>—check out the API and see which suits you best.</p><p>At this point, we need to run the test and ensure that it fails with the expected problem. Running the failing test is an important step as it gives us confidence that our test is validating the correct thing. Here<a id="GBS.0244.01"></a> we can see the test failing because there are no joined users in the list, as expected. Then, when it passes, we know that the behavior is correctly implemented to meet the specification:</p><div class="informalexample"><pre class="programlisting">[info]   - should add the UserRef to the list of joined users *** FAILED ***
-[info]     java.util.NoSuchElementException: head of empty list</pre></div><p>At this point, we&#39;ve covered the basics of designing and testing a<a id="GBS.0244.02"></a> new project. To recap, we can draw a lot of the design from the way we describe it. We&#39;ve identified where state exists, and in any case where we identified state in a concurrent environment, we can decide to implement it with an actor. Any behavior that doesn&#39;t have mutable state accessed from multiple places at the same time, we can probably simplify by using plain objects. As an example, maybe<a id="GBS.0244.03"></a> we want to represent the <code class="literal">ChatHistory</code> in a class instead of simply a list. As the <code class="literal">ChatHistory</code> is only accessed by the chatroom, the <code class="literal">ChatHistory</code> object could be a plain object implementing <code class="literal">getRecentHistory</code> with a simple unsynchronized method as the actor safely handles only one message at a time.</p><p>After checking the test fails, you can implement the behavior, then ensure the test passes in a traditional<a id="GBS.0244.04"></a> TDD/BDD manner, and then move on to implement the next specification in the same way&#8212;building the test and then implementing the behavior. Each edge case you find and build for should have a corresponding test. In my opinion, this is the most reliable way to build maintainable code.</p><p>Next, we&#39;ll look at some different aspects of the <span class="emphasis"><em>akka-testkit</em></span> module that we can use to help us build clear and<a id="GBS.0244.05"></a> expressive tests.</p></div></div><div style="display:none;"><a id="GBS.0244.06"></a></div></body></html>
+}</pre>
+        </div>
+        <p>This maps more directly<a id="id553" class="indexterm"></a> to the <span class="emphasis"><em>Given When Then</em></span> format to show how you might use <code class="literal">FunSpec</code> to layer your tests. While this demonstrates the specification quite directly, in real scenarios I would avoid creating too much nesting and duplicate things instead so that your tests aren't bleeding—unlike<a id="GBS.0243.05"></a> your production code, duplication can be appropriate in tests. There are several ways in which you can structure tests using <code class="literal">ScalaTest</code>—check out the API and see which suits you best.</p>
+        <p>At this point, we need to run the test and ensure that it fails with the expected problem. Running the failing test is an important step as it gives us confidence that our test is validating the correct thing. Here<a id="GBS.0244.01"></a> we can see the test failing because there are no joined users in the list, as expected. Then, when it passes, we know that the behavior is correctly implemented to meet the specification:</p>
+        <div class="informalexample">
+          <pre class="programlisting">[info]   - should add the UserRef to the list of joined users *** FAILED ***
+[info]     java.util.NoSuchElementException: head of empty list</pre>
+        </div>
+        <p>At this point, we've covered the basics of designing and testing a<a id="GBS.0244.02"></a> new project. To recap, we can draw a lot of the design from the way we describe it. We've identified where state exists, and in any case where we identified state in a concurrent environment, we can decide to implement it with an actor. Any behavior that doesn't have mutable state accessed from multiple places at the same time, we can probably simplify by using plain objects. As an example, maybe<a id="GBS.0244.03"></a> we want to represent the <code class="literal">ChatHistory</code> in a class instead of simply a list. As the <code class="literal">ChatHistory</code> is only accessed by the chatroom, the <code class="literal">ChatHistory</code> object could be a plain object implementing <code class="literal">getRecentHistory</code> with a simple unsynchronized method as the actor safely handles only one message at a time.</p>
+        <p>After checking the test fails, you can implement the behavior, then ensure the test passes in a traditional<a id="GBS.0244.04"></a> TDD/BDD manner, and then move on to implement the next specification in the same way—building the test and then implementing the behavior. Each edge case you find and build for should have a corresponding test. In my opinion, this is the most reliable way to build maintainable code.</p>
+        <p>Next, we'll look at some different aspects of the <span class="emphasis"><em>akka-testkit</em></span> module that we can use to help us build clear and<a id="GBS.0244.05"></a> expressive tests.</p>
+      </div>
+    </div>
+    <div style="display:none;">
+      <a id="GBS.0244.06"></a>
+    </div>
+  </body>
+</html>
