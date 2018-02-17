@@ -1,0 +1,1875 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+  <head>
+    <meta name="cover" content="cover" />
+    <meta name="dtb:depth" content="-1" />
+    <meta name="dtb:totalPageCount" content="0" />
+    <meta name="dtb:maxPageNumber" content="0" />
+    <meta name="dtb:uid" content="9781784393007" />
+  </head>
+  <docTitle>
+    <text>Learning Akka</text>
+  </docTitle>
+  <navMap>
+    <navPoint id="id286448480" playOrder="1">
+      <navLabel>
+        <text>Learning Akka</text>
+      </navLabel>
+      <content src="index.html" />
+      <navPoint id="toc" playOrder="2">
+        <navLabel>
+          <text>Table of Contents</text>
+        </navLabel>
+        <content src="toc.html" />
+      </navPoint>
+      <navPoint id="id286448496" playOrder="3">
+        <navLabel>
+          <text>Learning Akka</text>
+        </navLabel>
+        <content src="pr01.html" />
+      </navPoint>
+      <navPoint id="id286691987" playOrder="4">
+        <navLabel>
+          <text>Credits</text>
+        </navLabel>
+        <content src="pr02.html" />
+      </navPoint>
+      <navPoint id="id286697255" playOrder="5">
+        <navLabel>
+          <text>About the Author</text>
+        </navLabel>
+        <content src="pr03.html" />
+      </navPoint>
+      <navPoint id="id286697273" playOrder="6">
+        <navLabel>
+          <text>Acknowledgments</text>
+        </navLabel>
+        <content src="pr04.html" />
+      </navPoint>
+      <navPoint id="id286697297" playOrder="7">
+        <navLabel>
+          <text>About the Reviewer</text>
+        </navLabel>
+        <content src="pr05.html" />
+      </navPoint>
+      <navPoint id="id286697313" playOrder="8">
+        <navLabel>
+          <text>www.PacktPub.com</text>
+        </navLabel>
+        <content src="pr06.html" />
+        <navPoint id="id286697319" playOrder="9">
+          <navLabel>
+            <text>Support files, eBooks, discount offers, and more</text>
+          </navLabel>
+          <content src="pr06.html#ch00lvl1sec01" />
+          <navPoint id="id286697374" playOrder="10">
+            <navLabel>
+              <text>Why subscribe?</text>
+            </navLabel>
+            <content src="pr06.html#ch00lvl2sec01" />
+          </navPoint>
+          <navPoint id="id286697406" playOrder="11">
+            <navLabel>
+              <text>Free access for Packt account holders</text>
+            </navLabel>
+            <content src="pr06.html#ch00lvl2sec02" />
+          </navPoint>
+        </navPoint>
+      </navPoint>
+      <navPoint id="id286697424" playOrder="12">
+        <navLabel>
+          <text>Preface</text>
+        </navLabel>
+        <content src="pr07.html" />
+        <navPoint id="id286697436" playOrder="13">
+          <navLabel>
+            <text>What this book covers</text>
+          </navLabel>
+          <content src="pr07.html#ch00lvl1sec02" />
+        </navPoint>
+        <navPoint id="id286697542" playOrder="14">
+          <navLabel>
+            <text>What you need for this book</text>
+          </navLabel>
+          <content src="pr07s02.html" />
+        </navPoint>
+        <navPoint id="id286697553" playOrder="15">
+          <navLabel>
+            <text>Who this book is for</text>
+          </navLabel>
+          <content src="pr07s03.html" />
+        </navPoint>
+        <navPoint id="id286697566" playOrder="16">
+          <navLabel>
+            <text>Conventions</text>
+          </navLabel>
+          <content src="pr07s04.html" />
+        </navPoint>
+        <navPoint id="id286697629" playOrder="17">
+          <navLabel>
+            <text>Reader feedback</text>
+          </navLabel>
+          <content src="pr07s05.html" />
+        </navPoint>
+        <navPoint id="id286697655" playOrder="18">
+          <navLabel>
+            <text>Customer support</text>
+          </navLabel>
+          <content src="pr07s06.html" />
+          <navPoint id="id286697666" playOrder="19">
+            <navLabel>
+              <text>Downloading the example code</text>
+            </navLabel>
+            <content src="pr07s06.html#ch00lvl2sec03" />
+          </navPoint>
+          <navPoint id="id286697685" playOrder="20">
+            <navLabel>
+              <text>Downloading the color images of this book</text>
+            </navLabel>
+            <content src="pr07s06.html#ch00lvl2sec04" />
+          </navPoint>
+          <navPoint id="id286697700" playOrder="21">
+            <navLabel>
+              <text>Errata</text>
+            </navLabel>
+            <content src="pr07s06.html#ch00lvl2sec05" />
+          </navPoint>
+          <navPoint id="id286697732" playOrder="22">
+            <navLabel>
+              <text>Piracy</text>
+            </navLabel>
+            <content src="pr07s06.html#ch00lvl2sec06" />
+          </navPoint>
+          <navPoint id="id286697752" playOrder="23">
+            <navLabel>
+              <text>eBooks, discount offers, and more</text>
+            </navLabel>
+            <content src="pr07s06.html#ch00lvl2sec07" />
+          </navPoint>
+          <navPoint id="id286697778" playOrder="24">
+            <navLabel>
+              <text>Questions</text>
+            </navLabel>
+            <content src="pr07s06.html#ch00lvl2sec08" />
+          </navPoint>
+        </navPoint>
+      </navPoint>
+      <navPoint id="id286697829" playOrder="25">
+        <navLabel>
+          <text>1. Starting Life as an Actor</text>
+        </navLabel>
+        <content src="ch01.html" />
+        <navPoint id="id286697948" playOrder="26">
+          <navLabel>
+            <text>What&apos;s in this book?</text>
+          </navLabel>
+          <content src="ch01.html#ch01lvl1sec08" />
+        </navPoint>
+        <navPoint id="id286697966" playOrder="27">
+          <navLabel>
+            <text>Chapter overview</text>
+          </navLabel>
+          <content src="ch01s02.html" />
+        </navPoint>
+        <navPoint id="id286698007" playOrder="28">
+          <navLabel>
+            <text>What is Akka</text>
+          </navLabel>
+          <content src="ch01s03.html" />
+          <navPoint id="id286698070" playOrder="29">
+            <navLabel>
+              <text>Actor Model origins</text>
+            </navLabel>
+            <content src="ch01s03.html#ch01lvl2sec09" />
+          </navPoint>
+          <navPoint id="id286698106" playOrder="30">
+            <navLabel>
+              <text>What&apos;s an Actor anyway?</text>
+            </navLabel>
+            <content src="ch01s03.html#ch01lvl2sec10" />
+          </navPoint>
+          <navPoint id="id286722268" playOrder="31">
+            <navLabel>
+              <text>Actors and Message passing</text>
+            </navLabel>
+            <content src="ch01s03.html#ch01lvl2sec11" />
+            <navPoint id="id286722742" playOrder="32">
+              <navLabel>
+                <text>The Evolution of supervision and fault tolerance in Erlang</text>
+              </navLabel>
+              <content src="ch01s03.html#ch01lvl3sec01" />
+            </navPoint>
+            <navPoint id="id286722889" playOrder="33">
+              <navLabel>
+                <text>The Evolution of distribution and location transparency</text>
+              </navLabel>
+              <content src="ch01s03.html#ch01lvl3sec02" />
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286723063" playOrder="34">
+          <navLabel>
+            <text>What we will build</text>
+          </navLabel>
+          <content src="ch01s04.html" />
+          <navPoint id="id286723094" playOrder="35">
+            <navLabel>
+              <text>Example 1 – handling distributed state</text>
+            </navLabel>
+            <content src="ch01s04.html#ch01lvl2sec12" />
+          </navPoint>
+          <navPoint id="id286723109" playOrder="36">
+            <navLabel>
+              <text>Example 2 – getting lots of work done</text>
+            </navLabel>
+            <content src="ch01s04.html#ch01lvl2sec13" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286723210" playOrder="37">
+          <navLabel>
+            <text>Setting up your environment</text>
+          </navLabel>
+          <content src="ch01s05.html" />
+          <navPoint id="id286723238" playOrder="38">
+            <navLabel>
+              <text>Choosing a language</text>
+            </navLabel>
+            <content src="ch01s05.html#ch01lvl2sec14" />
+          </navPoint>
+          <navPoint id="id286723286" playOrder="39">
+            <navLabel>
+              <text>Installing Java – Oracle JDK8</text>
+            </navLabel>
+            <content src="ch01s05.html#ch01lvl2sec15" />
+            <navPoint id="id286723339" playOrder="40">
+              <navLabel>
+                <text>Installing on Windows</text>
+              </navLabel>
+              <content src="ch01s05.html#ch01lvl3sec03" />
+            </navPoint>
+            <navPoint id="id286723432" playOrder="41">
+              <navLabel>
+                <text>Installing on OS X</text>
+              </navLabel>
+              <content src="ch01s05.html#ch01lvl3sec04" />
+            </navPoint>
+            <navPoint id="id286723524" playOrder="42">
+              <navLabel>
+                <text>Installing on Linux or Unix (Universal instructions)</text>
+              </navLabel>
+              <content src="ch01s05.html#ch01lvl3sec05" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286723888" playOrder="43">
+            <navLabel>
+              <text>Ensuring Java is configured in your environment</text>
+            </navLabel>
+            <content src="ch01s05.html#ch01lvl2sec16" />
+          </navPoint>
+          <navPoint id="id286723923" playOrder="44">
+            <navLabel>
+              <text>Installing Scala</text>
+            </navLabel>
+            <content src="ch01s05.html#ch01lvl2sec17" />
+          </navPoint>
+          <navPoint id="id286724003" playOrder="45">
+            <navLabel>
+              <text>Installing Typesafe Activator</text>
+            </navLabel>
+            <content src="ch01s05.html#ch01lvl2sec18" />
+            <navPoint id="id286724071" playOrder="46">
+              <navLabel>
+                <text>Windows</text>
+              </navLabel>
+              <content src="ch01s05.html#ch01lvl3sec06" />
+            </navPoint>
+            <navPoint id="id286724197" playOrder="47">
+              <navLabel>
+                <text>Linux/Unix/OS X</text>
+              </navLabel>
+              <content src="ch01s05.html#ch01lvl3sec07" />
+            </navPoint>
+            <navPoint id="id286750701" playOrder="48">
+              <navLabel>
+                <text>OS X</text>
+              </navLabel>
+              <content src="ch01s05.html#ch01lvl3sec08" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286750917" playOrder="49">
+            <navLabel>
+              <text>Creating a new project</text>
+            </navLabel>
+            <content src="ch01s05.html#ch01lvl2sec19" />
+          </navPoint>
+          <navPoint id="id286751100" playOrder="50">
+            <navLabel>
+              <text>Installing an IDE</text>
+            </navLabel>
+            <content src="ch01s05.html#ch01lvl2sec20" />
+            <navPoint id="id286751128" playOrder="51">
+              <navLabel>
+                <text>Install IntelliJ CE</text>
+              </navLabel>
+              <content src="ch01s05.html#ch01lvl3sec09" />
+            </navPoint>
+            <navPoint id="id286751246" playOrder="52">
+              <navLabel>
+                <text>Eclipse</text>
+              </navLabel>
+              <content src="ch01s05.html#ch01lvl3sec10" />
+              <navPoint id="id286751275" playOrder="53">
+                <navLabel>
+                  <text>Installing Eclipse (Scala-Ide)</text>
+                </navLabel>
+                <content src="ch01s05.html#ch01lvl4sec01" />
+              </navPoint>
+              <navPoint id="id286751360" playOrder="54">
+                <navLabel>
+                  <text>Preparing the project for Eclipse</text>
+                </navLabel>
+                <content src="ch01s05.html#ch01lvl4sec02" />
+              </navPoint>
+              <navPoint id="id286751505" playOrder="55">
+                <navLabel>
+                  <text>Importing the project into Eclipse</text>
+                </navLabel>
+                <content src="ch01s05.html#ch01lvl4sec03" />
+              </navPoint>
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286751719" playOrder="56">
+          <navLabel>
+            <text>Creating your first Akka application – setting up the SBT project</text>
+          </navLabel>
+          <content src="ch01s06.html" />
+          <navPoint id="id286751788" playOrder="57">
+            <navLabel>
+              <text>Adding Akka to build.sbt</text>
+            </navLabel>
+            <content src="ch01s06.html#ch01lvl2sec21" />
+            <navPoint id="id286751877" playOrder="58">
+              <navLabel>
+                <text>A note on getting the right Scala version with %%</text>
+              </navLabel>
+              <content src="ch01s06.html#ch01lvl3sec11" />
+            </navPoint>
+            <navPoint id="id286751922" playOrder="59">
+              <navLabel>
+                <text>Adding other Dependencies from Maven Central</text>
+              </navLabel>
+              <content src="ch01s06.html#ch01lvl3sec12" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286751975" playOrder="60">
+            <navLabel>
+              <text>Creating your first Actor</text>
+            </navLabel>
+            <content src="ch01s06.html#ch01lvl2sec22" />
+            <navPoint id="id286752038" playOrder="61">
+              <navLabel>
+                <text>Making the Message first</text>
+              </navLabel>
+              <content src="ch01s06.html#ch01lvl3sec13" />
+              <navPoint id="id286752087" playOrder="62">
+                <navLabel>
+                  <text>Java</text>
+                </navLabel>
+                <content src="ch01s06.html#ch01lvl4sec04" />
+              </navPoint>
+              <navPoint id="id286752124" playOrder="63">
+                <navLabel>
+                  <text>Scala</text>
+                </navLabel>
+                <content src="ch01s06.html#ch01lvl4sec05" />
+              </navPoint>
+            </navPoint>
+            <navPoint id="id286752167" playOrder="64">
+              <navLabel>
+                <text>Defining Actor response to the Message</text>
+              </navLabel>
+              <content src="ch01s06.html#ch01lvl3sec14" />
+              <navPoint id="id286752222" playOrder="65">
+                <navLabel>
+                  <text>Java – AkkademyDb.java</text>
+                </navLabel>
+                <content src="ch01s06.html#ch01lvl4sec06" />
+              </navPoint>
+              <navPoint id="id286752403" playOrder="66">
+                <navLabel>
+                  <text>Scala – AkkademyDb.scala</text>
+                </navLabel>
+                <content src="ch01s06.html#ch01lvl4sec07" />
+              </navPoint>
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286752550" playOrder="67">
+            <navLabel>
+              <text>Validating the code with unit tests</text>
+            </navLabel>
+            <content src="ch01s06.html#ch01lvl2sec23" />
+            <navPoint id="id286752596" playOrder="68">
+              <navLabel>
+                <text>Akka Testkit</text>
+              </navLabel>
+              <content src="ch01s06.html#ch01lvl3sec15" />
+              <navPoint id="id286457405" playOrder="69">
+                <navLabel>
+                  <text>Java</text>
+                </navLabel>
+                <content src="ch01s06.html#ch01lvl4sec08" />
+              </navPoint>
+              <navPoint id="id286752800" playOrder="70">
+                <navLabel>
+                  <text>Scala</text>
+                </navLabel>
+                <content src="ch01s06.html#ch01lvl4sec09" />
+              </navPoint>
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286752944" playOrder="71">
+            <navLabel>
+              <text>Running the test</text>
+            </navLabel>
+            <content src="ch01s06.html#ch01lvl2sec24" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286753005" playOrder="72">
+          <navLabel>
+            <text>Homework</text>
+          </navLabel>
+          <content src="ch01s07.html" />
+        </navPoint>
+        <navPoint id="id286753084" playOrder="73">
+          <navLabel>
+            <text>Summary</text>
+          </navLabel>
+          <content src="ch01s08.html" />
+        </navPoint>
+      </navPoint>
+      <navPoint id="id286753099" playOrder="74">
+        <navLabel>
+          <text>2. Actors and Concurrency</text>
+        </navLabel>
+        <content src="ch02.html" />
+        <navPoint id="id286753173" playOrder="75">
+          <navLabel>
+            <text>Reactive system design</text>
+          </navLabel>
+          <content src="ch02.html#ch02lvl1sec16" />
+        </navPoint>
+        <navPoint id="id286753325" playOrder="76">
+          <navLabel>
+            <text>The 4 reactive tenets</text>
+          </navLabel>
+          <content src="ch02s02.html" />
+          <navPoint id="id286753353" playOrder="77">
+            <navLabel>
+              <text>Responsive</text>
+            </navLabel>
+            <content src="ch02s02.html#ch02lvl2sec25" />
+          </navPoint>
+          <navPoint id="id286753389" playOrder="78">
+            <navLabel>
+              <text>Elastic</text>
+            </navLabel>
+            <content src="ch02s02.html#ch02lvl2sec26" />
+          </navPoint>
+          <navPoint id="id286753425" playOrder="79">
+            <navLabel>
+              <text>Resilient</text>
+            </navLabel>
+            <content src="ch02s02.html#ch02lvl2sec27" />
+          </navPoint>
+          <navPoint id="id286753507" playOrder="80">
+            <navLabel>
+              <text>Event-driven/message-driven</text>
+            </navLabel>
+            <content src="ch02s02.html#ch02lvl2sec28" />
+          </navPoint>
+          <navPoint id="id286753539" playOrder="81">
+            <navLabel>
+              <text>Reactive Tenet Correlation</text>
+            </navLabel>
+            <content src="ch02s02.html#ch02lvl2sec29" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286753603" playOrder="82">
+          <navLabel>
+            <text>Anatomy of an Actor</text>
+          </navLabel>
+          <content src="ch02s03.html" />
+          <navPoint id="id286753632" playOrder="83">
+            <navLabel>
+              <text>Java Actor API</text>
+            </navLabel>
+            <content src="ch02s03.html#ch02lvl2sec30" />
+          </navPoint>
+          <navPoint id="id286754482" playOrder="84">
+            <navLabel>
+              <text>Scala Actor API</text>
+            </navLabel>
+            <content src="ch02s03.html#ch02lvl2sec31" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286754727" playOrder="85">
+          <navLabel>
+            <text>Creating an actor</text>
+          </navLabel>
+          <content src="ch02s04.html" />
+          <navPoint id="id286754867" playOrder="86">
+            <navLabel>
+              <text>Props</text>
+            </navLabel>
+            <content src="ch02s04.html#ch02lvl2sec32" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286755080" playOrder="87">
+          <navLabel>
+            <text>Promises, futures, and event-driven programming models</text>
+          </navLabel>
+          <content src="ch02s05.html" />
+          <navPoint id="id286755153" playOrder="88">
+            <navLabel>
+              <text>Blocking versus event-driven APIs</text>
+            </navLabel>
+            <content src="ch02s05.html#ch02lvl2sec33" />
+            <navPoint id="id286755618" playOrder="89">
+              <navLabel>
+                <text>Skills check-point</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec16" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286755685" playOrder="90">
+            <navLabel>
+              <text>Having an Actor respond via a future</text>
+            </navLabel>
+            <content src="ch02s05.html#ch02lvl2sec34" />
+            <navPoint id="id286755813" playOrder="91">
+              <navLabel>
+                <text>Java example</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec17" />
+              <navPoint id="id286755844" playOrder="92">
+                <navLabel>
+                  <text>Working with Scala futures</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec10" />
+              </navPoint>
+              <navPoint id="id286755921" playOrder="93">
+                <navLabel>
+                  <text>Test case</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec11" />
+              </navPoint>
+              <navPoint id="id286755980" playOrder="94">
+                <navLabel>
+                  <text>Actor creation</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec12" />
+              </navPoint>
+            </navPoint>
+            <navPoint id="id286756146" playOrder="95">
+              <navLabel>
+                <text>Scala example</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec18" />
+              <navPoint id="id286756174" playOrder="96">
+                <navLabel>
+                  <text>Test case</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec13" />
+              </navPoint>
+              <navPoint id="id286756212" playOrder="97">
+                <navLabel>
+                  <text>Actor creation</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec14" />
+              </navPoint>
+            </navPoint>
+            <navPoint id="id286756392" playOrder="98">
+              <navLabel>
+                <text>Blocking threads in tests</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec19" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286756553" playOrder="99">
+            <navLabel>
+              <text>Understanding futures and promises</text>
+            </navLabel>
+            <content src="ch02s05.html#ch02lvl2sec35" />
+            <navPoint id="id286756600" playOrder="100">
+              <navLabel>
+                <text>Future – expressing failure and latency in types</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec20" />
+              <navPoint id="id286756651" playOrder="101">
+                <navLabel>
+                  <text>Preparing for the Java example</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec15" />
+              </navPoint>
+              <navPoint id="id286756736" playOrder="102">
+                <navLabel>
+                  <text>Preparing for Scala examples</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec16" />
+              </navPoint>
+              <navPoint id="id286756791" playOrder="103">
+                <navLabel>
+                  <text>Note on sleeping</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec17" />
+              </navPoint>
+              <navPoint id="id286756824" playOrder="104">
+                <navLabel>
+                  <text>Anatomy of a future</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec18" />
+              </navPoint>
+              <navPoint id="id286756862" playOrder="105">
+                <navLabel>
+                  <text>Handling success cases</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec19" />
+                <navPoint id="id286756913" playOrder="106">
+                  <navLabel>
+                    <text>Executing code with the result</text>
+                  </navLabel>
+                  <content src="ch02s05.html#ch02lvl5sec01" />
+                </navPoint>
+                <navPoint id="id286756999" playOrder="107">
+                  <navLabel>
+                    <text>Transforming the result</text>
+                  </navLabel>
+                  <content src="ch02s05.html#ch02lvl5sec02" />
+                </navPoint>
+                <navPoint id="id286757062" playOrder="108">
+                  <navLabel>
+                    <text>Transforming the result asynchronously</text>
+                  </navLabel>
+                  <content src="ch02s05.html#ch02lvl5sec03" />
+                </navPoint>
+              </navPoint>
+              <navPoint id="id286757304" playOrder="109">
+                <navLabel>
+                  <text>Handling failure cases</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec20" />
+                <navPoint id="id286757354" playOrder="110">
+                  <navLabel>
+                    <text>Executing code in the failure case</text>
+                  </navLabel>
+                  <content src="ch02s05.html#ch02lvl5sec04" />
+                </navPoint>
+                <navPoint id="id286757437" playOrder="111">
+                  <navLabel>
+                    <text>Recovering from failure</text>
+                  </navLabel>
+                  <content src="ch02s05.html#ch02lvl5sec05" />
+                </navPoint>
+                <navPoint id="id286757498" playOrder="112">
+                  <navLabel>
+                    <text>Recovering from failure asynchronously</text>
+                  </navLabel>
+                  <content src="ch02s05.html#ch02lvl5sec06" />
+                </navPoint>
+              </navPoint>
+              <navPoint id="id286757626" playOrder="113">
+                <navLabel>
+                  <text>Composing futures</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec21" />
+                <navPoint id="id286757654" playOrder="114">
+                  <navLabel>
+                    <text>Chaining operations together</text>
+                  </navLabel>
+                  <content src="ch02s05.html#ch02lvl5sec07" />
+                </navPoint>
+                <navPoint id="id286757761" playOrder="115">
+                  <navLabel>
+                    <text>Combining futures</text>
+                  </navLabel>
+                  <content src="ch02s05.html#ch02lvl5sec08" />
+                </navPoint>
+                <navPoint id="id286757828" playOrder="116">
+                  <navLabel>
+                    <text>Dealing with lists of futures</text>
+                  </navLabel>
+                  <content src="ch02s05.html#ch02lvl5sec09" />
+                </navPoint>
+                <navPoint id="id286757928" playOrder="117">
+                  <navLabel>
+                    <text>Future cheat-sheet</text>
+                  </navLabel>
+                  <content src="ch02s05.html#ch02lvl5sec10" />
+                </navPoint>
+              </navPoint>
+              <navPoint id="id286758163" playOrder="118">
+                <navLabel>
+                  <text>Composing a Distributed System – AkkademyDb and client</text>
+                </navLabel>
+                <content src="ch02s05.html#ch02lvl4sec22" />
+              </navPoint>
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286758251" playOrder="119">
+            <navLabel>
+              <text>Preparing the DB and messages</text>
+            </navLabel>
+            <content src="ch02s05.html#ch02lvl2sec36" />
+            <navPoint id="id286758371" playOrder="120">
+              <navLabel>
+                <text>The messages</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec21" />
+            </navPoint>
+            <navPoint id="id286758483" playOrder="121">
+              <navLabel>
+                <text>Implementing the DB functionality</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec22" />
+            </navPoint>
+            <navPoint id="id286758620" playOrder="122">
+              <navLabel>
+                <text>Enabling remoting</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec23" />
+            </navPoint>
+            <navPoint id="id286758746" playOrder="123">
+              <navLabel>
+                <text>Main</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec24" />
+            </navPoint>
+            <navPoint id="id286758974" playOrder="124">
+              <navLabel>
+                <text>Publishing the messages</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec25" />
+            </navPoint>
+            <navPoint id="id286759094" playOrder="125">
+              <navLabel>
+                <text>Starting the DB</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec26" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286759145" playOrder="126">
+            <navLabel>
+              <text>Producing the client</text>
+            </navLabel>
+            <content src="ch02s05.html#ch02lvl2sec37" />
+            <navPoint id="id286759174" playOrder="127">
+              <navLabel>
+                <text>Scaffolding the project</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec27" />
+            </navPoint>
+            <navPoint id="id286759213" playOrder="128">
+              <navLabel>
+                <text>Modifying build.sbt</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec28" />
+            </navPoint>
+            <navPoint id="id286759273" playOrder="129">
+              <navLabel>
+                <text>Building the client</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec29" />
+            </navPoint>
+            <navPoint id="id286759462" playOrder="130">
+              <navLabel>
+                <text>Testing</text>
+              </navLabel>
+              <content src="ch02s05.html#ch02lvl3sec30" />
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286759525" playOrder="131">
+          <navLabel>
+            <text>Homework</text>
+          </navLabel>
+          <content src="ch02s06.html" />
+          <navPoint id="id286759536" playOrder="132">
+            <navLabel>
+              <text>General learning</text>
+            </navLabel>
+            <content src="ch02s06.html#ch02lvl2sec38" />
+          </navPoint>
+          <navPoint id="id286759584" playOrder="133">
+            <navLabel>
+              <text>Project homework</text>
+            </navLabel>
+            <content src="ch02s06.html#ch02lvl2sec39" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286759650" playOrder="134">
+          <navLabel>
+            <text>Summary</text>
+          </navLabel>
+          <content src="ch02s07.html" />
+        </navPoint>
+      </navPoint>
+      <navPoint id="id286759669" playOrder="135">
+        <navLabel>
+          <text>3. Getting the Message Across</text>
+        </navLabel>
+        <content src="ch03.html" />
+        <navPoint id="id286759720" playOrder="136">
+          <navLabel>
+            <text>Setting the stage with an example problem</text>
+          </navLabel>
+          <content src="ch03.html#ch03lvl1sec23" />
+          <navPoint id="id286760248" playOrder="137">
+            <navLabel>
+              <text>Sketching the project</text>
+            </navLabel>
+            <content src="ch03.html#ch03lvl2sec40" />
+            <navPoint id="id286760401" playOrder="138">
+              <navLabel>
+                <text>Core functionality</text>
+              </navLabel>
+              <content src="ch03.html#ch03lvl3sec31" />
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286760444" playOrder="139">
+          <navLabel>
+            <text>Messaging delivery</text>
+          </navLabel>
+          <content src="ch03s02.html" />
+          <navPoint id="id286760731" playOrder="140">
+            <navLabel>
+              <text>Messages should be immutable</text>
+            </navLabel>
+            <content src="ch03s02.html#ch03lvl2sec41" />
+          </navPoint>
+          <navPoint id="id286761312" playOrder="141">
+            <navLabel>
+              <text>Ask message pattern</text>
+            </navLabel>
+            <content src="ch03s02.html#ch03lvl2sec42" />
+            <navPoint id="id286761541" playOrder="142">
+              <navLabel>
+                <text>Designing with Ask</text>
+              </navLabel>
+              <content src="ch03s02.html#ch03lvl3sec32" />
+            </navPoint>
+            <navPoint id="id286761793" playOrder="143">
+              <navLabel>
+                <text>Callbacks execute in another execution context</text>
+              </navLabel>
+              <content src="ch03s02.html#ch03lvl3sec33" />
+            </navPoint>
+            <navPoint id="id286761863" playOrder="144">
+              <navLabel>
+                <text>Timeouts are required</text>
+              </navLabel>
+              <content src="ch03s02.html#ch03lvl3sec34" />
+            </navPoint>
+            <navPoint id="id286761970" playOrder="145">
+              <navLabel>
+                <text>Timeout stacktraces aren&apos;t useful</text>
+              </navLabel>
+              <content src="ch03s02.html#ch03lvl3sec35" />
+            </navPoint>
+            <navPoint id="id286762033" playOrder="146">
+              <navLabel>
+                <text>Ask has overhead</text>
+              </navLabel>
+              <content src="ch03s02.html#ch03lvl3sec36" />
+            </navPoint>
+            <navPoint id="id286762068" playOrder="147">
+              <navLabel>
+                <text>Complexity of Actors and Ask</text>
+              </navLabel>
+              <content src="ch03s02.html#ch03lvl3sec37" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286762145" playOrder="148">
+            <navLabel>
+              <text>Tell</text>
+            </navLabel>
+            <content src="ch03s02.html#ch03lvl2sec43" />
+            <navPoint id="id286762322" playOrder="149">
+              <navLabel>
+                <text>Designing with Tell</text>
+              </navLabel>
+              <content src="ch03s02.html#ch03lvl3sec38" />
+              <navPoint id="id286762356" playOrder="150">
+                <navLabel>
+                  <text>Handling replies with Tell</text>
+                </navLabel>
+                <content src="ch03s02.html#ch03lvl4sec23" />
+              </navPoint>
+              <navPoint id="id286762441" playOrder="151">
+                <navLabel>
+                  <text>Scheduling a Tell Timeout</text>
+                </navLabel>
+                <content src="ch03s02.html#ch03lvl4sec24" />
+              </navPoint>
+              <navPoint id="id286762505" playOrder="152">
+                <navLabel>
+                  <text>Avoiding Ask with an Anonymous Actor</text>
+                </navLabel>
+                <content src="ch03s02.html#ch03lvl4sec25" />
+              </navPoint>
+            </navPoint>
+            <navPoint id="id286762903" playOrder="153">
+              <navLabel>
+                <text>Forward</text>
+              </navLabel>
+              <content src="ch03s02.html#ch03lvl3sec39" />
+            </navPoint>
+            <navPoint id="id286763072" playOrder="154">
+              <navLabel>
+                <text>Pipe</text>
+              </navLabel>
+              <content src="ch03s02.html#ch03lvl3sec40" />
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286763211" playOrder="155">
+          <navLabel>
+            <text>Homework</text>
+          </navLabel>
+          <content src="ch03s03.html" />
+          <navPoint id="id286763256" playOrder="156">
+            <navLabel>
+              <text>General learning</text>
+            </navLabel>
+            <content src="ch03s03.html#ch03lvl2sec44" />
+          </navPoint>
+          <navPoint id="id286763317" playOrder="157">
+            <navLabel>
+              <text>Project homework</text>
+            </navLabel>
+            <content src="ch03s03.html#ch03lvl2sec45" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286763354" playOrder="158">
+          <navLabel>
+            <text>Summary</text>
+          </navLabel>
+          <content src="ch03s04.html" />
+        </navPoint>
+      </navPoint>
+      <navPoint id="id286763438" playOrder="159">
+        <navLabel>
+          <text>4. Actor Lifecycle – Handling State and Failure</text>
+        </navLabel>
+        <content src="ch04.html" />
+        <navPoint id="id286763491" playOrder="160">
+          <navLabel>
+            <text>The 8 Fallacies of Distributed Computing</text>
+          </navLabel>
+          <content src="ch04.html#ch04lvl1sec27" />
+          <navPoint id="id286763538" playOrder="161">
+            <navLabel>
+              <text>The network is reliable</text>
+            </navLabel>
+            <content src="ch04.html#ch04lvl2sec460" />
+          </navPoint>
+          <navPoint id="id286763610" playOrder="162">
+            <navLabel>
+              <text>Latency is zero</text>
+            </navLabel>
+            <content src="ch04.html#ch04lvl2sec46" />
+          </navPoint>
+          <navPoint id="id286763690" playOrder="163">
+            <navLabel>
+              <text>Bandwidth is infinite</text>
+            </navLabel>
+            <content src="ch04.html#ch04lvl2sec47" />
+          </navPoint>
+          <navPoint id="id286763733" playOrder="164">
+            <navLabel>
+              <text>The network is secure</text>
+            </navLabel>
+            <content src="ch04.html#ch04lvl2sec48" />
+          </navPoint>
+          <navPoint id="id286763771" playOrder="165">
+            <navLabel>
+              <text>Network topology doesn&apos;t change</text>
+            </navLabel>
+            <content src="ch04.html#ch04lvl2sec49" />
+          </navPoint>
+          <navPoint id="id286763804" playOrder="166">
+            <navLabel>
+              <text>There is one administrator</text>
+            </navLabel>
+            <content src="ch04.html#ch04lvl2sec50" />
+          </navPoint>
+          <navPoint id="id286763836" playOrder="167">
+            <navLabel>
+              <text>Transport cost is zero</text>
+            </navLabel>
+            <content src="ch04.html#ch04lvl2sec51" />
+          </navPoint>
+          <navPoint id="id286764074" playOrder="168">
+            <navLabel>
+              <text>The network is homogeneous</text>
+            </navLabel>
+            <content src="ch04.html#ch04lvl2sec52" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286764185" playOrder="169">
+          <navLabel>
+            <text>Failure</text>
+          </navLabel>
+          <content src="ch04s02.html" />
+          <navPoint id="id286764222" playOrder="170">
+            <navLabel>
+              <text>Isolating failure</text>
+            </navLabel>
+            <content src="ch04s02.html#ch04lvl2sec53" />
+            <navPoint id="id286764261" playOrder="171">
+              <navLabel>
+                <text>Redundancy</text>
+              </navLabel>
+              <content src="ch04s02.html#ch04lvl3sec41" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286764496" playOrder="172">
+            <navLabel>
+              <text>Supervision</text>
+            </navLabel>
+            <content src="ch04s02.html#ch04lvl2sec54" />
+            <navPoint id="id286764523" playOrder="173">
+              <navLabel>
+                <text>Supervision hierarchies</text>
+              </navLabel>
+              <content src="ch04s02.html#ch04lvl3sec42" />
+            </navPoint>
+            <navPoint id="id286764644" playOrder="174">
+              <navLabel>
+                <text>Supervision strategies and the drunken sushi chef</text>
+              </navLabel>
+              <content src="ch04s02.html#ch04lvl3sec43" />
+            </navPoint>
+            <navPoint id="id286764830" playOrder="175">
+              <navLabel>
+                <text>Defining supervisor strategies</text>
+              </navLabel>
+              <content src="ch04s02.html#ch04lvl3sec44" />
+            </navPoint>
+            <navPoint id="id286765042" playOrder="176">
+              <navLabel>
+                <text>Actor lifecycle</text>
+              </navLabel>
+              <content src="ch04s02.html#ch04lvl3sec45" />
+            </navPoint>
+            <navPoint id="id286765251" playOrder="177">
+              <navLabel>
+                <text>Messages in restart, stop</text>
+              </navLabel>
+              <content src="ch04s02.html#ch04lvl3sec461" />
+            </navPoint>
+            <navPoint id="id286765348" playOrder="178">
+              <navLabel>
+                <text>Terminating or killing an Actor</text>
+              </navLabel>
+              <content src="ch04s02.html#ch04lvl3sec47" />
+            </navPoint>
+            <navPoint id="id286765496" playOrder="179">
+              <navLabel>
+                <text>Lifecycle monitoring and DeathWatch</text>
+              </navLabel>
+              <content src="ch04s02.html#ch04lvl3sec48" />
+            </navPoint>
+            <navPoint id="id286765597" playOrder="180">
+              <navLabel>
+                <text>Safely restarting</text>
+              </navLabel>
+              <content src="ch04s02.html#ch04lvl3sec49" />
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286765700" playOrder="181">
+          <navLabel>
+            <text>State</text>
+          </navLabel>
+          <content src="ch04s03.html" />
+          <navPoint id="id286765766" playOrder="182">
+            <navLabel>
+              <text>Online/Offline state</text>
+            </navLabel>
+            <content src="ch04s03.html#ch04lvl2sec55" />
+            <navPoint id="id286765901" playOrder="183">
+              <navLabel>
+                <text>Transitioning state</text>
+              </navLabel>
+              <content src="ch04s03.html#ch04lvl3sec50" />
+            </navPoint>
+            <navPoint id="id286765925" playOrder="184">
+              <navLabel>
+                <text>Stashing messages between states</text>
+              </navLabel>
+              <content src="ch04s03.html#ch04lvl3sec51" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286766060" playOrder="185">
+            <navLabel>
+              <text>Conditional statements</text>
+            </navLabel>
+            <content src="ch04s03.html#ch04lvl2sec56" />
+          </navPoint>
+          <navPoint id="id286766139" playOrder="186">
+            <navLabel>
+              <text>Hotswap: Become/Unbecome</text>
+            </navLabel>
+            <content src="ch04s03.html#ch04lvl2sec57" />
+            <navPoint id="id286766336" playOrder="187">
+              <navLabel>
+                <text>Stash leaks</text>
+              </navLabel>
+              <content src="ch04s03.html#ch04lvl3sec52" />
+            </navPoint>
+            <navPoint id="id286766435" playOrder="188">
+              <navLabel>
+                <text>Finite State Machines (FSM)</text>
+              </navLabel>
+              <content src="ch04s03.html#ch04lvl3sec53" />
+            </navPoint>
+            <navPoint id="id286766756" playOrder="189">
+              <navLabel>
+                <text>Defining states</text>
+              </navLabel>
+              <content src="ch04s03.html#ch04lvl3sec54" />
+            </navPoint>
+            <navPoint id="id286766899" playOrder="190">
+              <navLabel>
+                <text>Defining the state container</text>
+              </navLabel>
+              <content src="ch04s03.html#ch04lvl3sec55" />
+            </navPoint>
+            <navPoint id="id286766955" playOrder="191">
+              <navLabel>
+                <text>Defining behavior in FSMs</text>
+              </navLabel>
+              <content src="ch04s03.html#ch04lvl3sec56" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286767232" playOrder="192">
+            <navLabel>
+              <text>Using restarts to transition through states</text>
+            </navLabel>
+            <content src="ch04s03.html#ch04lvl2sec58" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286767265" playOrder="193">
+          <navLabel>
+            <text>Homework</text>
+          </navLabel>
+          <content src="ch04s04.html" />
+        </navPoint>
+        <navPoint id="id286767368" playOrder="194">
+          <navLabel>
+            <text>Summary</text>
+          </navLabel>
+          <content src="ch04s05.html" />
+        </navPoint>
+      </navPoint>
+      <navPoint id="id286767395" playOrder="195">
+        <navLabel>
+          <text>5. Scaling Up</text>
+        </navLabel>
+        <content src="ch05.html" />
+        <navPoint id="id286767443" playOrder="196">
+          <navLabel>
+            <text>Moore&apos;s law</text>
+          </navLabel>
+          <content src="ch05.html#ch05lvl1sec32" />
+        </navPoint>
+        <navPoint id="id286767500" playOrder="197">
+          <navLabel>
+            <text>Multicore architecture as a distribution problem</text>
+          </navLabel>
+          <content src="ch05s02.html" />
+        </navPoint>
+        <navPoint id="id286767558" playOrder="198">
+          <navLabel>
+            <text>Choosing Futures or Actors for concurrency</text>
+          </navLabel>
+          <content src="ch05s03.html" />
+        </navPoint>
+        <navPoint id="id286767653" playOrder="199">
+          <navLabel>
+            <text>Doing work in parallel</text>
+          </navLabel>
+          <content src="ch05s04.html" />
+          <navPoint id="id286767733" playOrder="200">
+            <navLabel>
+              <text>Doing work In parallel with futures</text>
+            </navLabel>
+            <content src="ch05s04.html#ch05lvl2sec59" />
+          </navPoint>
+          <navPoint id="id286767909" playOrder="201">
+            <navLabel>
+              <text>Doing work in parallel with Actors</text>
+            </navLabel>
+            <content src="ch05s04.html#ch05lvl2sec60" />
+            <navPoint id="id286767990" playOrder="202">
+              <navLabel>
+                <text>Introducing Routers</text>
+              </navLabel>
+              <content src="ch05s04.html#ch05lvl3sec57" />
+            </navPoint>
+            <navPoint id="id286768178" playOrder="203">
+              <navLabel>
+                <text>Routing logic</text>
+              </navLabel>
+              <content src="ch05s04.html#ch05lvl3sec58" />
+            </navPoint>
+            <navPoint id="id286768645" playOrder="204">
+              <navLabel>
+                <text>Sending Messages to All Actors in a Router Group/Pool</text>
+              </navLabel>
+              <content src="ch05s04.html#ch05lvl3sec59" />
+            </navPoint>
+            <navPoint id="id286768683" playOrder="205">
+              <navLabel>
+                <text>Supervising the Routees in a Router Pool</text>
+              </navLabel>
+              <content src="ch05s04.html#ch05lvl3sec60" />
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286768795" playOrder="206">
+          <navLabel>
+            <text>Working with Dispatchers</text>
+          </navLabel>
+          <content src="ch05s05.html" />
+          <navPoint id="id286768823" playOrder="207">
+            <navLabel>
+              <text>Dispatchers explained</text>
+            </navLabel>
+            <content src="ch05s05.html#ch05lvl2sec61" />
+          </navPoint>
+          <navPoint id="id286769233" playOrder="208">
+            <navLabel>
+              <text>Executors</text>
+            </navLabel>
+            <content src="ch05s05.html#ch05lvl2sec62" />
+          </navPoint>
+          <navPoint id="id286769281" playOrder="209">
+            <navLabel>
+              <text>Creating Dispatchers</text>
+            </navLabel>
+            <content src="ch05s05.html#ch05lvl2sec63" />
+          </navPoint>
+          <navPoint id="id286769662" playOrder="210">
+            <navLabel>
+              <text>Deciding Which Dispatcher to use where</text>
+            </navLabel>
+            <content src="ch05s05.html#ch05lvl2sec64" />
+          </navPoint>
+          <navPoint id="id286769907" playOrder="211">
+            <navLabel>
+              <text>Default Dispatcher</text>
+            </navLabel>
+            <content src="ch05s05.html#ch05lvl2sec65" />
+          </navPoint>
+          <navPoint id="id286770059" playOrder="212">
+            <navLabel>
+              <text>Blocking IO dispatcher use with futures</text>
+            </navLabel>
+            <content src="ch05s05.html#ch05lvl2sec66" />
+          </navPoint>
+          <navPoint id="id286770288" playOrder="213">
+            <navLabel>
+              <text>Article parsing dispatcher</text>
+            </navLabel>
+            <content src="ch05s05.html#ch05lvl2sec67" />
+            <navPoint id="id286770339" playOrder="214">
+              <navLabel>
+                <text>Using a configured dispatcher with Actors</text>
+              </navLabel>
+              <content src="ch05s05.html#ch05lvl3sec61" />
+            </navPoint>
+            <navPoint id="id286770555" playOrder="215">
+              <navLabel>
+                <text>Using BalancingPool/BalancingDispatcher</text>
+              </navLabel>
+              <content src="ch05s05.html#ch05lvl3sec62" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286770704" playOrder="216">
+            <navLabel>
+              <text>Optimal parallelism</text>
+            </navLabel>
+            <content src="ch05s05.html#ch05lvl2sec68" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286770738" playOrder="217">
+          <navLabel>
+            <text>Homework</text>
+          </navLabel>
+          <content src="ch05s06.html" />
+        </navPoint>
+        <navPoint id="id286770828" playOrder="218">
+          <navLabel>
+            <text>Summary</text>
+          </navLabel>
+          <content src="ch05s07.html" />
+        </navPoint>
+      </navPoint>
+      <navPoint id="id286770846" playOrder="219">
+        <navLabel>
+          <text>6. Successfully Scaling Out – Clustering</text>
+        </navLabel>
+        <content src="ch06.html" />
+        <navPoint id="id286770920" playOrder="220">
+          <navLabel>
+            <text>Introducing Akka Cluster</text>
+          </navLabel>
+          <content src="ch06.html#ch06lvl1sec39" />
+        </navPoint>
+        <navPoint id="id286771236" playOrder="221">
+          <navLabel>
+            <text>One Giant Monolith or Many Micro Services?</text>
+          </navLabel>
+          <content src="ch06s02.html" />
+        </navPoint>
+        <navPoint id="id286771310" playOrder="222">
+          <navLabel>
+            <text>Definition of a Cluster</text>
+          </navLabel>
+          <content src="ch06s03.html" />
+          <navPoint id="id286771338" playOrder="223">
+            <navLabel>
+              <text>Failure Detection</text>
+            </navLabel>
+            <content src="ch06s03.html#ch06lvl2sec69" />
+          </navPoint>
+          <navPoint id="id286771404" playOrder="224">
+            <navLabel>
+              <text>Gossiping an Eventually Consistent View</text>
+            </navLabel>
+            <content src="ch06s03.html#ch06lvl2sec70" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286771489" playOrder="225">
+          <navLabel>
+            <text>CAP Theorem</text>
+          </navLabel>
+          <content src="ch06s04.html" />
+          <navPoint id="id286771521" playOrder="226">
+            <navLabel>
+              <text>C – Consistency</text>
+            </navLabel>
+            <content src="ch06s04.html#ch06lvl2sec71" />
+          </navPoint>
+          <navPoint id="id286771549" playOrder="227">
+            <navLabel>
+              <text>A – Availability</text>
+            </navLabel>
+            <content src="ch06s04.html#ch06lvl2sec72" />
+          </navPoint>
+          <navPoint id="id286771579" playOrder="228">
+            <navLabel>
+              <text>P – Partition Tolerance</text>
+            </navLabel>
+            <content src="ch06s04.html#ch06lvl2sec73" />
+          </navPoint>
+          <navPoint id="id286771608" playOrder="229">
+            <navLabel>
+              <text>Compromises in CAP Theorem</text>
+            </navLabel>
+            <content src="ch06s04.html#ch06lvl2sec74" />
+            <navPoint id="id286771690" playOrder="230">
+              <navLabel>
+                <text>CP System – Preferring Consistency</text>
+              </navLabel>
+              <content src="ch06s04.html#ch06lvl3sec63" />
+            </navPoint>
+            <navPoint id="id286771756" playOrder="231">
+              <navLabel>
+                <text>AP System – Preferring Availability</text>
+              </navLabel>
+              <content src="ch06s04.html#ch06lvl3sec64" />
+            </navPoint>
+            <navPoint id="id286771831" playOrder="232">
+              <navLabel>
+                <text>Consistency as a Sliding Scale</text>
+              </navLabel>
+              <content src="ch06s04.html#ch06lvl3sec65" />
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286771896" playOrder="233">
+          <navLabel>
+            <text>Building Systems with Akka Cluster</text>
+          </navLabel>
+          <content src="ch06s05.html" />
+          <navPoint id="id286771945" playOrder="234">
+            <navLabel>
+              <text>Creating the Cluster</text>
+            </navLabel>
+            <content src="ch06s05.html#ch06lvl2sec75" />
+            <navPoint id="id286771974" playOrder="235">
+              <navLabel>
+                <text>Configuring the Project</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec66" />
+            </navPoint>
+            <navPoint id="id286772171" playOrder="236">
+              <navLabel>
+                <text>Seed Nodes</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec67" />
+            </navPoint>
+            <navPoint id="id286772242" playOrder="237">
+              <navLabel>
+                <text>Subscribing to Cluster Events</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec68" />
+            </navPoint>
+            <navPoint id="id286772385" playOrder="238">
+              <navLabel>
+                <text>Starting the Cluster</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec69" />
+            </navPoint>
+            <navPoint id="id286772611" playOrder="239">
+              <navLabel>
+                <text>Leaving the Cluster Gracefully</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec70" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286772744" playOrder="240">
+            <navLabel>
+              <text>Cluster Member States</text>
+            </navLabel>
+            <content src="ch06s05.html#ch06lvl2sec76" />
+            <navPoint id="id286772851" playOrder="241">
+              <navLabel>
+                <text>Failure Detection</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec71" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286772951" playOrder="242">
+            <navLabel>
+              <text>Routing Messages to the Cluster</text>
+            </navLabel>
+            <content src="ch06s05.html#ch06lvl2sec77" />
+          </navPoint>
+          <navPoint id="id286772999" playOrder="243">
+            <navLabel>
+              <text>Producing a Distributed Article Parse Service</text>
+            </navLabel>
+            <content src="ch06s05.html#ch06lvl2sec78" />
+          </navPoint>
+          <navPoint id="id286773223" playOrder="244">
+            <navLabel>
+              <text>Cluster Client for Clustered Services</text>
+            </navLabel>
+            <content src="ch06s05.html#ch06lvl2sec79" />
+            <navPoint id="id286773321" playOrder="245">
+              <navLabel>
+                <text>Setting up the Server Project</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec72" />
+            </navPoint>
+            <navPoint id="id286773522" playOrder="246">
+              <navLabel>
+                <text>Setting up the Client Project</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec73" />
+            </navPoint>
+            <navPoint id="id286773597" playOrder="247">
+              <navLabel>
+                <text>Sharing the Message Class between Client and Server</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec74" />
+            </navPoint>
+            <navPoint id="id286773726" playOrder="248">
+              <navLabel>
+                <text>Sending Messages to the Cluster</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec75" />
+            </navPoint>
+            <navPoint id="id286773973" playOrder="249">
+              <navLabel>
+                <text>Building a Distributed Key Value Store</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec76" />
+            </navPoint>
+            <navPoint id="id286774006" playOrder="250">
+              <navLabel>
+                <text>Disclaimer – Distributed Systems are Hard</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec77" />
+            </navPoint>
+          </navPoint>
+          <navPoint id="id286774053" playOrder="251">
+            <navLabel>
+              <text>Designing the Cluster</text>
+            </navLabel>
+            <content src="ch06s05.html#ch06lvl2sec80" />
+            <navPoint id="id286774113" playOrder="252">
+              <navLabel>
+                <text>Basic Key-Value Store Design</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec78" />
+            </navPoint>
+            <navPoint id="id286774193" playOrder="253">
+              <navLabel>
+                <text>Coordinating Node</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec79" />
+              <navPoint id="id286774265" playOrder="254">
+                <navLabel>
+                  <text>Sharding for Linear Scalability</text>
+                </navLabel>
+                <content src="ch06s05.html#ch06lvl4sec26" />
+              </navPoint>
+            </navPoint>
+            <navPoint id="id286774379" playOrder="255">
+              <navLabel>
+                <text>Redundant Nodes</text>
+              </navLabel>
+              <content src="ch06s05.html#ch06lvl3sec80" />
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286774548" playOrder="256">
+          <navLabel>
+            <text>Combining Sharding and Replication</text>
+          </navLabel>
+          <content src="ch06s06.html" />
+          <navPoint id="id286774621" playOrder="257">
+            <navLabel>
+              <text>Pre-Sharding And Redistributing Keys to New Nodes</text>
+            </navLabel>
+            <content src="ch06s06.html#ch06lvl2sec81" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286774791" playOrder="258">
+          <navLabel>
+            <text>Addressing Remote Actors</text>
+          </navLabel>
+          <content src="ch06s07.html" />
+          <navPoint id="id286774942" playOrder="259">
+            <navLabel>
+              <text>Using akka.actor.Identify to Find a Remote Actor</text>
+            </navLabel>
+            <content src="ch06s07.html#ch06lvl2sec82" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286775040" playOrder="260">
+          <navLabel>
+            <text>Homework</text>
+          </navLabel>
+          <content src="ch06s08.html" />
+        </navPoint>
+        <navPoint id="id286775101" playOrder="261">
+          <navLabel>
+            <text>Summary</text>
+          </navLabel>
+          <content src="ch06s09.html" />
+        </navPoint>
+      </navPoint>
+      <navPoint id="id286775120" playOrder="262">
+        <navLabel>
+          <text>7. Handling Mailbox Problems</text>
+        </navLabel>
+        <content src="ch07.html" />
+        <navPoint id="id286775138" playOrder="263">
+          <navLabel>
+            <text>Overwhelming your weakest link</text>
+          </navLabel>
+          <content src="ch07.html#ch07lvl1sec48" />
+          <navPoint id="id286775188" playOrder="264">
+            <navLabel>
+              <text>Ballooning response times</text>
+            </navLabel>
+            <content src="ch07.html#ch07lvl2sec83" />
+          </navPoint>
+          <navPoint id="id286775325" playOrder="265">
+            <navLabel>
+              <text>Crashing</text>
+            </navLabel>
+            <content src="ch07.html#ch07lvl2sec84" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286775396" playOrder="266">
+          <navLabel>
+            <text>Resiliency</text>
+          </navLabel>
+          <content src="ch07s02.html" />
+          <navPoint id="id286775431" playOrder="267">
+            <navLabel>
+              <text>Mailboxes</text>
+            </navLabel>
+            <content src="ch07s02.html#ch07lvl2sec85" />
+            <navPoint id="id286775460" playOrder="268">
+              <navLabel>
+                <text>Configuring mailboxes</text>
+              </navLabel>
+              <content src="ch07s02.html#ch07lvl3sec81" />
+              <navPoint id="id286775531" playOrder="269">
+                <navLabel>
+                  <text>Selecting a mailbox in deployment configuration</text>
+                </navLabel>
+                <content src="ch07s02.html#ch07lvl4sec27" />
+              </navPoint>
+              <navPoint id="id286775607" playOrder="270">
+                <navLabel>
+                  <text>Selecting a mailbox in code</text>
+                </navLabel>
+                <content src="ch07s02.html#ch07lvl4sec28" />
+              </navPoint>
+            </navPoint>
+            <navPoint id="id286775705" playOrder="271">
+              <navLabel>
+                <text>Deciding which mailbox to use</text>
+              </navLabel>
+              <content src="ch07s02.html#ch07lvl3sec82" />
+              <navPoint id="id286775846" playOrder="272">
+                <navLabel>
+                  <text>Prioritizing messages in mailboxes</text>
+                </navLabel>
+                <content src="ch07s02.html#ch07lvl4sec29" />
+              </navPoint>
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286775924" playOrder="273">
+          <navLabel>
+            <text>Staying responsive under load</text>
+          </navLabel>
+          <content src="ch07s03.html" />
+          <navPoint id="id286776010" playOrder="274">
+            <navLabel>
+              <text>Circuit breakers</text>
+            </navLabel>
+            <content src="ch07s03.html#ch07lvl2sec86" />
+            <navPoint id="id286776198" playOrder="275">
+              <navLabel>
+                <text>Circuit breaker listeners</text>
+              </navLabel>
+              <content src="ch07s03.html#ch07lvl3sec83" />
+            </navPoint>
+            <navPoint id="id286776244" playOrder="276">
+              <navLabel>
+                <text>Circuit breaker examples</text>
+              </navLabel>
+              <content src="ch07s03.html#ch07lvl3sec84" />
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286776621" playOrder="277">
+          <navLabel>
+            <text>Homework</text>
+          </navLabel>
+          <content src="ch07s04.html" />
+        </navPoint>
+        <navPoint id="id286776903" playOrder="278">
+          <navLabel>
+            <text>Summary</text>
+          </navLabel>
+          <content src="ch07s05.html" />
+        </navPoint>
+      </navPoint>
+      <navPoint id="id286776918" playOrder="279">
+        <navLabel>
+          <text>8. Testing and Design</text>
+        </navLabel>
+        <content src="ch08.html" />
+        <navPoint id="id286776987" playOrder="280">
+          <navLabel>
+            <text>Example problem</text>
+          </navLabel>
+          <content src="ch08.html#ch08lvl1sec53" />
+        </navPoint>
+        <navPoint id="id286777278" playOrder="281">
+          <navLabel>
+            <text>Approaching application design</text>
+          </navLabel>
+          <content src="ch08s02.html" />
+          <navPoint id="id286777499" playOrder="282">
+            <navLabel>
+              <text>High-Level design</text>
+            </navLabel>
+            <content src="ch08s02.html#ch08lvl2sec87" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286777626" playOrder="283">
+          <navLabel>
+            <text>Designing, building, and testing the Domain model</text>
+          </navLabel>
+          <content src="ch08s03.html" />
+          <navPoint id="id286777691" playOrder="284">
+            <navLabel>
+              <text>Specifications</text>
+            </navLabel>
+            <content src="ch08s03.html#ch08lvl2sec88" />
+          </navPoint>
+          <navPoint id="id286777875" playOrder="285">
+            <navLabel>
+              <text>Designing the Domain model</text>
+            </navLabel>
+            <content src="ch08s03.html#ch08lvl2sec89" />
+          </navPoint>
+          <navPoint id="id286778069" playOrder="286">
+            <navLabel>
+              <text>Testing and building the Domain model</text>
+            </navLabel>
+            <content src="ch08s03.html#ch08lvl2sec90" />
+          </navPoint>
+          <navPoint id="id286778344" playOrder="287">
+            <navLabel>
+              <text>Building by specification</text>
+            </navLabel>
+            <content src="ch08s03.html#ch08lvl2sec91" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286778541" playOrder="288">
+          <navLabel>
+            <text>Testing actors</text>
+          </navLabel>
+          <content src="ch08s04.html" />
+          <navPoint id="id286778577" playOrder="289">
+            <navLabel>
+              <text>Testing Actor behavior and state</text>
+            </navLabel>
+            <content src="ch08s04.html#ch08lvl2sec92" />
+          </navPoint>
+          <navPoint id="id286778826" playOrder="290">
+            <navLabel>
+              <text>Testing Message flow</text>
+            </navLabel>
+            <content src="ch08s04.html#ch08lvl2sec93" />
+            <navPoint id="id286779200" playOrder="291">
+              <navLabel>
+                <text>Using the test Itself as an Actor</text>
+              </navLabel>
+              <content src="ch08s04.html#ch08lvl3sec85" />
+            </navPoint>
+            <navPoint id="id286779412" playOrder="292">
+              <navLabel>
+                <text>Using TestProbes as mock Actors</text>
+              </navLabel>
+              <content src="ch08s04.html#ch08lvl3sec86" />
+            </navPoint>
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286779602" playOrder="293">
+          <navLabel>
+            <text>Testing Advice</text>
+          </navLabel>
+          <content src="ch08s05.html" />
+        </navPoint>
+        <navPoint id="id286779832" playOrder="294">
+          <navLabel>
+            <text>Homework</text>
+          </navLabel>
+          <content src="ch08s06.html" />
+        </navPoint>
+        <navPoint id="id286779978" playOrder="295">
+          <navLabel>
+            <text>Summary</text>
+          </navLabel>
+          <content src="ch08s07.html" />
+        </navPoint>
+      </navPoint>
+      <navPoint id="id286779993" playOrder="296">
+        <navLabel>
+          <text>9. A Journey&apos;s End</text>
+        </navLabel>
+        <content src="ch09.html" />
+        <navPoint id="id286780099" playOrder="297">
+          <navLabel>
+            <text>Other Akka Features and Modules</text>
+          </navLabel>
+          <content src="ch09.html#ch09lvl1sec60" />
+          <navPoint id="id286780130" playOrder="298">
+            <navLabel>
+              <text>Logging in Akka</text>
+            </navLabel>
+            <content src="ch09.html#ch09lvl2sec94" />
+          </navPoint>
+          <navPoint id="id286780429" playOrder="299">
+            <navLabel>
+              <text>Message Channels and EventBus</text>
+            </navLabel>
+            <content src="ch09.html#ch09lvl2sec95" />
+          </navPoint>
+          <navPoint id="id286780872" playOrder="300">
+            <navLabel>
+              <text>Agents</text>
+            </navLabel>
+            <content src="ch09.html#ch09lvl2sec96" />
+          </navPoint>
+          <navPoint id="id286781275" playOrder="301">
+            <navLabel>
+              <text>Akka Persistence</text>
+            </navLabel>
+            <content src="ch09.html#ch09lvl2sec97" />
+          </navPoint>
+          <navPoint id="id286781370" playOrder="302">
+            <navLabel>
+              <text>Akka I/O</text>
+            </navLabel>
+            <content src="ch09.html#ch09lvl2sec98" />
+          </navPoint>
+          <navPoint id="id286781479" playOrder="303">
+            <navLabel>
+              <text>Akka streams and HTTP</text>
+            </navLabel>
+            <content src="ch09.html#ch09lvl2sec99" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286781568" playOrder="304">
+          <navLabel>
+            <text>Deployment Tools</text>
+          </navLabel>
+          <content src="ch09s02.html" />
+        </navPoint>
+        <navPoint id="id286781681" playOrder="305">
+          <navLabel>
+            <text>Monitoring Logs and Events</text>
+          </navLabel>
+          <content src="ch09s03.html" />
+          <navPoint id="id286781868" playOrder="306">
+            <navLabel>
+              <text>Next Steps</text>
+            </navLabel>
+            <content src="ch09s03.html#ch09lvl2sec1000" />
+          </navPoint>
+          <navPoint id="id286781879" playOrder="307">
+            <navLabel>
+              <text>Writing some Actor Code</text>
+            </navLabel>
+            <content src="ch09s03.html#ch09lvl2sec100" />
+          </navPoint>
+          <navPoint id="id286781963" playOrder="308">
+            <navLabel>
+              <text>Coursera Courses</text>
+            </navLabel>
+            <content src="ch09s03.html#ch09lvl2sec101" />
+          </navPoint>
+        </navPoint>
+        <navPoint id="id286782122" playOrder="309">
+          <navLabel>
+            <text>Summary</text>
+          </navLabel>
+          <content src="ch09s04.html" />
+        </navPoint>
+      </navPoint>
+      <navPoint id="backindex" playOrder="310">
+        <navLabel>
+          <text>Index</text>
+        </navLabel>
+        <content src="backindex.html" />
+      </navPoint>
+    </navPoint>
+  </navMap>
+</ncx>

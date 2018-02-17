@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="bookid">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+    <dc:title>Learning Akka</dc:title>
+    <dc:publisher>Packt Publishing</dc:publisher>
+    <dc:identifier id="bookid">9781784393007</dc:identifier>
+    <dc:language>en</dc:language>
+    <meta name="cover" content="cover-image" />
+    <meta name="GBSProcVer" content="1" />
+    <meta name="GBSEpubSource" content="GoogleEbooks" />
+  </metadata>
+  <manifest>
+    <item id="ncxtoc" href="toc.ncx" media-type="application/x-dtbncx+xml" />
+    <item id="cover-image" href="cover/cover.jpg" media-type="image/jpeg" />
+    <item id="id286697355" href="graphics/PacktLibLogo.jpg" media-type="image/jpeg" />
+    <item id="id286722323" href="graphics/B04006_01_01.jpg" media-type="image/jpeg" />
+    <item id="id286722578" href="graphics/B04006_01_02.jpg" media-type="image/jpeg" />
+    <item id="id286722676" href="graphics/B04006_01_03.jpg" media-type="image/jpeg" />
+    <item id="id286722852" href="graphics/B04006_01_04.jpg" media-type="image/jpeg" />
+    <item id="id286723144" href="graphics/B04006_01_05.jpg" media-type="image/jpeg" />
+    <item id="id286751568" href="graphics/B04006_01_06.jpg" media-type="image/jpeg" />
+    <item id="id286751658" href="graphics/B04006_01_07.jpg" media-type="image/jpeg" />
+    <item id="id286753572" href="graphics/B04006_02_01.jpg" media-type="image/jpeg" />
+    <item id="id286755434" href="graphics/B04006_02_02.jpg" media-type="image/jpeg" />
+    <item id="id286755557" href="graphics/B04006_02_03.jpg" media-type="image/jpeg" />
+    <item id="id286758220" href="graphics/B04006_02_04.jpg" media-type="image/jpeg" />
+    <item id="id286760874" href="graphics/B04006_03_50.jpg" media-type="image/jpeg" />
+    <item id="id286760948" href="graphics/B04006_03_500.jpg" media-type="image/jpeg" />
+    <item id="id286761114" href="graphics/B04006_03_01.jpg" media-type="image/jpeg" />
+    <item id="id286761202" href="graphics/B04006_03_02.jpg" media-type="image/jpeg" />
+    <item id="id286761369" href="graphics/B04006_03_03.jpg" media-type="image/jpeg" />
+    <item id="id286761598" href="graphics/B04006_03_04.jpg" media-type="image/jpeg" />
+    <item id="id286761901" href="graphics/B04006_03_05.jpg" media-type="image/jpeg" />
+    <item id="id286762024" href="graphics/B04006_03_06.jpg" media-type="image/jpeg" />
+    <item id="id286762196" href="graphics/B04006_03_07.jpg" media-type="image/jpeg" />
+    <item id="id286762408" href="graphics/B04006_03_08.jpg" media-type="image/jpeg" />
+    <item id="id286762720" href="graphics/B04006_03_09.jpg" media-type="image/jpeg" />
+    <item id="id286762992" href="graphics/B04006_03_10.jpg" media-type="image/jpeg" />
+    <item id="id286764486" href="graphics/B04006_04_01.jpg" media-type="image/jpeg" />
+    <item id="id286764614" href="graphics/B04006_04_02.jpg" media-type="image/jpeg" />
+    <item id="id286765168" href="graphics/B04006_04_03.jpg" media-type="image/jpeg" />
+    <item id="id286765242" href="graphics/B04006_04_04.jpg" media-type="image/jpeg" />
+    <item id="id286768033" href="graphics/B04006_05_01.jpg" media-type="image/jpeg" />
+    <item id="id286768860" href="graphics/B04006_05_02.jpg" media-type="image/jpeg" />
+    <item id="id286769702" href="graphics/B04006_05_03.jpg" media-type="image/jpeg" />
+    <item id="id286769857" href="graphics/B04006_05_04.jpg" media-type="image/jpeg" />
+    <item id="id286771374" href="graphics/B04006_06_01.jpg" media-type="image/jpeg" />
+    <item id="id286771683" href="graphics/B04006_06_02.jpg" media-type="image/jpeg" />
+    <item id="id286771722" href="graphics/B04006_06_03.jpg" media-type="image/jpeg" />
+    <item id="id286771792" href="graphics/B04006_06_04.jpg" media-type="image/jpeg" />
+    <item id="id286772209" href="graphics/B04006_06_05.jpg" media-type="image/jpeg" />
+    <item id="id286773255" href="graphics/B04006_06_06.jpg" media-type="image/jpeg" />
+    <item id="id286774232" href="graphics/B04006_06_07.jpg" media-type="image/jpeg" />
+    <item id="id286774426" href="graphics/B04006_06_08.jpg" media-type="image/jpeg" />
+    <item id="id286774581" href="graphics/B04006_06_09.jpg" media-type="image/jpeg" />
+    <item id="id286774614" href="graphics/B04006_06_10.jpg" media-type="image/jpeg" />
+    <item id="id286774704" href="graphics/B04006_06_11.jpg" media-type="image/jpeg" />
+    <item id="id286775158" href="graphics/B04006_07_01.jpg" media-type="image/jpeg" />
+    <item id="id286775177" href="graphics/B04006_07_02.jpg" media-type="image/jpeg" />
+    <item id="id286775226" href="graphics/B04006_07_03.jpg" media-type="image/jpeg" />
+    <item id="id286775365" href="graphics/B04006_07_04.jpg" media-type="image/jpeg" />
+    <item id="id286775748" href="graphics/B04006_07_05.jpg" media-type="image/jpeg" />
+    <item id="id286776046" href="graphics/B04006_07_06.jpg" media-type="image/jpeg" />
+    <item id="id286776080" href="graphics/B04006_07_07.jpg" media-type="image/jpeg" />
+    <item id="id286776131" href="graphics/B04006_07_08.jpg" media-type="image/jpeg" />
+    <item id="id286777531" href="graphics/B04006_08_01.jpg" media-type="image/jpeg" />
+    <item id="id286781651" href="graphics/B04006_09_01.jpg" media-type="image/jpeg" />
+    <item id="id-note" href="graphics/note.jpg" media-type="image/jpeg" />
+    <item id="id-reference" href="graphics/reference.jpg" media-type="image/jpeg" />
+    <item id="id-list" href="graphics/list.jpg" media-type="image/jpeg" />
+    <item id="id-activity" href="graphics/activity.jpg" media-type="image/jpeg" />
+    <item id="id-action" href="graphics/action.jpg" media-type="image/jpeg" />
+    <item id="cover" href="cover.html" media-type="application/xhtml+xml" />
+    <item id="toc" href="toc.html" media-type="application/xhtml+xml" />
+    <item id="id286448480" href="index.html" media-type="application/xhtml+xml" />
+    <item id="id286448496" href="pr01.html" media-type="application/xhtml+xml" />
+    <item id="id286691987" href="pr02.html" media-type="application/xhtml+xml" />
+    <item id="id286697255" href="pr03.html" media-type="application/xhtml+xml" />
+    <item id="id286697273" href="pr04.html" media-type="application/xhtml+xml" />
+    <item id="id286697297" href="pr05.html" media-type="application/xhtml+xml" />
+    <item id="id286697313" href="pr06.html" media-type="application/xhtml+xml" />
+    <item id="id286697424" href="pr07.html" media-type="application/xhtml+xml" />
+    <item id="id286697542" href="pr07s02.html" media-type="application/xhtml+xml" />
+    <item id="id286697553" href="pr07s03.html" media-type="application/xhtml+xml" />
+    <item id="id286697566" href="pr07s04.html" media-type="application/xhtml+xml" />
+    <item id="id286697629" href="pr07s05.html" media-type="application/xhtml+xml" />
+    <item id="id286697655" href="pr07s06.html" media-type="application/xhtml+xml" />
+    <item id="id286697829" href="ch01.html" media-type="application/xhtml+xml" />
+    <item id="id286697966" href="ch01s02.html" media-type="application/xhtml+xml" />
+    <item id="id286698007" href="ch01s03.html" media-type="application/xhtml+xml" />
+    <item id="id286723063" href="ch01s04.html" media-type="application/xhtml+xml" />
+    <item id="id286723210" href="ch01s05.html" media-type="application/xhtml+xml" />
+    <item id="id286751719" href="ch01s06.html" media-type="application/xhtml+xml" />
+    <item id="id286753005" href="ch01s07.html" media-type="application/xhtml+xml" />
+    <item id="id286753084" href="ch01s08.html" media-type="application/xhtml+xml" />
+    <item id="id286753099" href="ch02.html" media-type="application/xhtml+xml" />
+    <item id="id286753325" href="ch02s02.html" media-type="application/xhtml+xml" />
+    <item id="id286753603" href="ch02s03.html" media-type="application/xhtml+xml" />
+    <item id="id286754727" href="ch02s04.html" media-type="application/xhtml+xml" />
+    <item id="id286755080" href="ch02s05.html" media-type="application/xhtml+xml" />
+    <item id="id286759525" href="ch02s06.html" media-type="application/xhtml+xml" />
+    <item id="id286759650" href="ch02s07.html" media-type="application/xhtml+xml" />
+    <item id="id286759669" href="ch03.html" media-type="application/xhtml+xml" />
+    <item id="id286760444" href="ch03s02.html" media-type="application/xhtml+xml" />
+    <item id="id286763211" href="ch03s03.html" media-type="application/xhtml+xml" />
+    <item id="id286763354" href="ch03s04.html" media-type="application/xhtml+xml" />
+    <item id="id286763438" href="ch04.html" media-type="application/xhtml+xml" />
+    <item id="id286764185" href="ch04s02.html" media-type="application/xhtml+xml" />
+    <item id="id286765700" href="ch04s03.html" media-type="application/xhtml+xml" />
+    <item id="id286767265" href="ch04s04.html" media-type="application/xhtml+xml" />
+    <item id="id286767368" href="ch04s05.html" media-type="application/xhtml+xml" />
+    <item id="id286767395" href="ch05.html" media-type="application/xhtml+xml" />
+    <item id="id286767500" href="ch05s02.html" media-type="application/xhtml+xml" />
+    <item id="id286767558" href="ch05s03.html" media-type="application/xhtml+xml" />
+    <item id="id286767653" href="ch05s04.html" media-type="application/xhtml+xml" />
+    <item id="id286768795" href="ch05s05.html" media-type="application/xhtml+xml" />
+    <item id="id286770738" href="ch05s06.html" media-type="application/xhtml+xml" />
+    <item id="id286770828" href="ch05s07.html" media-type="application/xhtml+xml" />
+    <item id="id286770846" href="ch06.html" media-type="application/xhtml+xml" />
+    <item id="id286771236" href="ch06s02.html" media-type="application/xhtml+xml" />
+    <item id="id286771310" href="ch06s03.html" media-type="application/xhtml+xml" />
+    <item id="id286771489" href="ch06s04.html" media-type="application/xhtml+xml" />
+    <item id="id286771896" href="ch06s05.html" media-type="application/xhtml+xml" />
+    <item id="id286774548" href="ch06s06.html" media-type="application/xhtml+xml" />
+    <item id="id286774791" href="ch06s07.html" media-type="application/xhtml+xml" />
+    <item id="id286775040" href="ch06s08.html" media-type="application/xhtml+xml" />
+    <item id="id286775101" href="ch06s09.html" media-type="application/xhtml+xml" />
+    <item id="id286775120" href="ch07.html" media-type="application/xhtml+xml" />
+    <item id="id286775396" href="ch07s02.html" media-type="application/xhtml+xml" />
+    <item id="id286775924" href="ch07s03.html" media-type="application/xhtml+xml" />
+    <item id="id286776621" href="ch07s04.html" media-type="application/xhtml+xml" />
+    <item id="id286776903" href="ch07s05.html" media-type="application/xhtml+xml" />
+    <item id="id286776918" href="ch08.html" media-type="application/xhtml+xml" />
+    <item id="id286777278" href="ch08s02.html" media-type="application/xhtml+xml" />
+    <item id="id286777626" href="ch08s03.html" media-type="application/xhtml+xml" />
+    <item id="id286778541" href="ch08s04.html" media-type="application/xhtml+xml" />
+    <item id="id286779602" href="ch08s05.html" media-type="application/xhtml+xml" />
+    <item id="id286779832" href="ch08s06.html" media-type="application/xhtml+xml" />
+    <item id="id286779978" href="ch08s07.html" media-type="application/xhtml+xml" />
+    <item id="id286779993" href="ch09.html" media-type="application/xhtml+xml" />
+    <item id="id286781568" href="ch09s02.html" media-type="application/xhtml+xml" />
+    <item id="id286781681" href="ch09s03.html" media-type="application/xhtml+xml" />
+    <item id="id286782122" href="ch09s04.html" media-type="application/xhtml+xml" />
+    <item id="backindex" href="backindex.html" media-type="application/xhtml+xml" />
+    <item id="css" href="epub.css" media-type="text/css" />
+    <item id="_page_map_" href="_page_map_.xml" media-type="application/oebps-page-map+xml" />
+  </manifest>
+  <spine toc="ncxtoc" page-map="_page_map_">
+    <itemref idref="cover" linear="yes" />
+    <itemref idref="toc" />
+    <itemref idref="id286448480" />
+    <itemref idref="id286448496" />
+    <itemref idref="id286691987" />
+    <itemref idref="id286697255" />
+    <itemref idref="id286697273" />
+    <itemref idref="id286697297" />
+    <itemref idref="id286697313" />
+    <itemref idref="id286697424" />
+    <itemref idref="id286697542" />
+    <itemref idref="id286697553" />
+    <itemref idref="id286697566" />
+    <itemref idref="id286697629" />
+    <itemref idref="id286697655" />
+    <itemref idref="id286697829" />
+    <itemref idref="id286697966" />
+    <itemref idref="id286698007" />
+    <itemref idref="id286723063" />
+    <itemref idref="id286723210" />
+    <itemref idref="id286751719" />
+    <itemref idref="id286753005" />
+    <itemref idref="id286753084" />
+    <itemref idref="id286753099" />
+    <itemref idref="id286753325" />
+    <itemref idref="id286753603" />
+    <itemref idref="id286754727" />
+    <itemref idref="id286755080" />
+    <itemref idref="id286759525" />
+    <itemref idref="id286759650" />
+    <itemref idref="id286759669" />
+    <itemref idref="id286760444" />
+    <itemref idref="id286763211" />
+    <itemref idref="id286763354" />
+    <itemref idref="id286763438" />
+    <itemref idref="id286764185" />
+    <itemref idref="id286765700" />
+    <itemref idref="id286767265" />
+    <itemref idref="id286767368" />
+    <itemref idref="id286767395" />
+    <itemref idref="id286767500" />
+    <itemref idref="id286767558" />
+    <itemref idref="id286767653" />
+    <itemref idref="id286768795" />
+    <itemref idref="id286770738" />
+    <itemref idref="id286770828" />
+    <itemref idref="id286770846" />
+    <itemref idref="id286771236" />
+    <itemref idref="id286771310" />
+    <itemref idref="id286771489" />
+    <itemref idref="id286771896" />
+    <itemref idref="id286774548" />
+    <itemref idref="id286774791" />
+    <itemref idref="id286775040" />
+    <itemref idref="id286775101" />
+    <itemref idref="id286775120" />
+    <itemref idref="id286775396" />
+    <itemref idref="id286775924" />
+    <itemref idref="id286776621" />
+    <itemref idref="id286776903" />
+    <itemref idref="id286776918" />
+    <itemref idref="id286777278" />
+    <itemref idref="id286777626" />
+    <itemref idref="id286778541" />
+    <itemref idref="id286779602" />
+    <itemref idref="id286779832" />
+    <itemref idref="id286779978" />
+    <itemref idref="id286779993" />
+    <itemref idref="id286781568" />
+    <itemref idref="id286781681" />
+    <itemref idref="id286782122" />
+    <itemref idref="backindex" />
+  </spine>
+  <guide>
+    <reference type="cover" title="Cover" href="cover.html" />
+  </guide>
+</package>
